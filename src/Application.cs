@@ -1,5 +1,5 @@
 //***********************************************************************
-// *  $RCSfile$ - Application.cs
+// *  Application.cs
 // *
 // *  Copyright (C) 2007 Novell, Inc.
 // *
@@ -47,7 +47,8 @@ namespace Giver
         private Gnome.Program program;
 		private Gdk.Pixbuf pixbuf;
 		private Egg.TrayIcon trayIcon;	
-		private GiverService service;	
+		private GiverService service;
+		private ServiceLocator locator;
 		#endregion
 	
 		#region Public Static Properties
@@ -98,6 +99,7 @@ namespace Giver
 			//tray = new NotificationArea("RtcApplication");
 			SetupTrayIcon();
 
+			locator = new ServiceLocator();
 			service = new GiverService();
 		}
 	
@@ -122,6 +124,7 @@ namespace Giver
 		{
 			Logger.Info ("OnQuitAction called - terminating application");
 
+			locator.Stop();
 			service.Stop();
 
 			Gtk.Main.Quit ();
@@ -132,9 +135,8 @@ namespace Giver
 		private void OnTrayIconClick (object o, ButtonPressEventArgs args) // handler for mouse click
 		{
 			if (args.Event.Button == 1) {
-				Logger.Debug ("left button clicked");
-			} else if (args.Event.Button == 3) //right click
-   			{
+				ShowGiverTargets(args);
+			} else if (args.Event.Button == 3) {
    				// FIXME: Eventually get all these into UIManagerLayout.xml file
       			Menu popupMenu = new Menu();
       			
@@ -172,6 +174,31 @@ namespace Giver
       			popupMenu.Popup(null, null, null, args.Event.Button, args.Event.Time);
    			}
 		}		
+
+		private void ShowGiverTargets(ButtonPressEventArgs args)
+		{
+			bool foundItems = false;
+ 			Menu popupMenu = new Menu();
+ 			
+			Logger.Debug("looping through found services");
+			foreach(Giver.Service s in locator.Services) {
+				Logger.Debug("A Service was found!");
+				foundItems = true;
+	 			ImageMenuItem item = new ImageMenuItem (s.MachineName);
+	 			//quit.Activated += OnQuit;
+	 			popupMenu.Add (item);
+			}
+
+			
+			if(!foundItems) {
+				ImageMenuItem item = new ImageMenuItem("No Giver targets found!");
+				popupMenu.Add(item);
+			}
+ 			
+			popupMenu.ShowAll(); // shows everything
+ 			//popupMenu.Popup(null, null, null, IntPtr.Zero, args.Event.Button, args.Event.Time);
+ 			popupMenu.Popup(null, null, null, args.Event.Button, args.Event.Time);
+		}
 		
 		
 		#endregion		

@@ -15,6 +15,7 @@ CSFILES = \
 	$(srcdir)/Application.cs \
 	$(srcdir)/GiverService.cs \
 	$(srcdir)/Logger.cs \
+	$(srcdir)/ServiceLocator.cs \
 	$(srcdir)/TrayLib.cs \
 	$(srcdir)/Utilities.cs 
 

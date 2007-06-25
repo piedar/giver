@@ -1,8 +1,23 @@
-// /home/calvin/code/giver/src/GiverService.cs created with MonoDevelop
-// User: calvin at 2:12 PM 6/25/2007
-//
-// To change standard headers go to Edit->Preferences->Coding->Standard Headers
-//
+//***********************************************************************
+// *  GiverService.cs
+// *
+// *  Copyright (C) 2007 Novell, Inc.
+// *
+// *  This program is free software; you can redistribute it and/or
+// *  modify it under the terms of the GNU General Public
+// *  License as published by the Free Software Foundation; either
+// *  version 2 of the License, or (at your option) any later version.
+// *
+// *  This program is distributed in the hope that it will be useful,
+// *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+// *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// *  General Public License for more details.
+// *
+// *  You should have received a copy of the GNU General Public
+// *  License along with this program; if not, write to the Free
+// *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+// *
+// **********************************************************************
 
 using System;
 using Avahi;
@@ -62,7 +77,7 @@ namespace Giver
                 try {
 					Logger.Debug("Adding Avahi Service  _giver._tcp");
 					eg.AddService("giver on " + Environment.MachineName, "_giver._tcp", "", 8080, 
-							new string[] { "UserName=" + Environment.UserName, 
+							new string[] { "User Name=" + Environment.UserName, 
 											"Machine Name=" + Environment.MachineName, 
 											"Version=" + Defines.Version });
    

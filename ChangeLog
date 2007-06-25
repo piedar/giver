@@ -1,5 +1,13 @@
 2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/GiverService.cs: New service to advertize service
+	* src/Application.cs: Added Service Locator
+	* src/ServiceLocator.cs: Giver Service Locator to find giver instances
+	* src/Makefile.am: ADded files that needed to be built
+	* giver.mdp: Updated to mono 2.0
+
+2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/GiverService.cs: new service to advertise and transfer files
 	* src/Application.cs: Started Giver Service
 	* src/Makefile.am: Added service to build
