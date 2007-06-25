@@ -13,6 +13,7 @@ endif
 
 CSFILES = \
 	$(srcdir)/Application.cs \
+	$(srcdir)/GiverService.cs \
 	$(srcdir)/Logger.cs \
 	$(srcdir)/TrayLib.cs \
 	$(srcdir)/Utilities.cs 

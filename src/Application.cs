@@ -46,7 +46,8 @@ namespace Giver
 		#region Private Types
         private Gnome.Program program;
 		private Gdk.Pixbuf pixbuf;
-		private Egg.TrayIcon trayIcon;		
+		private Egg.TrayIcon trayIcon;	
+		private GiverService service;	
 		#endregion
 	
 		#region Public Static Properties
@@ -96,6 +97,8 @@ namespace Giver
 
 			//tray = new NotificationArea("RtcApplication");
 			SetupTrayIcon();
+
+			service = new GiverService();
 		}
 	
 		private void SetupTrayIcon ()
@@ -118,6 +121,8 @@ namespace Giver
 		private void OnQuit (object sender, EventArgs args)
 		{
 			Logger.Info ("OnQuitAction called - terminating application");
+
+			service.Stop();
 
 			Gtk.Main.Quit ();
 			//program.Quit (); // Should this be called instead?

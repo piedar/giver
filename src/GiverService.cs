@@ -7,7 +7,7 @@
 using System;
 using Avahi;
 
-namespace giver
+namespace Giver
 {
 	public class GiverService
 	{
@@ -15,23 +15,23 @@ namespace giver
 		#region Private Types
 		private Avahi.Client client;
         private EntryGroup eg;
-		private bool running;
         private object eglock;
-        private ServerInfo serverInfo;
 		#endregion
 
 		
 		public GiverService()
 		{
+			Logger.Debug("New GiverService was created");
 	        eglock = new Object();
-			serverInfo = new ServerInfo ();
             client = new Avahi.Client ();
             client.StateChanged += OnClientStateChanged;
+			if(client.State == ClientState.Running)
+				RegisterService();
 		}
 
         public void Stop ()
 		{
-            running = false;
+        	UnregisterService ();
 
             if (client != null) {
                 client.Dispose ();
@@ -40,8 +40,10 @@ namespace giver
         }
 
         private void OnClientStateChanged (object o, ClientStateArgs args)
-		{
-            if (publish && args.State == ClientState.Running) {
+		{  
+			Logger.Debug("OnClientStateChanged called with state = {0}", args.State);
+
+            if (args.State == ClientState.Running) {
                 RegisterService ();
             }
         }
@@ -58,17 +60,16 @@ namespace giver
                 }
 
                 try {
-                    string auth = serverInfo.AuthenticationMethod == AuthenticationMethod.None ? "false" : "true";
-                    eg.AddService (serverInfo.Name, "_daap._tcp", "", ws.BoundPort,
-                                   new string[] { "Password=" + auth, "Machine Name=" + serverInfo.Name,
-                                                  "txtvers=1" });
+					Logger.Debug("Adding Avahi Service  _giver._tcp");
+					eg.AddService("giver on " + Environment.MachineName, "_giver._tcp", "", 8080, 
+							new string[] { "UserName=" + Environment.UserName, 
+											"Machine Name=" + Environment.MachineName, 
+											"Version=" + Defines.Version });
+   
                     eg.Commit ();
-                } catch (ClientException e) {
-                    if (e.ErrorCode == ErrorCode.Collision && Collision != null) {
-                        Collision (this, new EventArgs ());
-                    } else {
-                        throw e;
-                    }
+					Logger.Debug("Avahi Service  _giver._tcp is added");
+                } catch (Exception e) {
+					Logger.Debug("Exception adding service: {0}", e.Message);
                 }
             }
         }
@@ -85,9 +86,7 @@ namespace giver
         }
 
         private void OnEntryGroupStateChanged (object o, EntryGroupStateArgs args) {
-            if (args.State == EntryGroupState.Collision && Collision != null) {
-                Collision (this, new EventArgs ());
-            }
+			Logger.Debug("GiverService:OnEntryGroupStateChanged was called state: {0}", args.State.ToString());
         }
 
 
