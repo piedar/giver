@@ -1,5 +1,9 @@
 2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* po/POTFILES.in: updated to use the correct file
+
+2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/Utilities.cs, src/Logger.cs, src/Defines.cs.in, src/Makefile.am,
 	  configure.ac, Makefile.am, autogen.sh: Updated template to work
 	  with giver
