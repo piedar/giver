@@ -28,6 +28,7 @@ using System.Threading;
 using System.Xml;
 
 using Gtk;
+using Gdk;
 using Gnome;
 using Mono.Unix;
 using Mono.Unix.Native;
@@ -43,7 +44,9 @@ namespace Giver
 		#endregion
 		
 		#region Private Types
-        private Gnome.Program program = null;
+        private Gnome.Program program;
+		private Gdk.Pixbuf pixbuf;
+		private Egg.TrayIcon trayIcon;		
 		#endregion
 	
 		#region Public Static Properties
@@ -97,30 +100,74 @@ namespace Giver
 	
 		private void SetupTrayIcon ()
 		{
-/*			Logger.Debug ("Creating TrayIcon");
+			Logger.Debug ("Creating TrayIcon");
 			
 			EventBox eb = new EventBox();
-			appPixBuf = GetIcon ("banter-22", 22);
-			eb.Add(new Image (appPixBuf)); 
+			pixbuf = Utilities.GetIcon ("giver-22", 22);
+			eb.Add(new Gtk.Image (pixbuf)); 
 			//new Image(Gtk.Stock.DialogWarning, IconSize.Menu)); // using stock icon
 
 			// hooking event
-			eb.ButtonPressEvent += new ButtonPressEventHandler (this.OnImageClick);
+			eb.ButtonPressEvent += new ButtonPressEventHandler (this.OnTrayIconClick);
 			trayIcon = new Egg.TrayIcon("RtcApplication");
 			trayIcon.Add(eb);
 			// showing the trayicon
 			trayIcon.ShowAll();			
-*/
 		}
-		
 
-		private void OnQuitAction (object sender, EventArgs args)
+		private void OnQuit (object sender, EventArgs args)
 		{
 			Logger.Info ("OnQuitAction called - terminating application");
 
 			Gtk.Main.Quit ();
 			//program.Quit (); // Should this be called instead?
 		}
+		
+		
+		private void OnTrayIconClick (object o, ButtonPressEventArgs args) // handler for mouse click
+		{
+			if (args.Event.Button == 1) {
+				Logger.Debug ("left button clicked");
+			} else if (args.Event.Button == 3) //right click
+   			{
+   				// FIXME: Eventually get all these into UIManagerLayout.xml file
+      			Menu popupMenu = new Menu();
+      			
+      			ImageMenuItem status = new ImageMenuItem (
+						Catalog.GetString ("Show online status ..."));
+      			//status.Activated += OnPeople;
+      			popupMenu.Add (status);
+      			
+//      			ImageMenuItem everyone = new ImageMenuItem ("Everyone");
+//      			everyone.Activated += OnEveryone;
+//      			popupMenu.Add (everyone);
+
+      			//ImageMenuItem accounts = new ImageMenuItem (
+      			//		Catalog.GetString ("Accounts"));
+      			//accounts.Activated += OnAccounts;
+      			//popupMenu.Add (accounts);
+      			
+      			SeparatorMenuItem separator = new SeparatorMenuItem ();
+      			popupMenu.Add (separator);
+      			
+      			ImageMenuItem preferences = new ImageMenuItem (Gtk.Stock.Preferences, null);
+      			//preferences.Activated += OnPreferences;
+      			popupMenu.Add (preferences);
+
+      			separator = new SeparatorMenuItem ();
+      			popupMenu.Add (separator);
+
+      			ImageMenuItem quit = new ImageMenuItem (
+      					Catalog.GetString ("Quit"));
+      			quit.Activated += OnQuit;
+      			popupMenu.Add (quit);
+      			
+				popupMenu.ShowAll(); // shows everything
+      			//popupMenu.Popup(null, null, null, IntPtr.Zero, args.Event.Button, args.Event.Time);
+      			popupMenu.Popup(null, null, null, args.Event.Button, args.Event.Time);
+   			}
+		}		
+		
 		
 		#endregion		
 
@@ -174,7 +221,7 @@ namespace Giver
 			OnExitSignal (-1);
 			System.Environment.Exit (exitcode);
 		}
-
+			
 		#endregion
 		
 		#region Public Methods			

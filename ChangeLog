@@ -1,5 +1,10 @@
 2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/Application.cs, src/Makefile.am, giver.mdp: Fixed up graphics in
+	  project
+
+2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* configure.ac, Makefile.am, data, data/images,
 	  data/images/giver-22.png, data/images/giver-32.png,
 	  data/images/giver-24.png, data/images/giver-16.png,

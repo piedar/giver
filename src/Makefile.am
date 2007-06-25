@@ -14,9 +14,15 @@ endif
 CSFILES = \
 	$(srcdir)/Application.cs \
 	$(srcdir)/Logger.cs \
+	$(srcdir)/TrayLib.cs \
 	$(srcdir)/Utilities.cs 
 
-RESOURCES = 
+RESOURCES = \
+	-resource:$(top_srcdir)/data/images/giver-16.png \
+	-resource:$(top_srcdir)/data/images/giver-22.png \
+	-resource:$(top_srcdir)/data/images/giver-24.png \
+	-resource:$(top_srcdir)/data/images/giver-32.png \
+	-resource:$(top_srcdir)/data/images/giver-44.png 
 
 ASSEMBLIES =  \
 	-r:System \
