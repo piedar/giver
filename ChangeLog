@@ -1,4 +1,13 @@
 2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/Utilities.cs, src/Logger.cs, src/Defines.cs.in, src/Makefile.am,
+	  configure.ac, Makefile.am, autogen.sh: Updated template to work
+	  with giver
+	* src/giver.in: created standard startup script
+	* src/Application.cs: updated to work with giver
+	* giver.mdp: added files
+
+2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* AUTHORS: Initial checkin of code
 

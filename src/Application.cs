@@ -27,9 +27,6 @@ using System.Text;
 using System.Threading;
 using System.Xml;
 
-using NDesk.DBus;
-using org.freedesktop.DBus;
-
 using Gtk;
 using Gnome;
 using Mono.Unix;
@@ -46,6 +43,7 @@ namespace Giver
 		#endregion
 		
 		#region Private Types
+        private Gnome.Program program = null;
 		#endregion
 	
 		#region Public Static Properties
@@ -85,7 +83,6 @@ namespace Giver
 		private void Init(string[] args)
 		{
 			Logger.Debug ("Giver::Application::Init - called");
-			initialized = false;
 			Gtk.Application.Init ();
 			program = 
 				new Gnome.Program (
@@ -163,6 +160,22 @@ namespace Giver
 				return application;
 			}
 		}
+
+		public static void OnExitSignal (int signal)
+		{
+			if (ExitingEvent != null) ExitingEvent (null, EventArgs.Empty);
+			if (signal >= 0) System.Environment.Exit (0);
+		}
+		
+		public static event EventHandler ExitingEvent = null;
+		
+		public static void Exit (int exitcode)
+		{
+			OnExitSignal (-1);
+			System.Environment.Exit (exitcode);
+		}
+
+		#endregion
 		
 		#region Public Methods			
 		public void StartMainLoop ()
