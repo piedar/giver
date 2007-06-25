@@ -1,5 +1,9 @@
 2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/Application.cs: Updated menu with more information
+
+2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/ServiceLocator.cs: Added code to correctly remove a service when
 	  it goes down
 

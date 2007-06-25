@@ -184,7 +184,8 @@ namespace Giver
 			foreach(Giver.Service s in locator.Services) {
 				Logger.Debug("A Service was found!");
 				foundItems = true;
-	 			ImageMenuItem item = new ImageMenuItem (s.MachineName);
+	 			ImageMenuItem item = new ImageMenuItem (s.UserName + "@" + s.MachineName + 
+									" (" + s.Address + ":" + s.Port.ToString() + ")");
 	 			//quit.Activated += OnQuit;
 	 			popupMenu.Add (item);
 			}
