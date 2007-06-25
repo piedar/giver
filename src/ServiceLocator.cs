@@ -215,7 +215,7 @@ namespace Giver {
 				}
             }
 
-            services[svc.MachineName] = svc;
+            services[svc.Name] = svc;
 
             if (Found != null)
                 Found (this, new ServiceArgs (svc));
@@ -223,11 +223,13 @@ namespace Giver {
 
         private void OnServiceTimeout (object o, EventArgs args) 
 		{
-            Console.Error.WriteLine ("Failed to resolve");
+			Logger.Debug("Service timed out");
         }
 
         private void OnServiceRemoved (object o, ServiceInfoArgs args) 
 		{
+			Logger.Debug("A Service was removed: {0}", args.Service.Name);
+
 			if(services.ContainsKey(args.Service.Name)) {
 				Service svc = services[args.Service.Name];
             	if (svc != null)

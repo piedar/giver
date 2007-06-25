@@ -1,5 +1,10 @@
 2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/ServiceLocator.cs: Added code to correctly remove a service when
+	  it goes down
+
+2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/GiverService.cs: New service to advertize service
 	* src/Application.cs: Added Service Locator
 	* src/ServiceLocator.cs: Giver Service Locator to find giver instances
