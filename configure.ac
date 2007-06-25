@@ -96,6 +96,8 @@ AC_SUBST(GACUTIL_FLAGS)
 AC_CONFIG_FILES([
 ./Makefile
 ./src/Makefile
+./data/Makefile
+./data/images/Makefile
 ./po/Makefile.in
 ])
 

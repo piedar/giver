@@ -1,5 +1,14 @@
 2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* configure.ac, Makefile.am, data, data/images,
+	  data/images/giver-22.png, data/images/giver-32.png,
+	  data/images/giver-24.png, data/images/giver-16.png,
+	  data/images/giver-44.png, data/images/Makefile.am,
+	  data/Makefile.am, data/giver.desktop.in: Added image files to
+	  project
+
+2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* po/POTFILES.in: updated to use the correct file
 
 2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 

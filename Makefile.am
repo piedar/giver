@@ -1,5 +1,4 @@
-#SUBDIRS = src data po
-SUBDIRS = src po
+SUBDIRS = src data po
 
 pkglib_DATA =  $(DLL_REFERENCES)
 DLL_REFERENCES =   
