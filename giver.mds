@@ -1,0 +1,16 @@
+<Combine name="giver" fileversion="2.0" outputpath="./build/bin/">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="giver" configuration="Debug" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="giver" configuration="Release" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="giver" single="True">
+    <Execute type="None" entry="giver" />
+  </StartMode>
+  <Entries>
+    <Entry filename="./giver.mdp" />
+  </Entries>
+</Combine>
