@@ -1,5 +1,10 @@
 2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/GiverService.cs, src/Makefile.am, src/TrayLib.cs, giver.mdp,
+	  configure.ac: Added GiverService and TRayLib.cs
+
+2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/Application.cs, src/Makefile.am, giver.mdp: Fixed up graphics in
 	  project
 
