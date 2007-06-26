@@ -156,7 +156,7 @@ namespace Giver
 				trayImage = new Gtk.Image(onPixBuf);
 			else
 				trayImage = new Gtk.Image(offPixBuf);
-			eb.Add(trayImage); 
+			eb.Add(trayImage);
 			//new Image(Gtk.Stock.DialogWarning, IconSize.Menu)); // using stock icon
 
 			// hooking event

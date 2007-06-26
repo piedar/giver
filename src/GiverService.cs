@@ -98,12 +98,18 @@ namespace Giver
 
                 try {
 					Logger.Debug("Adding Avahi Service  _giver._tcp");
-					eg.AddService(	"giver on " + Environment.MachineName, 
+					eg.AddService(	"giver on " + Environment.UserName + "@" + Environment.MachineName, 
 									"_giver._tcp", "", (ushort)((IPEndPoint)server.LocalEndpoint).Port, 
 									new string[] { "User Name=" + Environment.UserName, 
 													"Machine Name=" + Environment.MachineName, 
 													"Version=" + Defines.Version });
-   
+
+//					Gdk.Pixbuf pixbuf = new Gdk.Pixbuf("/home/calvin/calvin.png");
+//					pixbuf = pixbuf.ScaleSimple(8,8, Gdk.InterpType.Bilinear);
+//					byte[] photo = pixbuf.SaveToBuffer("png");
+//					eg.AddRecord("Photo", RecordClass.In, RecordType.Txt, 20, photo, photo.Length);
+//					eg.AddRecord("Photo", RecordClass.In, RecordType.Txt, 20, photo, photo.Length);
+
                     eg.Commit ();
 					Logger.Debug("Avahi Service  _giver._tcp is added");
                 } catch (Exception e) {

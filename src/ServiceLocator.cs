@@ -124,7 +124,7 @@ namespace Giver {
         private ServiceBrowser browser;
         private Dictionary <string, Service> services;
         private List <ServiceResolver> resolvers;
-        private bool showLocals = false;
+        private bool showLocals = true;
 
         public event ServiceHandler Found;
         public event ServiceHandler Removed;

@@ -1,5 +1,14 @@
 2007-06-26  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/GiverService.cs: Changed the service name so two instances can
+	  run on a box
+	* src/GiverMenuItem.cs: Switched the graphic size to one that fits
+	* src/Application.cs: Debug
+	* src/ServiceLocator.cs: Turned on the show locals for debugging
+	* giver.mdp: truned on gdk.sharp
+
+2007-06-26  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* data/images/giver-48.png: added correct size
 
 2007-06-26  Calvin Gaisford <calvinrg@gmail.com> 
