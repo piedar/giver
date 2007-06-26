@@ -84,8 +84,6 @@ namespace Giver
             stream.Write (utf8_data, 0, utf8_data.Length);
             stream.WriteByte (0); //NULL string terminator
         }
-
-
 	}
 }
 

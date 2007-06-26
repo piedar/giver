@@ -87,7 +87,7 @@ namespace Giver
 			if(bytesRead < size)
 				throw new Exception("Unable to read all bytes from stream");
 
-			return System.Convert.ToBase64String(buffer);
+			return Encoding.UTF8.GetString(buffer);
 		}
 	}
 }

@@ -1,5 +1,11 @@
 2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/SendingHandler.cs: debug
+	* src/ReceivingHandler.cs: changed the encoding and it fixed a problems
+	  getting the file name
+
+2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/GiverMenuItem.cs: Added parameters to get the service from the
 	  menu item
 	* src/Application.cs: Added handlers to send files (well, test it)
