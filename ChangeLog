@@ -1,5 +1,17 @@
 2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/GiverService.cs: Removed sample code
+	* src/GiverMenuItem.cs: Comment correction
+	* src/Application.cs: Updated application to handle incoming
+	  connections
+	* src/Makefile.am: ADded new files
+	* src/PayloadInfo.cs: new class to hold payload info on a transfer
+	* src/ReceivingHandler.cs: new class to handle incoming giver requests
+	  and handle the transfer
+	* giver.mdp: Added new files
+
+2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/GiverService.cs: Added TcpListener for transferring files
 	* src/Application.cs: Changed the stop order
 	* giver.mdp: Added needed references

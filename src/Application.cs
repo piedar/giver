@@ -26,6 +26,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Xml;
+using System.Net.Sockets;
 
 using Gtk;
 using Gdk;
@@ -102,6 +103,7 @@ namespace Giver
 			service = new GiverService();
 			locator.Removed += OnServicesChanged;
 			locator.Found += OnServicesChanged;
+			service.ClientConnected += OnClientConnected;
 
 			//tray = new NotificationArea("RtcApplication");
 			SetupTrayIcon();
@@ -114,6 +116,12 @@ namespace Giver
 			else
 				trayImage.Pixbuf = offPixBuf;
 
+		}
+
+		private void OnClientConnected (TcpClient client)
+		{
+			ReceivingHandler rh = new ReceivingHandler(client);
+			client.Close();
 		}
 
 

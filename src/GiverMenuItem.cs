@@ -25,7 +25,7 @@ using Gtk;
 namespace Giver
 {
 	/// <summary>
-	/// Widget used to avatars in a menu
+	/// Used to show Giver targets in the target menu
 	/// </summary>
 	public class GiverMenuItem : ComplexMenuItem
 	{   
