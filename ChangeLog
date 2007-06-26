@@ -1,5 +1,16 @@
 2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/GiverMenuItem.cs: Added parameters to get the service from the
+	  menu item
+	* src/Application.cs: Added handlers to send files (well, test it)
+	* src/Makefile.am: Added SendingHandler
+	* src/PayloadInfo.cs: Added public property to get name
+	* src/SendingHandler.cs: new class for sending files
+	* src/ReceivingHandler.cs: debug message
+	* giver.mdp: Added SendingHandlerClass
+
+2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/GiverService.cs: Removed sample code
 	* src/GiverMenuItem.cs: Comment correction
 	* src/Application.cs: Updated application to handle incoming

@@ -160,7 +160,16 @@ namespace Giver
 			Gtk.Main.Quit ();
 			//program.Quit (); // Should this be called instead?
 		}
-		
+
+		private void OnSelectedService (object sender, EventArgs args)
+		{
+			Logger.Debug("OnSelectedService... sending file");
+
+			GiverMenuItem gmi = (GiverMenuItem)sender;
+			
+			SendingHandler sh = new SendingHandler(gmi.Service);
+			sh.SendFile("GiverRocks.jpg");
+		}
 		
 		private void OnTrayIconClick (object o, ButtonPressEventArgs args) // handler for mouse click
 		{
@@ -210,7 +219,7 @@ namespace Giver
 
 //	 			ImageMenuItem item = new ImageMenuItem (s.UserName + "@" + s.MachineName + 
 //									" (" + s.Address + ":" + s.Port.ToString() + ")");
-	 			//quit.Activated += OnQuit;
+	 			item.Activated += OnSelectedService;
 	 			popupMenu.Add (item);
 			}
 

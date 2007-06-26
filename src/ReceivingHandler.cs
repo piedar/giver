@@ -42,6 +42,7 @@ namespace Giver
 			this.client = client;
 			this.stream = client.GetStream();
 			ReadPayloadInfo();
+			Logger.Debug("We are being send the file: {0}", payloadInfo.Name);
 		}
 
 		private void ReadPayloadInfo()

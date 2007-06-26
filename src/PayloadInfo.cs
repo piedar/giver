@@ -47,6 +47,11 @@ namespace Giver
 		private string senderPublicKey;
 		#endregion		
 
+		public string Name
+		{
+			get { return name; }
+		}
+
 		public PayloadInfo(string name, PayloadType type)
 		{
 			this.name = name;

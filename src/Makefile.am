@@ -19,6 +19,7 @@ CSFILES = \
 	$(srcdir)/Logger.cs \
 	$(srcdir)/PayloadInfo.cs \
 	$(srcdir)/ReceivingHandler.cs \
+	$(srcdir)/SendingHandler.cs \
 	$(srcdir)/ServiceLocator.cs \
 	$(srcdir)/TrayLib.cs \
 	$(srcdir)/Utilities.cs 
@@ -43,7 +44,7 @@ ASSEMBLIES =  \
 	$(AVAHI_SHARP_LIBS) 
 
 $(TARGET): $(CSFILES) Defines.cs
-	$(CSC) -out:$@ $(CSFLAGS) $^ $(ASSEMBLIES) $(RESOURCES)
+	$(CSC) -unsafe -out:$@ $(CSFLAGS) $^ $(ASSEMBLIES) $(RESOURCES)
 
 banterlibdir = $(pkglibdir)
 banterlib_DATA = $(TARGET)	
