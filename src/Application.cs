@@ -98,13 +98,13 @@ namespace Giver
 						Gnome.Modules.UI,
 						args);
 
-			//tray = new NotificationArea("RtcApplication");
-			SetupTrayIcon();
-
 			locator = new ServiceLocator();
 			service = new GiverService();
 			locator.Removed += OnServicesChanged;
 			locator.Found += OnServicesChanged;
+
+			//tray = new NotificationArea("RtcApplication");
+			SetupTrayIcon();
 		}
 	
     	private void OnServicesChanged (object o, ServiceArgs args)
@@ -125,7 +125,10 @@ namespace Giver
 			EventBox eb = new EventBox();
 			onPixBuf = Utilities.GetIcon ("giver-24", 24);
 			offPixBuf = Utilities.GetIcon ("giveroff-24", 24);
-			trayImage = new Gtk.Image(onPixBuf);
+			if(locator.Count > 0)
+				trayImage = new Gtk.Image(onPixBuf);
+			else
+				trayImage = new Gtk.Image(offPixBuf);
 			eb.Add(trayImage); 
 			//new Image(Gtk.Stock.DialogWarning, IconSize.Menu)); // using stock icon
 

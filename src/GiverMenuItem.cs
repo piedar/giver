@@ -32,7 +32,7 @@ namespace Giver
 	    public GiverMenuItem(Service service) : base(false)
 	    {
 	        HBox hbox = new HBox(false, 10);
-			Gtk.Image image = new Gtk.Image(Utilities.GetIcon("banter-44", 44));
+			Gtk.Image image = new Gtk.Image(Utilities.GetIcon("giver-44", 44));
 			hbox.PackStart(image, false, false, 0);
 			VBox vbox = new VBox();
 			hbox.PackStart(vbox, false, false, 0);
