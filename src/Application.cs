@@ -98,9 +98,28 @@ namespace Giver
 						Defines.Version,
 						Gnome.Modules.UI,
 						args);
+			try {
+				locator = new ServiceLocator();
+			} catch (Exception e) {
+				if(e.Message.CompareTo("Daemon not running") == 0) {
+					Logger.Fatal("The Avahi Daemon is not running... start it before running Giver");
+				}
+				else
+					Logger.Debug("Error starting ServiceLocator: {0}", e.Message);
 
-			locator = new ServiceLocator();
-			service = new GiverService();
+				throw e;
+			}
+			try {
+				service = new GiverService();
+			} catch (Exception e) {
+				if(e.Message.CompareTo("Daemon not running") == 0) {
+					Logger.Fatal("The Avahi Daemon is not running... start it before running Giver");
+				}
+				else
+					Logger.Debug("Error starting ServiceLocator: {0}", e.Message);
+
+				throw e;
+			}
 			locator.Removed += OnServicesChanged;
 			locator.Found += OnServicesChanged;
 			service.ClientConnected += OnClientConnected;

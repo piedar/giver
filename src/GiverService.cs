@@ -54,6 +54,7 @@ namespace Giver
 			server.Start();
 			listnerThread  = new Thread(TcpServerThread);
 			listnerThread.Start();
+			Logger.Debug("About to create the Avahi client");
             client = new Avahi.Client ();
             client.StateChanged += OnClientStateChanged;
 			if(client.State == ClientState.Running)

@@ -1,3 +1,13 @@
+2007-06-26  Calvin Gaisford <calvinrg@gmail.com> 
+
+	* src/GiverService.cs: debug
+	* src/Application.cs: Added wrappers of Avahi isn't running
+	* src/Makefile.am, data/images/giver-22.png, data/images/giver-32.png,
+	  data/images/giver-24.png, data/images/giver-16.png,
+	  data/images/giver-44.png, data/images/Makefile.am,
+	  data/images/giver-256.png, data/images/giveroff-24.png: Updated
+	  icons from jimmac
+
 2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
 
 	* src/SendingHandler.cs: debug
