@@ -1,5 +1,9 @@
 2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/GiverMenuItem.cs: Updated the alignment of the menu items
+
+2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/ComplexMenuItem.cs: code to handle cool new complex menu items
 	* src/GiverMenuItem.cs: New menu item to handle graphics and such
 	* src/Defines.cs.in: removed unneeded definitions

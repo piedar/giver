@@ -37,6 +37,8 @@ namespace Giver
 			VBox vbox = new VBox();
 			hbox.PackStart(vbox, false, false, 0);
 			Label label = new Label();
+			label.Justify = Gtk.Justification.Left;
+            label.SetAlignment (0.0f, 0.5f);
 			label.LineWrap = false;
 			label.UseMarkup = true;
 			label.UseUnderline = false;
@@ -45,15 +47,19 @@ namespace Giver
 			vbox.PackStart(label, true, true, 0);
 
 			label = new Label();
+			label.Justify = Gtk.Justification.Left;
+            label.SetAlignment (0.0f, 0.5f);
 			label.LineWrap = false;
 			label.UseMarkup = true;
 			label.UseUnderline = false;
 			label.Markup = string.Format ("<span size=\"small\">{0}</span>",
                     						service.MachineName);
 
-			vbox.PackStart(label, false, false, 0);
+			vbox.PackStart(label, true, true, 0);
 
 			label = new Label();
+			label.Justify = Gtk.Justification.Left;
+            label.SetAlignment (0.0f, 0.5f);
 			label.LineWrap = false;
 			label.UseMarkup = true;
 			label.UseUnderline = false;
