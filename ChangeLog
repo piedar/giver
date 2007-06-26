@@ -1,3 +1,16 @@
+2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
+
+	* src/ComplexMenuItem.cs: code to handle cool new complex menu items
+	* src/GiverMenuItem.cs: New menu item to handle graphics and such
+	* src/Defines.cs.in: removed unneeded definitions
+	* src/Application.cs: Added new menu support with graphics
+	* src/ServiceLocator.cs: Updated to provide a count of current services
+	  found
+	* src/Makefile.am: Added new files
+	* giver.mdp: Updated for new files
+	* data/images/Makefile.am: Addded new back and white image
+	* data/images/giveroff-24.png: new "off" image
+
 2007-06-25  Scott Reeves <sreeves@novell.com> 
 
 	* TODO: add todo item

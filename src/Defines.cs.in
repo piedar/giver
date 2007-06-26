@@ -28,8 +28,5 @@ namespace Giver
 		public const string Version          	= "@version@";
 		public const string DataDir          	= "@datadir@";
 		public const string GnomeLocaleDir		= "@datadir@/locale";
-		public const string GnomeHelDir			= "@datadir@/gnome/help/rtc";
-		public const string ThemeDir			= "@datadir@/banter/Themes";
-		public const string SoundDir			= "@datadir@/banter/sounds";
 	}
 }

@@ -3,6 +3,7 @@ pixmapdir = $(datadir)/pixmaps
 pixmap_DATA = 	giver-16.png \
 				giver-22.png \
 				giver-24.png \
+				giveroff-24.png \
 				giver-32.png \
 				giver-44.png 
 
@@ -11,7 +12,7 @@ hicolordir = $(datadir)/icons/hicolor
 tango_icons = 				\
 				giver-16.png \
 				giver-22.png \
-				giver-24.png \
+				giveroff-24.png \
 				giver-32.png \
 				giver-44.png
 
@@ -20,6 +21,7 @@ install-data-local:
 	$(INSTALL_DATA) $(srcdir)/giver-16.png $(DESTDIR)$(hicolordir)/16x16/apps/giver.png
 	$(INSTALL_DATA) $(srcdir)/giver-22.png $(DESTDIR)$(hicolordir)/22x22/apps/giver.png
 	$(INSTALL_DATA) $(srcdir)/giver-24.png $(DESTDIR)$(hicolordir)/24x24/apps/giver.png
+	$(INSTALL_DATA) $(srcdir)/giveroff-24.png $(DESTDIR)$(hicolordir)/24x24/apps/giveroff.png
 	$(INSTALL_DATA) $(srcdir)/giver-32.png $(DESTDIR)$(hicolordir)/32x32/apps/giver.png
 	$(INSTALL_DATA) $(srcdir)/giver-44.png $(DESTDIR)$(hicolordir)/44x44/apps/giver.png
 
@@ -38,6 +40,7 @@ uninstall-hook:
 	rm -f $(DESTDIR)$(hicolordir)/16x16/apps/giver.png
 	rm -f $(DESTDIR)$(hicolordir)/22x22/apps/giver.png
 	rm -f $(DESTDIR)$(hicolordir)/24x24/apps/giver.png
+	rm -f $(DESTDIR)$(hicolordir)/24x24/apps/giveroff.png
 	rm -f $(DESTDIR)$(hicolordir)/32x32/apps/giver.png
 	rm -f $(DESTDIR)$(hicolordir)/44x44/apps/giver.png
 

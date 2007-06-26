@@ -13,6 +13,8 @@ endif
 
 CSFILES = \
 	$(srcdir)/Application.cs \
+	$(srcdir)/ComplexMenuItem.cs \
+	$(srcdir)/GiverMenuItem.cs \
 	$(srcdir)/GiverService.cs \
 	$(srcdir)/Logger.cs \
 	$(srcdir)/ServiceLocator.cs \
@@ -23,6 +25,7 @@ RESOURCES = \
 	-resource:$(top_srcdir)/data/images/giver-16.png \
 	-resource:$(top_srcdir)/data/images/giver-22.png \
 	-resource:$(top_srcdir)/data/images/giver-24.png \
+	-resource:$(top_srcdir)/data/images/giveroff-24.png \
 	-resource:$(top_srcdir)/data/images/giver-32.png \
 	-resource:$(top_srcdir)/data/images/giver-44.png 
 

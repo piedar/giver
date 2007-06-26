@@ -134,6 +134,11 @@ namespace Giver {
             get { return showLocals; }
             set { showLocals = value; }
         }
+
+		public int Count
+		{
+			get { return services.Count; }
+		}
         
         public IEnumerable Services 
 		{

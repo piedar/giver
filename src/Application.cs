@@ -45,7 +45,9 @@ namespace Giver
 		
 		#region Private Types
         private Gnome.Program program;
-		private Gdk.Pixbuf pixbuf;
+		private Gdk.Pixbuf onPixBuf;
+		private Gdk.Pixbuf offPixBuf;
+		private Gtk.Image trayImage;
 		private Egg.TrayIcon trayIcon;	
 		private GiverService service;
 		private ServiceLocator locator;
@@ -87,7 +89,7 @@ namespace Giver
 		#region Private Methods
 		private void Init(string[] args)
 		{
-			Logger.Debug ("Giver::Application::Init - called");
+//			Logger.Debug ("Giver::Application::Init - called");
 			Gtk.Application.Init ();
 			program = 
 				new Gnome.Program (
@@ -101,24 +103,41 @@ namespace Giver
 
 			locator = new ServiceLocator();
 			service = new GiverService();
+			locator.Removed += OnServicesChanged;
+			locator.Found += OnServicesChanged;
 		}
 	
+    	private void OnServicesChanged (object o, ServiceArgs args)
+		{
+			if(locator.Count > 0)
+				trayImage.Pixbuf = onPixBuf;
+			else
+				trayImage.Pixbuf = offPixBuf;
+
+		}
+
+
+
 		private void SetupTrayIcon ()
 		{
-			Logger.Debug ("Creating TrayIcon");
+//			Logger.Debug ("Creating TrayIcon");
 			
 			EventBox eb = new EventBox();
-			pixbuf = Utilities.GetIcon ("giver-22", 22);
-			eb.Add(new Gtk.Image (pixbuf)); 
+			onPixBuf = Utilities.GetIcon ("giver-24", 24);
+			offPixBuf = Utilities.GetIcon ("giveroff-24", 24);
+			trayImage = new Gtk.Image(onPixBuf);
+			eb.Add(trayImage); 
 			//new Image(Gtk.Stock.DialogWarning, IconSize.Menu)); // using stock icon
 
 			// hooking event
 			eb.ButtonPressEvent += new ButtonPressEventHandler (this.OnTrayIconClick);
-			trayIcon = new Egg.TrayIcon("RtcApplication");
+			trayIcon = new Egg.TrayIcon("Giver");
 			trayIcon.Add(eb);
 			// showing the trayicon
 			trayIcon.ShowAll();			
 		}
+
+
 
 		private void OnQuit (object sender, EventArgs args)
 		{
@@ -144,15 +163,6 @@ namespace Giver
 						Catalog.GetString ("Show online status ..."));
       			//status.Activated += OnPeople;
       			popupMenu.Add (status);
-      			
-//      			ImageMenuItem everyone = new ImageMenuItem ("Everyone");
-//      			everyone.Activated += OnEveryone;
-//      			popupMenu.Add (everyone);
-
-      			//ImageMenuItem accounts = new ImageMenuItem (
-      			//		Catalog.GetString ("Accounts"));
-      			//accounts.Activated += OnAccounts;
-      			//popupMenu.Add (accounts);
       			
       			SeparatorMenuItem separator = new SeparatorMenuItem ();
       			popupMenu.Add (separator);
@@ -180,19 +190,22 @@ namespace Giver
 			bool foundItems = false;
  			Menu popupMenu = new Menu();
  			
-			Logger.Debug("looping through found services");
+//			Logger.Debug("looping through found services");
 			foreach(Giver.Service s in locator.Services) {
-				Logger.Debug("A Service was found!");
+//				Logger.Debug("A Service was found!");
 				foundItems = true;
-	 			ImageMenuItem item = new ImageMenuItem (s.UserName + "@" + s.MachineName + 
-									" (" + s.Address + ":" + s.Port.ToString() + ")");
+
+				GiverMenuItem item = new GiverMenuItem(s);
+
+//	 			ImageMenuItem item = new ImageMenuItem (s.UserName + "@" + s.MachineName + 
+//									" (" + s.Address + ":" + s.Port.ToString() + ")");
 	 			//quit.Activated += OnQuit;
 	 			popupMenu.Add (item);
 			}
 
 			
 			if(!foundItems) {
-				ImageMenuItem item = new ImageMenuItem("No Giver targets found!");
+				ImageMenuItem item = new ImageMenuItem("No giver targets found!");
 				popupMenu.Add(item);
 			}
  			
