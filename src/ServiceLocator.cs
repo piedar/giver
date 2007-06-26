@@ -183,7 +183,7 @@ namespace Giver {
             resolver.Found += OnServiceResolved;
             resolver.Timeout += OnServiceTimeout;
 
-			Logger.Debug("ServiceLocator:OnServiceAdded : {0}", args.Service.Name);
+			//Logger.Debug("ServiceLocator:OnServiceAdded : {0}", args.Service.Name);
         }
 
         private void OnServiceResolved (object o, ServiceInfoArgs args) 

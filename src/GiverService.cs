@@ -30,7 +30,9 @@ using System.Threading;
 namespace Giver
 {
 
-	public delegate void ClientConnectedHandler (TcpClient client);
+//	public delegate void ClientConnectedHandler (TcpClient client);
+	public delegate void ClientConnectedHandler (HttpListenerContext context);
+
 
 	public class GiverService
 	{		
@@ -38,9 +40,11 @@ namespace Giver
 		private Avahi.Client client;
         private EntryGroup eg;
         private object eglock;
-		private TcpListener server;
+		private HttpListener listener;
 		private Thread listnerThread;
 		private bool running;
+		private int port;
+		private string host;
 		#endregion
 
 		public event ClientConnectedHandler ClientConnected;
@@ -50,8 +54,18 @@ namespace Giver
 			Logger.Debug("New GiverService was created");
 	        eglock = new Object();
 			running = true;
-			server = new TcpListener(IPAddress.Any, 0);
+
+			TcpListener server = new TcpListener(IPAddress.Any, 0);
 			server.Start();
+			port = ((IPEndPoint)server.LocalEndpoint).Port;
+			server.Stop();
+			Logger.Debug("We have the port : {0}", port );
+
+			listener = new HttpListener();
+			listener.AuthenticationSchemes = AuthenticationSchemes.None;
+			listener.Prefixes.Add(String.Format("http://+:{0}/", port));
+			listener.Start();
+
 			listnerThread  = new Thread(TcpServerThread);
 			listnerThread.Start();
 			Logger.Debug("About to create the Avahi client");
@@ -66,7 +80,8 @@ namespace Giver
 		{
 			running = false;
         	UnregisterService ();
-			server.Stop();
+			listener.Stop();
+			//server.Stop();
 
             if (client != null) {
                 client.Dispose ();
@@ -99,7 +114,7 @@ namespace Giver
                 try {
 					Logger.Debug("Adding Avahi Service  _giver._tcp");
 					eg.AddService(	"giver on " + Environment.UserName + "@" + Environment.MachineName, 
-									"_giver._tcp", "", (ushort)((IPEndPoint)server.LocalEndpoint).Port, 
+									"_giver._tcp", "", (ushort)port, 
 									new string[] { "User Name=" + Environment.UserName, 
 													"Machine Name=" + Environment.MachineName, 
 													"Version=" + Defines.Version });
@@ -143,14 +158,19 @@ namespace Giver
 		        
 				try
 				{
-		        	TcpClient client = server.AcceptTcpClient();            
+					HttpListenerContext context = listener.GetContext();
+
+		        	//TcpClient client = server.AcceptTcpClient();            
 		        	Logger.Debug("GiverService: Connected!");
 
 					// Fire off an event here and hand off the connected TcpClient to be handled
 					if(ClientConnected != null) {
-						ClientConnected(client);
+						ClientConnected(context);
+						//ClientConnected(client);
 					} else {
-						client.Close();
+						context.Response.StatusCode = (int)HttpStatusCode.Gone;
+						context.Response.Close();
+						//client.Close();
 					}
 				}
 			    catch(SocketException e)

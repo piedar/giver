@@ -31,14 +31,22 @@ namespace Giver
 	public class SendingHandler
 	{
 		private Service service;
-		private TcpClient client;
-		private NetworkStream stream;
+		private System.Net.HttpWebRequest request;
+		//private TcpClient client;
+		private Stream stream;
+		// private NetworkStream stream;
 		
 		public SendingHandler(Service service)
 		{
 			this.service = service;
-    		client = new TcpClient(service.Address.ToString(), (int)service.Port);
-		    stream = client.GetStream();
+			UriBuilder urib = new UriBuilder("http", service.Address.ToString(), (int)service.Port);
+//			Uri uri = new Uri(requestURI);
+			Logger.Debug("Sending request to URI: {0}", urib.Uri.ToString());
+			request = (HttpWebRequest) HttpWebRequest.Create(urib.Uri);
+    		//client = new TcpClient(service.Address.ToString(), (int)service.Port);
+			request.Method = "POST";
+			stream = request.GetRequestStream();
+		    //stream = client.GetStream();
 		}
 
 		public void SendFile(string fileName)
@@ -46,16 +54,18 @@ namespace Giver
 			// Write PayloadInfo
 			
 		    // Send the message to the connected TcpServer. 
-			Write(fileName);
-			Write((uint)PayloadType.File);
+			Write(stream, fileName);
+			Write(stream, (uint)PayloadType.File);
 		    //stream.Write(data, 0, data.Length);
 
 		    // Close everything.
-		    stream.Close();         
-		    client.Close();
+		    stream.Close();
+			
+			//stream.Close();         
+		    //client.Close();
 		}
 
-        unsafe private void MarshalUInt (byte *data)
+        unsafe private void MarshalUInt (Stream stream, byte *data)
         {
 			byte[] dst = new byte[4];
 
@@ -67,20 +77,20 @@ namespace Giver
 			stream.Write (dst, 0, 4);
         }
 
-        unsafe private void Write (int val)
+        unsafe private void Write (Stream stream, int val)
         {
-            MarshalUInt ((byte*)&val);
+            MarshalUInt (stream, (byte*)&val);
         }
 
-        unsafe private void Write (uint val)
+        unsafe private void Write (Stream stream, uint val)
         {
-            MarshalUInt ((byte*)&val);
+            MarshalUInt (stream, (byte*)&val);
         }
 
-        public void Write (string val)
+        public void Write (Stream stream, string val)
         {
             byte[] utf8_data = Encoding.UTF8.GetBytes (val);
-            Write ((uint)utf8_data.Length);
+            Write (stream, (uint)utf8_data.Length);
             stream.Write (utf8_data, 0, utf8_data.Length);
             stream.WriteByte (0); //NULL string terminator
         }

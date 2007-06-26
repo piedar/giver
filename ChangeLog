@@ -1,5 +1,11 @@
 2007-06-26  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/GiverService.cs, src/Application.cs, src/ServiceLocator.cs,
+	  src/SendingHandler.cs, src/ReceivingHandler.cs: Moved the socket
+	  communication over to http
+
+2007-06-26  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/GiverService.cs: Changed the service name so two instances can
 	  run on a box
 	* src/GiverMenuItem.cs: Switched the graphic size to one that fits

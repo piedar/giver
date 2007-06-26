@@ -137,10 +137,10 @@ namespace Giver
 
 		}
 
-		private void OnClientConnected (TcpClient client)
+		private void OnClientConnected (HttpListenerContext context)
 		{
-			ReceivingHandler rh = new ReceivingHandler(client);
-			client.Close();
+			ReceivingHandler rh = new ReceivingHandler(context);
+			context.Response.Close();
 		}
 
 

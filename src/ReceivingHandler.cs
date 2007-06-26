@@ -33,14 +33,14 @@ namespace Giver
 	/// </summary>	
 	public class ReceivingHandler
 	{
-		private TcpClient client;
-		private NetworkStream stream;
+		private HttpListenerContext context;
+		private Stream stream;
 		private PayloadInfo payloadInfo;
 
-		public ReceivingHandler(TcpClient client)
+		public ReceivingHandler(HttpListenerContext context)
 		{
-			this.client = client;
-			this.stream = client.GetStream();
+			this.context = context;
+			this.stream = context.Request.InputStream;
 			ReadPayloadInfo();
 			Logger.Debug("We are being send the file: {0}", payloadInfo.Name);
 		}
@@ -50,9 +50,9 @@ namespace Giver
 			try {
 				int size;
 
-				size = ReadInt();
-				string name = ReadString(size);
-				PayloadType type = (PayloadType) ReadInt();
+				size = ReadInt(stream);
+				string name = ReadString(stream, size);
+				PayloadType type = (PayloadType) ReadInt(stream);
 
 				payloadInfo = new PayloadInfo(name, type);
 			} catch (Exception e) {
@@ -61,7 +61,7 @@ namespace Giver
 			}
 		}
 
-		private int ReadInt()
+		private int ReadInt(Stream stream)
 		{
 			int bytesRead;
 			Byte[] buffer = new Byte[4];
@@ -71,9 +71,9 @@ namespace Giver
 				throw new Exception("Unable to read 4 bytes");
 
 			return (int)buffer[0];
-		}	
+		}
 
-		private string ReadString(int size)
+		private string ReadString(Stream stream, int size)
 		{
 			int bytesRead;
 
@@ -93,81 +93,3 @@ namespace Giver
 }
 
 
-
-/*
-class MyTcpListener
-{
-  public static void Main()
-  { 
-    TcpListener server=null;   
-    try
-    {
-      // Set the TcpListener on port 13000.
-      Int32 port = 13000;
-      IPAddress localAddr = IPAddress.Parse("127.0.0.1");
-      
-      // TcpListener server = new TcpListener(port);
-      server = new TcpListener(localAddr, port);
-
-      // Start listening for client requests.
-      server.Start();
-         
-      // Buffer for reading data
-      Byte[] bytes = new Byte[256];
-      String data = null;
-
-      // Enter the listening loop.
-      while(true) 
-      {
-        Console.Write("Waiting for a connection... ");
-        
-        // Perform a blocking call to accept requests.
-        // You could also user server.AcceptSocket() here.
-        TcpClient client = server.AcceptTcpClient();            
-        Console.WriteLine("Connected!");
-
-        data = null;
-
-        // Get a stream object for reading and writing
-        NetworkStream stream = client.GetStream();
-
-        int i;
-
-        // Loop to receive all the data sent by the client.
-        while((i = stream.Read(bytes, 0, bytes.Length))!=0) 
-        {   
-          // Translate data bytes to a ASCII string.
-          data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
-          Console.WriteLine("Received: {0}", data);
-       
-          // Process the data sent by the client.
-          data = data.ToUpper();
-
-          byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
-
-          // Send back a response.
-          stream.Write(msg, 0, msg.Length);
-          Console.WriteLine("Sent: {0}", data);            
-        }
-         
-        // Shutdown and end connection
-        client.Close();
-      }
-    }
-    catch(SocketException e)
-    {
-      Console.WriteLine("SocketException: {0}", e);
-    }
-    finally
-    {
-       // Stop listening for new clients.
-       server.Stop();
-    }
-
-      
-    Console.WriteLine("\nHit enter to continue...");
-    Console.Read();
-  }   
-}
-
-*/
