@@ -1,5 +1,11 @@
 2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/GiverService.cs: Added TcpListener for transferring files
+	* src/Application.cs: Changed the stop order
+	* giver.mdp: Added needed references
+
+2007-06-25  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/GiverMenuItem.cs: Fixed the banter-44 icon to be giver-44
 	* src/Application.cs: Fixed up icon so it's off if nobody is there
 

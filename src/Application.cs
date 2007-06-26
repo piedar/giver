@@ -146,8 +146,8 @@ namespace Giver
 		{
 			Logger.Info ("OnQuitAction called - terminating application");
 
-			locator.Stop();
 			service.Stop();
+			locator.Stop();
 
 			Gtk.Main.Quit ();
 			//program.Quit (); // Should this be called instead?
