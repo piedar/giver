@@ -220,6 +220,11 @@ namespace Giver {
 				}
             }
 
+			try {
+				SendingHandler.GetPhoto(svc);
+			} catch (Exception e) {
+				Logger.Debug("Exception getting photo {0}", e.Message);
+			}
             services[svc.Name] = svc;
 
             if (Found != null)

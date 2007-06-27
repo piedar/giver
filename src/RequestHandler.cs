@@ -65,6 +65,9 @@ namespace Giver
 			else if(context.Request.Headers[Protocol.Request].CompareTo(Protocol.Payload) == 0) {
 				HandlePayload(context);
 			}
+			else if(context.Request.Headers[Protocol.Request].CompareTo(Protocol.Photo) == 0) {
+				HandlePhoto(context);
+			}
 			else {
 				context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 				context.Response.StatusDescription = Protocol.ResponseUnknown;
@@ -152,6 +155,56 @@ namespace Giver
 			context.Response.Close();
 		}
 
+
+		private void HandlePhoto(HttpListenerContext context)
+		{
+			// get the information about what wants to be sent
+			if(!Application.Preferences.HasPhoto) {
+				context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+				context.Response.StatusDescription = Protocol.ResponseNoPhoto;
+				context.Response.Close();			
+				return;
+			}
+
+			if(Application.Preferences.PhotoLocation.CompareTo("local") != 0)
+			{
+				context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+				context.Response.StatusDescription = Application.Preferences.PhotoLocation;
+				context.Response.Close();			
+				return;
+			}
+
+			try
+			{
+				FileStream fs = new FileStream(Application.Preferences.LocalPhotoLocation, FileMode.Open);
+				Stream stream = context.Response.OutputStream;
+				context.Response.ContentLength64 = fs.Length;
+				context.Response.StatusCode = (int)HttpStatusCode.OK;
+				context.Response.StatusDescription = Protocol.ResponsePhotoSent;
+
+				int sizeRead = 0;
+				int totalRead = 0;
+				byte[] buffer = new byte[2048];
+
+				do {
+					sizeRead = fs.Read(buffer, 0, 2048);
+					totalRead += sizeRead;
+					if(sizeRead > 0) {
+						stream.Write(buffer, 0, sizeRead);
+					}
+				} while(sizeRead == 2048);
+
+				stream.Close();
+				fs.Close();
+				context.Response.Close();
+
+			} catch (Exception e) {
+				Logger.Debug("Exception when sending photo {0}", e.Message);
+				context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+				context.Response.StatusDescription = Protocol.ResponseNoPhoto;
+				context.Response.Close();			
+			}
+		}
 	}
 }
 

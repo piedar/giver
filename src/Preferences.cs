@@ -44,6 +44,11 @@ namespace Giver
 			get { return "local"; }
 		}
 
+		public string LocalPhotoLocation
+		{
+			get { return "/home/calvin/calvin.png"; }
+		}
+
 		public Preferences ()
 		{
 			// Initialize the preferences

@@ -29,6 +29,7 @@ namespace Giver
 		public const string Request = "Request";
 		public const string Send = "Send";
 		public const string Payload = "Payload";
+		public const string Photo = "Photo";
 
 
 		// Request Responses
@@ -37,7 +38,8 @@ namespace Giver
 		public const string ResponseMissingSession = "SessionID missing";
 		public const string ResponseInvalidSession = "Invalid Session";
 		public const string ResponsePayloadReceived = "Payload Received";
-
+		public const string ResponseNoPhoto = "Photograph not available";
+		public const string ResponsePhotoSent = "Photo was sent";
 
 
 		// Headers

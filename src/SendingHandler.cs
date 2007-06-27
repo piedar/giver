@@ -55,11 +55,6 @@ namespace Giver
 			// Read the response to the request
 			HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
-			Logger.Debug("The response status is {0}", response.Headers["Status"]);
-			foreach(string s in response.Headers.AllKeys) {
-				Logger.Debug("Header {0}", s);
-			}
-
 			if( response.StatusCode == HttpStatusCode.OK ) {
 				Logger.Debug("Response was OK");
 
@@ -105,6 +100,56 @@ namespace Giver
 				Logger.Debug("Not OKToSend");
 			}
 		}
+
+
+		public static void GetPhoto(Service service)
+		{
+			UriBuilder urib = new UriBuilder("http", service.Address.ToString(), (int)service.Port);
+			Logger.Debug("Sending request to URI: {0}", urib.Uri.ToString());
+			System.Net.HttpWebRequest request = (HttpWebRequest) HttpWebRequest.Create(urib.Uri);
+
+			// Send request to send the file
+			request.Method = "POST";
+			request.Headers.Set(Protocol.Request, Protocol.Photo);
+			request.ContentLength = 0;
+			request.GetRequestStream().Close();
+
+			// Read the response to the request
+			HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+			if( response.StatusCode == HttpStatusCode.OK ) {
+				Logger.Debug("Response was OK");
+
+				byte[] buffer = new byte[response.ContentLength];
+				int sizeRead = 0;
+				int totalRead = 0;
+				Stream stream = response.GetResponseStream();
+				Logger.Debug("About to read photo of size {0}", response.ContentLength);
+
+				try {
+
+					do {
+						sizeRead = stream.Read(buffer, totalRead, (int)(response.ContentLength - totalRead));
+						totalRead += sizeRead;
+						Logger.Debug("SizeRead = {0}, totalRead = {1}", sizeRead, totalRead);
+					} while( (sizeRead > 0) && (totalRead < response.ContentLength) );
+
+					Logger.Debug("We Read the photo and it's {0} bytes", totalRead);
+					Logger.Debug("The content length is {0} bytes", response.ContentLength);
+
+					stream.Close();
+				} catch (Exception e) {
+					Logger.Debug("Exception when reading file from stream: {0}", e.Message);
+					Logger.Debug("Exception {0}", e);
+				}
+
+				service.Photo = new Gdk.Pixbuf(buffer);
+
+			} else {
+				Logger.Debug("Unable to get the photo because {0}", response.StatusDescription);
+			}
+		}
+
 
 	}
 }

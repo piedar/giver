@@ -1,5 +1,16 @@
 2007-06-27  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/GiverMenuItem.cs: Uses the photo in the service if available
+	* src/ServiceLocator.cs: Added code to get the photo when discovering
+	  services
+	* src/SendingHandler.cs: Added GetPhoto method
+	* src/RequestHandler.cs: Handles requests for photos
+	* src/Protocol.cs: ADded a photo headder tag
+	* src/Preferences.cs: Added a debug photo
+	* src/Application.cs: Added the preference object 
+
+2007-06-27  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/SendingHandler.cs, src/RequestHandler.cs: updated to use Protocol
 	  class and real HTTP headers
 	* src/Protocol.cs: Class to hold defines for headers and such

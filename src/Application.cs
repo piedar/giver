@@ -60,6 +60,7 @@ namespace Giver
 		private ServiceLocator locator;
 		private RequestHandler requestHandler;
 		private SendingHandler sendingHandler;
+		private Preferences preferences;
 		#endregion
 	
 		#region Public Static Properties
@@ -79,6 +80,11 @@ namespace Giver
 					return application;
 				}
 			}
+		}
+
+		public static Preferences Preferences
+		{
+			get { return Application.Instance.preferences; }
 		}
 		#endregion
 
@@ -106,7 +112,7 @@ namespace Giver
 						Defines.Version,
 						Gnome.Modules.UI,
 						args);
-
+			preferences = new Preferences();
 			requestHandler = new RequestHandler();
 			sendingHandler = new SendingHandler();
 
