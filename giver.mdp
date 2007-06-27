@@ -25,6 +25,8 @@
     <File name="./src/GiverMenuItem.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/RequestHandler.cs" subtype="Code" buildaction="Compile" />
     <File name="./src/SendingHandler.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Protocol.cs" subtype="Code" buildaction="Compile" />
+    <File name="./src/Preferences.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="avahi-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=4d116c78973743f5" />

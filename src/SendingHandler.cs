@@ -44,34 +44,38 @@ namespace Giver
 			string fileName = System.IO.Path.GetFileName(file);
 			// Send request to send the file
 			request.Method = "POST";
-			request.Headers.Set("Request", "Send");
-			request.Headers.Set("Type", "File");
-			request.Headers.Set("Count", "1");
-			request.Headers.Set("Name", fileName);
-			request.Headers.Set("Size", "2034");
+			request.Headers.Set(Protocol.Request, Protocol.Send);
+			request.Headers.Set(Protocol.Type, "File");
+			request.Headers.Set(Protocol.Count, "1");
+			request.Headers.Set(Protocol.Name, fileName);
+			request.Headers.Set(Protocol.Size, "2034");
 			request.ContentLength = 0;
 			request.GetRequestStream().Close();
 
 			// Read the response to the request
-			WebResponse response = request.GetResponse();
+			HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
-			if(response.Headers["Response"].CompareTo("OKToSend") == 0) {
-				Logger.Debug("Response was OKToSend");
+			Logger.Debug("The response status is {0}", response.Headers["Status"]);
+			foreach(string s in response.Headers.AllKeys) {
+				Logger.Debug("Header {0}", s);
+			}
 
-				string sessionID = response.Headers["SessionID"];
+			if( response.StatusCode == HttpStatusCode.OK ) {
+				Logger.Debug("Response was OK");
+
+				string sessionID = response.Headers[Protocol.SessionID];
 				response.Close();
 				
 				request = (HttpWebRequest) HttpWebRequest.Create(urib.Uri);
 				request.Method = "POST";
-				request.Headers.Set("SessionID", sessionID);
-				request.Headers.Set("Request", "Payload");
-				request.Headers.Set("Type", "File");
-				request.Headers.Set("Count", "1");
-				request.Headers.Set("Name", fileName);
+				request.Headers.Set(Protocol.SessionID, sessionID);
+				request.Headers.Set(Protocol.Request, Protocol.Payload);
+				request.Headers.Set(Protocol.Type, "File");
+				request.Headers.Set(Protocol.Count, "1");
+				request.Headers.Set(Protocol.Name, fileName);
 
 				try {
 					System.IO.FileStream filestream = new FileStream(file, FileMode.Open);
-					request.Headers.Set("Size", filestream.Length.ToString());
 					request.ContentLength = filestream.Length;
 					Stream stream = request.GetRequestStream();
 					
@@ -90,6 +94,7 @@ namespace Giver
 					Logger.Debug("The content length is {0} bytes", filestream.Length);
 
 					stream.Close();
+					filestream.Close();
 				} catch (Exception e) {
 					Logger.Debug("Exception when sending file: {0}", e.Message);
 					Logger.Debug("Exception {0}", e);

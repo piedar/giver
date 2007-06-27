@@ -57,17 +57,17 @@ namespace Giver
 
 		public void HandleRequest(HttpListenerContext context)
 		{
-			Logger.Debug("Request came in {0}", context.Request.Headers["Request"]);
+			Logger.Debug("Request came in {0}", context.Request.Headers[Protocol.Request]);
 
-			if(context.Request.Headers["Request"].CompareTo("Send") == 0) {
+			if(context.Request.Headers[Protocol.Request].CompareTo(Protocol.Send) == 0) {
 				HandleSendRequest(context);
 			}
-			else if(context.Request.Headers["Request"].CompareTo("Payload") == 0) {
+			else if(context.Request.Headers[Protocol.Request].CompareTo(Protocol.Payload) == 0) {
 				HandlePayload(context);
 			}
 			else {
 				context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-				context.Response.StatusDescription = "Unknown request";
+				context.Response.StatusDescription = Protocol.ResponseUnknown;
 				context.Response.Close();
 			}
 		}
@@ -75,20 +75,19 @@ namespace Giver
 		private void HandleSendRequest(HttpListenerContext context)
 		{
 			// get the information about what wants to be sent
-
 			SessionData sd = new SessionData();
-			sd.count = Convert.ToInt32(context.Request.Headers["Count"]);
-			sd.name = context.Request.Headers["Name"];
-			sd.type = context.Request.Headers["Type"];
-			sd.size = Convert.ToInt32(context.Request.Headers["Size"]);
+			sd.count = Convert.ToInt32(context.Request.Headers[Protocol.Count]);
+			sd.name = context.Request.Headers[Protocol.Name];
+			sd.type = context.Request.Headers[Protocol.Type];
+			sd.size = Convert.ToInt32(context.Request.Headers[Protocol.Size]);
 			sd.sessionID = System.Guid.NewGuid().ToString();
 
 
 			// Ask the user to accept at this point, then do the following if they accept
-			context.Response.Headers.Set("Response", "OKToSend");
-			context.Response.Headers.Set("SessionID", sd.sessionID);
+			context.Response.Headers.Set(Protocol.SessionID, sd.sessionID);
 			sessions.Add(sd.sessionID, sd);
 			context.Response.StatusCode = (int)HttpStatusCode.OK;
+			context.Response.StatusDescription = Protocol.ResponseOKToSend;
 			context.Response.OutputStream.Close();
 			context.Response.Close();
 		}
@@ -97,31 +96,32 @@ namespace Giver
 		{
 			// get the information about what wants to be sent
 
-			string sessionID = context.Request.Headers["SessionID"];
+			string sessionID = context.Request.Headers[Protocol.SessionID];
 			if( (sessionID == null) || (sessionID.Length < 1) ) {
 				context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-				context.Response.StatusDescription = "No SessionID in HTTP Header";
+				context.Response.StatusDescription = Protocol.ResponseMissingSession;
 				context.Response.Close();			
 				return;
 			}
 
 			if(!sessions.ContainsKey(sessionID)) {
 				context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-				context.Response.StatusDescription = "SessionID is invalid";
+				context.Response.StatusDescription = Protocol.ResponseInvalidSession;
 				context.Response.Close();			
 				return;
 			}
 
 			SessionData sd = sessions[sessionID];
-			if(sd.name.CompareTo(context.Request.Headers["Name"]) == 0) {
-				// start receiving the file
+			if(sd.name.CompareTo(context.Request.Headers[Protocol.Name]) == 0) {
 				byte[] buffer = new byte[2048];
 				int readCount = 0;
 				long totalRead = 0;
 				int fileInstance = 1;
 
+				// Create the local file path
 				string newFilePath = Path.Combine(System.Environment.GetFolderPath
 												(System.Environment.SpecialFolder.Desktop), sd.name);
+				// Loop until there is no file conflict
 				while(File.Exists(newFilePath)) {
 					newFilePath = Path.Combine(System.Environment.GetFolderPath
 											(System.Environment.SpecialFolder.Desktop), 
@@ -147,6 +147,7 @@ namespace Giver
 			}
 
 			context.Response.StatusCode = (int)HttpStatusCode.OK;
+			context.Response.StatusDescription = Protocol.ResponsePayloadReceived;
 			context.Response.OutputStream.Close();
 			context.Response.Close();
 		}

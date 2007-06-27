@@ -17,6 +17,8 @@ CSFILES = \
 	$(srcdir)/GiverMenuItem.cs \
 	$(srcdir)/GiverService.cs \
 	$(srcdir)/Logger.cs \
+	$(srcdir)/Preferences.cs \
+	$(srcdir)/Protocol.cs \
 	$(srcdir)/RequestHandler.cs \
 	$(srcdir)/SendingHandler.cs \
 	$(srcdir)/ServiceLocator.cs \

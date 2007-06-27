@@ -1,3 +1,11 @@
+2007-06-27  Calvin Gaisford <calvinrg@gmail.com> 
+
+	* src/SendingHandler.cs, src/RequestHandler.cs: updated to use Protocol
+	  class and real HTTP headers
+	* src/Protocol.cs: Class to hold defines for headers and such
+	* src/Preferences.cs: New class to store app prefs
+	* src/Makefile.am, giver.mdp: Added new files
+
 2007-06-26  Calvin Gaisford <calvinrg@gmail.com> 
 
 	* src/SendingHandler.cs: Sends files
