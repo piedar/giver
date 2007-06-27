@@ -104,6 +104,7 @@ namespace Giver
 		#region Private Methods
 		private void Init(string[] args)
 		{
+
 //			Logger.Debug ("Giver::Application::Init - called");
 			Gtk.Application.Init ();
 			program = 
@@ -112,10 +113,16 @@ namespace Giver
 						Defines.Version,
 						Gnome.Modules.UI,
 						args);
+
 			preferences = new Preferences();
 			requestHandler = new RequestHandler();
 			sendingHandler = new SendingHandler();
 
+			GLib.Idle.Add(InitializeIdle);
+		}
+	
+		private bool InitializeIdle()
+		{
 			try {
 				locator = new ServiceLocator();
 			} catch (Exception e) {
@@ -144,9 +151,12 @@ namespace Giver
 
 			//tray = new NotificationArea("RtcApplication");
 			SetupTrayIcon();
+
+			return false;
 		}
-	
-    	private void OnServicesChanged (object o, ServiceArgs args)
+  
+ 
+	 	private void OnServicesChanged (object o, ServiceArgs args)
 		{
 			if(locator.Count > 0)
 				trayImage.Pixbuf = onPixBuf;

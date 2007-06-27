@@ -32,25 +32,30 @@ namespace Giver
 		
 //	   	public const string CustomAvailableMessages = "/apps/banter/custom_available_messages";
 //	   	public const string CustomBusyMessages = "/apps/banter/custom_busy_messages";
-
+		private string photoLocation;
+		private bool hasPhoto;
+		private bool isUri;
 
 		public bool HasPhoto
 		{
-			get { return true; }
+			get { return hasPhoto; }
+		}
+
+		public bool PhotoIsUri
+		{
+			get { return isUri; }
 		}
 
 		public string PhotoLocation
 		{
-			get { return "local"; }
-		}
-
-		public string LocalPhotoLocation
-		{
-			get { return "/home/calvin/calvin.png"; }
+			get { return photoLocation; }
 		}
 
 		public Preferences ()
 		{
+			isUri = false;
+			photoLocation = null;
+			hasPhoto = false;
 			// Initialize the preferences
 		}
 	}

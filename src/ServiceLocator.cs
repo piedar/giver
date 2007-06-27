@@ -56,6 +56,10 @@ namespace Giver {
 		private string userName;
 		private string name;
 		private string version;
+		private string photoValue;
+		private string photoUri;
+		private bool isUri;
+		private bool hasPhoto;
 		private Gdk.Pixbuf photo;
 
         public IPAddress Address 
@@ -94,6 +98,45 @@ namespace Giver {
 			set { this.version = value; }
 		}
 
+		public string PhotoValue
+		{
+			get { return photoValue; }
+			set
+			{ 
+				this.photoValue = value;
+
+				if(photoValue.CompareTo("none") == 0) {
+					Logger.Debug("Service found with no photo");
+					hasPhoto = false;
+				} else if(photoValue.CompareTo("local") == 0) {
+					Logger.Debug("Service found with local photo");
+					hasPhoto = true;
+					isUri = false;
+					photoUri = null;
+				} else {
+					Logger.Debug("Service found with Uri photo");
+					hasPhoto = true;
+					isUri = true;
+					photoUri = photoValue;
+				}
+			}
+		}
+
+		public bool HasPhoto
+		{
+			get { return hasPhoto; }
+		}
+
+		public bool IsURI
+		{
+			get { return isUri; }
+		}
+
+		public string PhotoURI
+		{
+			get { return photoUri; }
+		}
+
 		public Gdk.Pixbuf Photo
 		{
 			get { return photo; }
@@ -108,7 +151,11 @@ namespace Giver {
             this.machineName = "";
 			this.userName = "";
 			this.version = "";
+			this.photoValue = "none";
 			this.photo = null;
+			this.photoUri = null;
+			this.isUri = false;
+			this.hasPhoto = false;
         }
 
         public override string ToString()
@@ -215,16 +262,20 @@ namespace Giver {
 				if(splitstr[0].CompareTo("Version") == 0)
 					svc.Version = splitstr[1];
 				if(splitstr[0].CompareTo("Photo") == 0) {
-					// convert the string to a photo here and store it
-					// svc.Photo = ConvertToPhoto(splitstr[1];					
+					svc.PhotoValue = splitstr[1];
 				}
             }
 
-			try {
-				SendingHandler.GetPhoto(svc);
-			} catch (Exception e) {
-				Logger.Debug("Exception getting photo {0}", e.Message);
+			if(svc.HasPhoto) {
+				try {
+					SendingHandler.GetPhoto(svc);
+				} catch (Exception e) {
+					Logger.Debug("Exception getting photo {0}", e.Message);
+				}
+			} else {
+				svc.Photo = Utilities.GetIcon("computer", 48);
 			}
+
             services[svc.Name] = svc;
 
             if (Found != null)

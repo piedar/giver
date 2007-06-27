@@ -113,22 +113,35 @@ namespace Giver
 
                 try {
 					Logger.Debug("Adding Avahi Service  _giver._tcp");
-					eg.AddService(	"giver on " + Environment.UserName + "@" + Environment.MachineName, 
-									"_giver._tcp", "", (ushort)port, 
-									new string[] { "User Name=" + Environment.UserName, 
-													"Machine Name=" + Environment.MachineName, 
-													"Version=" + Defines.Version });
+					string[] txtStrings;
 
-//					Gdk.Pixbuf pixbuf = new Gdk.Pixbuf("/home/calvin/calvin.png");
-//					pixbuf = pixbuf.ScaleSimple(8,8, Gdk.InterpType.Bilinear);
-//					byte[] photo = pixbuf.SaveToBuffer("png");
-//					eg.AddRecord("Photo", RecordClass.In, RecordType.Txt, 20, photo, photo.Length);
-//					eg.AddRecord("Photo", RecordClass.In, RecordType.Txt, 20, photo, photo.Length);
+					if(	Application.Preferences.HasPhoto && 
+						Application.Preferences.PhotoIsUri &&
+						(Application.Preferences.PhotoLocation != null) ) {
+						txtStrings = new string[] { "User Name=" + Environment.UserName, 
+													"Machine Name=" + Environment.MachineName, 
+													"Version=" + Defines.Version,
+													"Photo=" + Application.Preferences.PhotoLocation };
+					} else if( Application.Preferences.HasPhoto && (!Application.Preferences.PhotoIsUri) ) {
+						txtStrings = new string[] { "User Name=" + Environment.UserName, 
+													"Machine Name=" + Environment.MachineName, 
+													"Version=" + Defines.Version,
+													"Photo=local" };
+					} else {
+						txtStrings = new string[] { "User Name=" + Environment.UserName, 
+													"Machine Name=" + Environment.MachineName, 
+													"Version=" + Defines.Version,
+													"Photo=none" };
+					}
+
+					eg.AddService(	"giver on " + Environment.UserName + "@" + Environment.MachineName, 
+									"_giver._tcp", "", (ushort)port, txtStrings);
 
                     eg.Commit ();
 					Logger.Debug("Avahi Service  _giver._tcp is added");
                 } catch (Exception e) {
 					Logger.Debug("Exception adding service: {0}", e.Message);
+					Logger.Debug("Exception is: {0}", e);
                 }
             }
         }
@@ -173,7 +186,13 @@ namespace Giver
 						//client.Close();
 					}
 				}
-			    catch(SocketException e)
+				catch(HttpListenerException le) {
+					// if the exception is not a listener being close, log it
+					if(le.ErrorCode != 0) {
+						Logger.Debug("Exception in GiverService {0} : {1}", le.ErrorCode, le.Message);
+					}
+				}
+			    catch(Exception e)
 			    {
 					// this will happen when we close down the service
 					Logger.Debug("GiverService: SocketException: {0}", e.Message);

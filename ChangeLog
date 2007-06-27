@@ -1,5 +1,13 @@
 2007-06-27  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/ServiceLocator.cs: Fixed up the shutdown and photo handling
+	* src/RequestHandler.cs: Updated photo requests
+	* src/GiverService.cs: Fixed up requesting photos
+	* src/Preferences.cs: Added photo prefs
+	* src/Application.cs: Fixed up the startup routine and the shutdown
+
+2007-06-27  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/GiverMenuItem.cs: Uses the photo in the service if available
 	* src/ServiceLocator.cs: Added code to get the photo when discovering
 	  services

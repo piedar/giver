@@ -57,7 +57,8 @@ namespace Giver
 
 		public void HandleRequest(HttpListenerContext context)
 		{
-			Logger.Debug("Request came in {0}", context.Request.Headers[Protocol.Request]);
+			Logger.Debug("Request:{0} came in from {1}", context.Request.Headers[Protocol.Request], 
+													context.Request.RemoteEndPoint.Address.ToString());
 
 			if(context.Request.Headers[Protocol.Request].CompareTo(Protocol.Send) == 0) {
 				HandleSendRequest(context);
@@ -153,6 +154,7 @@ namespace Giver
 			context.Response.StatusDescription = Protocol.ResponsePayloadReceived;
 			context.Response.OutputStream.Close();
 			context.Response.Close();
+			sessions.Remove(sessionID);
 		}
 
 
@@ -166,7 +168,7 @@ namespace Giver
 				return;
 			}
 
-			if(Application.Preferences.PhotoLocation.CompareTo("local") != 0)
+			if(Application.Preferences.PhotoIsUri)
 			{
 				context.Response.StatusCode = (int)HttpStatusCode.NotFound;
 				context.Response.StatusDescription = Application.Preferences.PhotoLocation;
@@ -176,7 +178,7 @@ namespace Giver
 
 			try
 			{
-				FileStream fs = new FileStream(Application.Preferences.LocalPhotoLocation, FileMode.Open);
+				FileStream fs = new FileStream(Application.Preferences.PhotoLocation, FileMode.Open);
 				Stream stream = context.Response.OutputStream;
 				context.Response.ContentLength64 = fs.Length;
 				context.Response.StatusCode = (int)HttpStatusCode.OK;
