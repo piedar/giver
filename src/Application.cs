@@ -37,6 +37,12 @@ using Notifications;
 
 namespace Giver
 {
+	public enum DragTargetType
+	{
+		UriList,
+		RootWindow
+	};
+
 	class Application
 	{
 		#region Private Static Types
@@ -52,6 +58,8 @@ namespace Giver
 		private Egg.TrayIcon trayIcon;	
 		private GiverService service;
 		private ServiceLocator locator;
+		private RequestHandler requestHandler;
+		private SendingHandler sendingHandler;
 		#endregion
 	
 		#region Public Static Properties
@@ -98,6 +106,10 @@ namespace Giver
 						Defines.Version,
 						Gnome.Modules.UI,
 						args);
+
+			requestHandler = new RequestHandler();
+			sendingHandler = new SendingHandler();
+
 			try {
 				locator = new ServiceLocator();
 			} catch (Exception e) {
@@ -139,8 +151,7 @@ namespace Giver
 
 		private void OnClientConnected (HttpListenerContext context)
 		{
-			ReceivingHandler rh = new ReceivingHandler(context);
-			context.Response.Close();
+			requestHandler.HandleRequest(context);
 		}
 
 
@@ -159,15 +170,30 @@ namespace Giver
 			eb.Add(trayImage);
 			//new Image(Gtk.Stock.DialogWarning, IconSize.Menu)); // using stock icon
 
+
+
 			// hooking event
 			eb.ButtonPressEvent += new ButtonPressEventHandler (this.OnTrayIconClick);
 			trayIcon = new Egg.TrayIcon("Giver");
 			trayIcon.Add(eb);
 			// showing the trayicon
 			trayIcon.ShowAll();			
+
+			TargetEntry[] targets = new TargetEntry[] {
+	                		new TargetEntry ("text/uri-list", 0, (uint) DragTargetType.UriList) };
+
+			trayIcon.DragDataReceived += DragDataReceivedHandler;
+
+			Gtk.Drag.DestSet(trayIcon,
+						 DestDefaults.All | DestDefaults.Highlight,
+						 targets,
+						 Gdk.DragAction.Copy );
 		}
 
-
+		public void DragDataReceivedHandler (object o, DragDataReceivedArgs args)
+		{
+			Logger.Debug("DragDataReceivedHandler called");
+		}
 
 		private void OnQuit (object sender, EventArgs args)
 		{
@@ -185,9 +211,16 @@ namespace Giver
 			Logger.Debug("OnSelectedService... sending file");
 
 			GiverMenuItem gmi = (GiverMenuItem)sender;
-			
-			SendingHandler sh = new SendingHandler(gmi.Service);
-			sh.SendFile("GiverRocks.jpg");
+
+            FileSelection fs = new FileSelection(Catalog.GetString("Select a File")); 
+            int fsreturn = fs.Run(); 
+            fs.Hide(); 
+             
+            if(fsreturn == -5) { 
+				Logger.Debug("Sending file {0}", fs.Filename);
+
+				sendingHandler.SendFile(gmi.Service, fs.Filename);
+            } 
 		}
 		
 		private void OnTrayIconClick (object o, ButtonPressEventArgs args) // handler for mouse click

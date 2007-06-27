@@ -30,127 +30,76 @@ namespace Giver
 {
 	public class SendingHandler
 	{
-		private Service service;
-		private System.Net.HttpWebRequest request;
-		//private TcpClient client;
-		private Stream stream;
-		// private NetworkStream stream;
-		
-		public SendingHandler(Service service)
+		public SendingHandler()
 		{
-			this.service = service;
+		}
+
+
+		public void SendFile(Service service, string file)
+		{
 			UriBuilder urib = new UriBuilder("http", service.Address.ToString(), (int)service.Port);
-//			Uri uri = new Uri(requestURI);
 			Logger.Debug("Sending request to URI: {0}", urib.Uri.ToString());
-			request = (HttpWebRequest) HttpWebRequest.Create(urib.Uri);
-    		//client = new TcpClient(service.Address.ToString(), (int)service.Port);
+			System.Net.HttpWebRequest request = (HttpWebRequest) HttpWebRequest.Create(urib.Uri);
+
+			string fileName = System.IO.Path.GetFileName(file);
+			// Send request to send the file
 			request.Method = "POST";
-			stream = request.GetRequestStream();
-		    //stream = client.GetStream();
+			request.Headers.Set("Request", "Send");
+			request.Headers.Set("Type", "File");
+			request.Headers.Set("Count", "1");
+			request.Headers.Set("Name", fileName);
+			request.Headers.Set("Size", "2034");
+			request.ContentLength = 0;
+			request.GetRequestStream().Close();
+
+			// Read the response to the request
+			WebResponse response = request.GetResponse();
+
+			if(response.Headers["Response"].CompareTo("OKToSend") == 0) {
+				Logger.Debug("Response was OKToSend");
+
+				string sessionID = response.Headers["SessionID"];
+				response.Close();
+				
+				request = (HttpWebRequest) HttpWebRequest.Create(urib.Uri);
+				request.Method = "POST";
+				request.Headers.Set("SessionID", sessionID);
+				request.Headers.Set("Request", "Payload");
+				request.Headers.Set("Type", "File");
+				request.Headers.Set("Count", "1");
+				request.Headers.Set("Name", fileName);
+
+				try {
+					System.IO.FileStream filestream = new FileStream(file, FileMode.Open);
+					request.Headers.Set("Size", filestream.Length.ToString());
+					request.ContentLength = filestream.Length;
+					Stream stream = request.GetRequestStream();
+					
+					int sizeRead = 0;
+					int totalRead = 0;
+					byte[] buffer = new byte[2048];
+
+					do {
+						sizeRead = filestream.Read(buffer, 0, 2048);
+						totalRead += sizeRead;
+						if(sizeRead > 0) {
+							stream.Write(buffer, 0, sizeRead);
+						}
+					} while(sizeRead == 2048);
+					Logger.Debug("We Read from the file {0} bytes", totalRead);
+					Logger.Debug("The content length is {0} bytes", filestream.Length);
+
+					stream.Close();
+				} catch (Exception e) {
+					Logger.Debug("Exception when sending file: {0}", e.Message);
+					Logger.Debug("Exception {0}", e);
+				}
+
+				// go ahead and send the file			
+			} else {
+				Logger.Debug("Not OKToSend");
+			}
 		}
 
-		public void SendFile(string fileName)
-		{
-			// Write PayloadInfo
-			
-		    // Send the message to the connected TcpServer. 
-			Write(stream, fileName);
-			Write(stream, (uint)PayloadType.File);
-		    //stream.Write(data, 0, data.Length);
-
-		    // Close everything.
-		    stream.Close();
-			
-			//stream.Close();         
-		    //client.Close();
-		}
-
-        unsafe private void MarshalUInt (Stream stream, byte *data)
-        {
-			byte[] dst = new byte[4];
-
-			dst[0] = data[0];
-			dst[1] = data[1];
-			dst[2] = data[2];
-			dst[3] = data[3];
-
-			stream.Write (dst, 0, 4);
-        }
-
-        unsafe private void Write (Stream stream, int val)
-        {
-            MarshalUInt (stream, (byte*)&val);
-        }
-
-        unsafe private void Write (Stream stream, uint val)
-        {
-            MarshalUInt (stream, (byte*)&val);
-        }
-
-        public void Write (Stream stream, string val)
-        {
-            byte[] utf8_data = Encoding.UTF8.GetBytes (val);
-            Write (stream, (uint)utf8_data.Length);
-            stream.Write (utf8_data, 0, utf8_data.Length);
-            stream.WriteByte (0); //NULL string terminator
-        }
 	}
 }
-
-
-
-/*
-static void Connect(String server, String message) 
-{
-  try 
-  {
-    // Create a TcpClient.
-    // Note, for this client to work you need to have a TcpServer 
-    // connected to the same address as specified by the server, port
-    // combination.
-    Int32 port = 13000;
-    TcpClient client = new TcpClient(server, port);
-    
-    // Translate the passed message into ASCII and store it as a Byte array.
-    Byte[] data = System.Text.Encoding.ASCII.GetBytes(message);         
-
-    // Get a client stream for reading and writing.
-   //  Stream stream = client.GetStream();
-    
-    NetworkStream stream = client.GetStream();
-
-    // Send the message to the connected TcpServer. 
-    stream.Write(data, 0, data.Length);
-
-    Console.WriteLine("Sent: {0}", message);         
-
-    // Receive the TcpServer.response.
-    
-    // Buffer to store the response bytes.
-    data = new Byte[256];
-
-    // String to store the response ASCII representation.
-    String responseData = String.Empty;
-
-    // Read the first batch of the TcpServer response bytes.
-    Int32 bytes = stream.Read(data, 0, data.Length);
-    responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-    Console.WriteLine("Received: {0}", responseData);         
-
-    // Close everything.
-    stream.Close();         
-    client.Close();         
-  } 
-  catch (ArgumentNullException e) 
-  {
-    Console.WriteLine("ArgumentNullException: {0}", e);
-  } 
-  catch (SocketException e) 
-  {
-    Console.WriteLine("SocketException: {0}", e);
-  }
-    
-  Console.WriteLine("\n Press Enter to continue...");
-  Console.Read();
-}
-*/

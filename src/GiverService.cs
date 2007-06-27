@@ -44,7 +44,7 @@ namespace Giver
 		private Thread listnerThread;
 		private bool running;
 		private int port;
-		private string host;
+		//private string host;
 		#endregion
 
 		public event ClientConnectedHandler ClientConnected;
