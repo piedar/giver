@@ -40,6 +40,7 @@ namespace Giver
 		public const string ResponsePayloadReceived = "Payload Received";
 		public const string ResponseNoPhoto = "Photograph not available";
 		public const string ResponsePhotoSent = "Photo was sent";
+		public const string ResponseDeclined = "Request was declined";
 
 
 		// Headers

@@ -355,7 +355,16 @@ namespace Giver
 			OnExitSignal (-1);
 			System.Environment.Exit (exitcode);
 		}
-			
+
+        // <summary>
+        // Connects a Notification to the application icon in the notification area and shows it.
+        // </summary>
+        public static void ShowAppNotification(Notification notification)
+        {
+            notification.AttachToWidget(Giver.Application.Instance.trayIcon);
+            notification.Show();
+        }
+
 		#endregion
 		
 		#region Public Methods			

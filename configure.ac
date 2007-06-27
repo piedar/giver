@@ -98,6 +98,7 @@ AC_CONFIG_FILES([
 ./src/Makefile
 ./data/Makefile
 ./data/images/Makefile
+./data/sounds/Makefile
 ./po/Makefile.in
 ])
 

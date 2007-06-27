@@ -26,6 +26,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Collections.Generic;
+using Notifications;
+using Mono.Unix;
 
 namespace Giver
 {
@@ -36,6 +38,7 @@ namespace Giver
 		public long size;
 		public string type;
 		public int count;
+		public HttpListenerContext context;
 
 		public SessionData()
 		{
@@ -49,10 +52,14 @@ namespace Giver
 	public class RequestHandler
 	{
 		private Dictionary<string, SessionData> sessions;
+		private SessionData pendingSession;
+		private Notification currentNotification;
 
 		public RequestHandler()
 		{
 			sessions = new Dictionary<string, SessionData> ();
+			pendingSession = null;
+			currentNotification = null;
 		}
 
 		public void HandleRequest(HttpListenerContext context)
@@ -78,6 +85,20 @@ namespace Giver
 
 		private void HandleSendRequest(HttpListenerContext context)
 		{
+			if(pendingSession != null) {
+				pendingSession.context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+				pendingSession.context.Response.StatusDescription = Protocol.ResponseDeclined;
+				pendingSession.context.Response.OutputStream.Close();
+				pendingSession.context.Response.Close();
+				pendingSession = null;
+			}
+
+			if(currentNotification != null) {
+				Logger.Debug("Current notification != null");
+				currentNotification.Close();
+				currentNotification = null;
+			}
+
 			// get the information about what wants to be sent
 			SessionData sd = new SessionData();
 			sd.count = Convert.ToInt32(context.Request.Headers[Protocol.Count]);
@@ -85,16 +106,86 @@ namespace Giver
 			sd.type = context.Request.Headers[Protocol.Type];
 			sd.size = Convert.ToInt32(context.Request.Headers[Protocol.Size]);
 			sd.sessionID = System.Guid.NewGuid().ToString();
+			sd.context = context;
 
+			pendingSession = sd;
+
+			// place this request into the pending requests and notify the user of the request
+			Notification notify = new Notification(	"Incoming File", 
+													"Someone wants to give you a file",
+													Utilities.GetIcon("File", 48));
+			notify.Timeout = 60000;
+			
+
+			notify.AddAction("Accept", Catalog.GetString("Accept"), AcceptNotificationHandler);
+			notify.AddAction("Decline", Catalog.GetString("Decline"), DeclineNotificationHandler);
+			notify.Closed += ClosedNotificationHandler;
+			currentNotification = notify;
+
+			Application.ShowAppNotification(notify);
+			Gnome.Sound.Play(Path.Combine(Giver.Defines.SoundDir, "notify.wav"));
+			
 
 			// Ask the user to accept at this point, then do the following if they accept
-			context.Response.Headers.Set(Protocol.SessionID, sd.sessionID);
-			sessions.Add(sd.sessionID, sd);
-			context.Response.StatusCode = (int)HttpStatusCode.OK;
-			context.Response.StatusDescription = Protocol.ResponseOKToSend;
-			context.Response.OutputStream.Close();
-			context.Response.Close();
+
 		}
+
+
+        /// <summary>
+        /// AcceptNotificationHandler
+        /// Handles notifications
+        /// </summary>
+        private void AcceptNotificationHandler (object o, ActionArgs args)
+        {
+			if(pendingSession != null) {
+				pendingSession.context.Response.Headers.Set(Protocol.SessionID, pendingSession.sessionID);
+				sessions.Add(pendingSession.sessionID, pendingSession);
+				pendingSession.context.Response.StatusCode = (int)HttpStatusCode.OK;
+				pendingSession.context.Response.StatusDescription = Protocol.ResponseOKToSend;
+				pendingSession.context.Response.OutputStream.Close();
+				pendingSession.context.Response.Close();
+				pendingSession.context = null;
+				pendingSession = null;
+			}
+			currentNotification = null;
+        }
+
+
+        /// <summary>
+        /// DeclineNotificationHandler
+        /// Handles notifications
+        /// </summary>
+        private void DeclineNotificationHandler (object o, ActionArgs args)
+        {
+			if(pendingSession != null) {
+				pendingSession.context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+				pendingSession.context.Response.StatusDescription = Protocol.ResponseDeclined;
+				pendingSession.context.Response.OutputStream.Close();
+				pendingSession.context.Response.Close();
+				pendingSession.context = null;
+				pendingSession = null;
+			}
+			currentNotification = null;
+        }
+
+
+        /// <summary>
+        /// ClosedNotificationHandler
+        /// Handles notifications
+        /// </summary>
+        private void ClosedNotificationHandler (object o, EventArgs args)
+        {
+			if(pendingSession != null) {
+				pendingSession.context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+				pendingSession.context.Response.StatusDescription = Protocol.ResponseDeclined;
+				pendingSession.context.Response.OutputStream.Close();
+				pendingSession.context.Response.Close();
+				pendingSession.context = null;
+				pendingSession = null;
+			}
+			currentNotification = null;
+        }
+
 
 		private void HandlePayload(HttpListenerContext context)
 		{
