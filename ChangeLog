@@ -1,3 +1,10 @@
+2007-06-27  Scott Reeves <sreeves@novell.com> 
+
+	* src/PreferencesDialog.cs, src/Preferences.cs, src/Makefile.am,
+	  giver.mdp, configure.ac, data/Makefile.am, data/glade,
+	  data/glade/giver-prefs.glade, data/glade/Makefile.am: start of
+	  preferences
+
 2007-06-27  Calvin Gaisford <calvinrg@gmail.com> 
 
 	* src/Defines.cs.in, configure.ac, data/Makefile.am, data/sounds,

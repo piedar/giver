@@ -45,6 +45,7 @@ PKG_CHECK_MODULES([GTK_DOTNET_20], [gtk-dotnet-2.0])
 PKG_CHECK_MODULES([EVOLUTION_SHARP], [evolution-sharp])
 PKG_CHECK_MODULES([NOTIFY_SHARP], [notify-sharp])
 PKG_CHECK_MODULES([AVAHI_SHARP], [avahi-sharp])
+PKG_CHECK_MODULES([GLADE_SHARP_20], [glade-sharp-2.0])
 
 
 AC_ARG_ENABLE(debug,
@@ -99,6 +100,7 @@ AC_CONFIG_FILES([
 ./data/Makefile
 ./data/images/Makefile
 ./data/sounds/Makefile
+./data/glade/Makefile
 ./po/Makefile.in
 ])
 

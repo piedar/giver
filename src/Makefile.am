@@ -18,6 +18,7 @@ CSFILES = \
 	$(srcdir)/GiverService.cs \
 	$(srcdir)/Logger.cs \
 	$(srcdir)/Preferences.cs \
+	$(srcdir)/PreferencesDialog.cs \
 	$(srcdir)/Protocol.cs \
 	$(srcdir)/RequestHandler.cs \
 	$(srcdir)/SendingHandler.cs \
@@ -39,6 +40,7 @@ ASSEMBLIES =  \
 	-r:System.Xml \
 	$(GLIB_SHARP_20_LIBS) \
 	$(GNOME_SHARP_20_LIBS) \
+	$(GLADE_SHARP_20_LIBS) \
 	$(GTK_DOTNET_20_LIBS) \
 	$(EVOLUTION_SHARP_LIBS) \
 	$(NOTIFY_SHARP_LIBS) \

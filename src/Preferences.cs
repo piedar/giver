@@ -49,6 +49,7 @@ namespace Giver
 		public string PhotoLocation
 		{
 			get { return photoLocation; }
+			set { photoLocation = value; }
 		}
 
 		public Preferences ()
