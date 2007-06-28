@@ -1,5 +1,9 @@
 2007-06-28  Scott Reeves <sreeves@novell.com> 
 
+	* src/PreferencesDialog.cs: store name, location, partial type
+
+2007-06-28  Scott Reeves <sreeves@novell.com> 
+
 	* src/PreferencesDialog.cs, data/glade/giver-prefs.glade: Finish
 	  loading preferences
 

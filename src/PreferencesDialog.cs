@@ -88,7 +88,7 @@ namespace Giver
 		private void BuildWindow()
 		{
 			storage_location_chooser = new FileChooserButton("Select storage location",
-			    FileChooserAction.Open);
+			    FileChooserAction.SelectFolder);
 			(Glade["storage_location_container"] as Container).Add(storage_location_chooser);
 			(Glade["storage_location_label"] as Label).MnemonicWidget = storage_location_chooser;
 			storage_location_chooser.Show();
@@ -126,14 +126,14 @@ namespace Giver
 			}
 			else if(photoType.Equals(Preferences.Gravatar))
 			{
-				Logger.Debug("photo type is gravatar");
+				//Logger.Debug("photo type is gravatar");
 			   (Glade["gravatar_radiobutton"] as RadioButton).Active = true;
 			   (Glade["gravatar_email"] as Entry).Text = photoLocation;
 			}
 			else if(photoType.Equals(Preferences.Uri))
 			{
 			   (Glade["uri_radiobutton"] as RadioButton).Active = true;
-				Logger.Debug("bloody photo location is {0}", photoLocation);
+				//Logger.Debug("bloody photo location is {0}", photoLocation);
 			   (Glade["photo_uri_location"] as Entry).Text = photoLocation;
 			}
 			           
@@ -142,10 +142,32 @@ namespace Giver
 
 		private void ConnectEvents()
 		{
+			Entry displayName = (Entry) glade.GetWidget("display_name");
+			displayName.Changed += delegate {
+				Application.Preferences.UserName = displayName.Text;
+			};
+			
 			storage_location_chooser.SelectionChanged += delegate {
 				Application.Preferences.ReceiveFileLocation = storage_location_chooser.Filename;
 			};
 
+			RadioButton button = (RadioButton) glade.GetWidget("none_radiobutton");
+			button.Toggled += delegate {
+				Logger.Debug("nonebutton was toggled");
+				if(button.Active)
+				{
+					Application.Preferences.PhotoType = Preferences.None;
+				}
+			};
+
+			button = (RadioButton) glade.GetWidget("local_radiobutton");
+			button.Toggled += delegate {
+				if(button.Active)
+				{
+					Application.Preferences.PhotoType = Preferences.Local;
+					Application.Preferences.PhotoLocation = photo_local_location.Filename; 
+				}
+			};
 			//photo.Changed += OnPhotoFileChanged;
 		}
 
