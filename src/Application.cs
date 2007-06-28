@@ -211,6 +211,13 @@ namespace Giver
 			Logger.Debug("DragDataReceivedHandler called");
 		}
 
+		private void OnPreferences (object sender, EventArgs args)
+		{
+			Logger.Info ("OnPreferences called");
+			Giver.PreferencesDialog dialog = new PreferencesDialog();
+			dialog.Run();
+		}
+		
 		private void OnQuit (object sender, EventArgs args)
 		{
 			Logger.Info ("OnQuitAction called - terminating application");
@@ -256,7 +263,7 @@ namespace Giver
       			popupMenu.Add (separator);
       			
       			ImageMenuItem preferences = new ImageMenuItem (Gtk.Stock.Preferences, null);
-      			//preferences.Activated += OnPreferences;
+      			preferences.Activated += OnPreferences;
       			popupMenu.Add (preferences);
 
       			separator = new SeparatorMenuItem ();

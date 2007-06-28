@@ -38,7 +38,7 @@ namespace Giver
 
 		public PreferencesDialog()
 		{
-			Glade.XML glade = new Glade.XML("giver-prefs.glade", "PrefDialog", "giver");
+			Glade.XML glade = new Glade.XML(Path.Combine(Defines.GladeDir, "giver-prefs.glade"), "GiverPrefsDialog", "giver");
 			window_name = "giver-prefs";        
 			this.glade = glade; 
 			this.glade.Autoconnect(this);
@@ -72,6 +72,16 @@ namespace Giver
 			return window;
 			}
 		}
+		
+		public ResponseType Run()
+		{
+		  return (ResponseType)Dialog.Run();
+		}
+
+		public Dialog Dialog
+		{
+			get { return (Dialog)Window; }
+		}
 
 		private void BuildWindow()
 		{
@@ -85,13 +95,15 @@ namespace Giver
 		}
 
 		private void LoadPreferences()
-		{                   
+		{
 			string location = Path.Combine(Environment.GetFolderPath(
-			Environment.SpecialFolder.ApplicationData), "giver");
+			Environment.SpecialFolder.ApplicationData), "giver/preferences");
 
-			photo_location_chooser.SetFilename(location);
+			
+			string photoLocation = "/tmp"; // open key/value file location, parse key PhotoLocation 
+			photo_location_chooser.SetFilename(photoLocation);
 
-			OnPhotoFileChanged(null, null);
+			//OnPhotoFileChanged(null, null);
 		}
 
 		private void ConnectEvents()

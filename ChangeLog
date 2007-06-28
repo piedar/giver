@@ -1,5 +1,10 @@
 2007-06-27  Scott Reeves <sreeves@novell.com> 
 
+	* src/PreferencesDialog.cs, src/Defines.cs.in, src/Application.cs,
+	  giver.mdp, data/glade/giver-prefs.glade: preferences update
+
+2007-06-27  Scott Reeves <sreeves@novell.com> 
+
 	* src/PreferencesDialog.cs, src/Preferences.cs, src/Makefile.am,
 	  giver.mdp, configure.ac, data/Makefile.am, data/glade,
 	  data/glade/giver-prefs.glade, data/glade/Makefile.am: start of

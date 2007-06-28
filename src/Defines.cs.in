@@ -29,5 +29,6 @@ namespace Giver
 		public const string DataDir          	= "@datadir@";
 		public const string GnomeLocaleDir		= "@datadir@/locale";
         public const string SoundDir            = "@datadir@/giver/sounds";
+        public const string GladeDir            = "@datadir@/giver/glade";
 	}
 }
