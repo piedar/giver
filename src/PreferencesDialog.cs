@@ -38,8 +38,9 @@ namespace Giver
 
 		public PreferencesDialog()
 		{
-			Glade.XML glade = new Glade.XML(Path.Combine(Defines.GladeDir, "giver-prefs.glade"), "GiverPrefsDialog", "giver");
-			window_name = "giver-prefs";        
+			//Glade.XML glade = new Glade.XML(Path.Combine(Defines.GladeDir, "giver-prefs.glade"), "GiverPrefsDialog", "giver");
+			Glade.XML glade = new Glade.XML(Path.Combine(Defines.GladeDir, "giver-prefs.glade"), null, null);
+			window_name = "GiverPrefsDialog";        
 			this.glade = glade; 
 			this.glade.Autoconnect(this);
 			BuildWindow();
@@ -99,7 +100,6 @@ namespace Giver
 			string location = Path.Combine(Environment.GetFolderPath(
 			Environment.SpecialFolder.ApplicationData), "giver/preferences");
 
-			
 			string photoLocation = "/tmp"; // open key/value file location, parse key PhotoLocation 
 			photo_location_chooser.SetFilename(photoLocation);
 

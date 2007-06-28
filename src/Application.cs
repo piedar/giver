@@ -337,7 +337,8 @@ namespace Giver
 			catch (Exception e)
 			{
 				//TODO log
-				Console.WriteLine (e.Message);
+				//Console.WriteLine (e.Message);
+				Giver.Logger.Debug("Exception is: {0}", e);
 				Exit (-1);
 			}
 		}
