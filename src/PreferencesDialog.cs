@@ -106,6 +106,10 @@ namespace Giver
 			//string location = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "giver/preferences");
 			string photoLocation = Application.Preferences.PhotoLocation;
 			string photoType = Application.Preferences.PhotoType;
+			string displayName = Application.Preferences.UserName;
+			string storage_location = Application.Preferences.ReceiveFileLocation;
+			
+			(Glade["display_name"] as Entry).Text = displayName;
 
 			if(photoType.Equals(Preferences.None))
 			{
@@ -129,12 +133,11 @@ namespace Giver
 			else if(photoType.Equals(Preferences.Uri))
 			{
 			   (Glade["uri_radiobutton"] as RadioButton).Active = true;
+				Logger.Debug("bloody photo location is {0}", photoLocation);
+			   (Glade["photo_uri_location"] as Entry).Text = photoLocation;
 			}
 			           
-			
-			//storage_location_chooser.SetFilename(photoLocation);
-
-			//OnPhotoFileChanged(null, null);
+			storage_location_chooser.SetFilename(storage_location);
 		}
 
 		private void ConnectEvents()
