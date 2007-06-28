@@ -1,3 +1,9 @@
+2007-06-28  Calvin Gaisford <calvinrg@gmail.com> 
+
+	* src/RequestHandler.cs: updated to use save location 
+	* src/GiverService.cs: added full name publish if the preference is set
+	* src/Preferences.cs: added full name and save location
+
 2007-06-27  Calvin Gaisford <calvinrg@gmail.com> 
 
 	* src/Utilities.cs, src/ServiceLocator.cs, src/RequestHandler.cs,

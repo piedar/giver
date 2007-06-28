@@ -91,6 +91,65 @@ namespace Giver
 			}
 		}
 
+
+		public string UserName
+		{
+			get
+			{ 
+				XmlNodeList list = document.GetElementsByTagName("UserName");
+				XmlElement element = (XmlElement) list[0];
+				if( (element == null) || (element.InnerText.Length < 1) )
+					return Environment.UserName;
+				else
+					return element.InnerText;
+			}
+			
+			set
+			{
+				XmlNodeList list = document.GetElementsByTagName("UserName");
+				XmlElement element = (XmlElement) list[0];
+				if(element == null) {
+					element = document.CreateElement("UserName");
+					document.DocumentElement.AppendChild(element);
+				}
+				if(value == null)
+					element.InnerText = Environment.UserName; 
+				else
+					element.InnerText = value; 
+				SavePrefs();
+			}
+		}
+
+
+		public string ReceiveFileLocation
+		{
+			get
+			{ 
+				XmlNodeList list = document.GetElementsByTagName("ReceiveFileLocation");
+				XmlElement element = (XmlElement) list[0];
+				if( (element == null) || (element.InnerText.Length < 1) )
+					return System.Environment.GetFolderPath (System.Environment.SpecialFolder.Desktop);
+				else
+					return element.InnerText;
+			}
+			
+			set
+			{
+				XmlNodeList list = document.GetElementsByTagName("ReceiveFileLocation");
+				XmlElement element = (XmlElement) list[0];
+				if(element == null) {
+					element = document.CreateElement("ReceiveFileLocation");
+					document.DocumentElement.AppendChild(element);
+				}
+				if(value == null)
+					element.InnerText = System.Environment.GetFolderPath (System.Environment.SpecialFolder.Desktop);
+				else
+					element.InnerText = value; 
+				SavePrefs();
+			}
+		}
+
+
 		public Preferences ()
 		{
 			document = new XmlDocument();
@@ -103,6 +162,7 @@ namespace Giver
 			}
 		}
 
+
 		private void SavePrefs()
 		{
 			XmlTextWriter writer = new XmlTextWriter(location, System.Text.Encoding.UTF8);
@@ -111,6 +171,7 @@ namespace Giver
 			writer.Flush();
 			writer.Close();
 		}
+
 
 		private void CreateDefaultPrefs()
 		{

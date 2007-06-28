@@ -116,32 +116,32 @@ namespace Giver
 					string[] txtStrings;
 
 					if( Application.Preferences.PhotoType.CompareTo(Preferences.Local) == 0) {
-						txtStrings = new string[] { "User Name=" + Environment.UserName, 
+						txtStrings = new string[] { "User Name=" + Application.Preferences.UserName, 
 													"Machine Name=" + Environment.MachineName, 
 													"Version=" + Defines.Version,
 													"PhotoType=" + Preferences.Local,
 													"Photo=none" };
 					} else if( Application.Preferences.PhotoType.CompareTo(Preferences.Gravatar) == 0) {
-						txtStrings = new string[] { "User Name=" + Environment.UserName, 
+						txtStrings = new string[] { "User Name=" + Application.Preferences.UserName, 
 													"Machine Name=" + Environment.MachineName, 
 													"Version=" + Defines.Version,
 													"PhotoType=" + Preferences.Gravatar,
 													"Photo=" + Giver.Utilities.GetMd5Sum(Application.Preferences.PhotoLocation) };	
 					} else if( Application.Preferences.PhotoType.CompareTo(Preferences.Uri) == 0) {
-						txtStrings = new string[] { "User Name=" + Environment.UserName, 
+						txtStrings = new string[] { "User Name=" + Application.Preferences.UserName, 
 													"Machine Name=" + Environment.MachineName, 
 													"Version=" + Defines.Version,
 													"PhotoType=" + Preferences.Uri,
 													"Photo=" + Application.Preferences.PhotoLocation };	
 					} else {
-						txtStrings = new string[] { "User Name=" + Environment.UserName, 
+						txtStrings = new string[] { "User Name=" + Application.Preferences.UserName, 
 													"Machine Name=" + Environment.MachineName, 
 													"Version=" + Defines.Version,
 													"PhotoType=" + Preferences.None,
 													"Photo=none" };
 					}
 
-					eg.AddService(	"giver on " + Environment.UserName + "@" + Environment.MachineName, 
+					eg.AddService(	"giver on " + Application.Preferences.UserName + "@" + Environment.MachineName, 
 									"_giver._tcp", "", (ushort)port, txtStrings);
 
                     eg.Commit ();

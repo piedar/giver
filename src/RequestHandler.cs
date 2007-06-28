@@ -231,13 +231,12 @@ namespace Giver
 				int fileInstance = 1;
 
 				// Create the local file path
-				string newFilePath = Path.Combine(System.Environment.GetFolderPath
-												(System.Environment.SpecialFolder.Desktop), sd.name);
+				string newFilePath = Path.Combine(Application.Preferences.ReceiveFileLocation, sd.name);
+
 				// Loop until there is no file conflict
 				while(File.Exists(newFilePath)) {
-					newFilePath = Path.Combine(System.Environment.GetFolderPath
-											(System.Environment.SpecialFolder.Desktop), 
-											String.Format("{0}({1}){2}",
+					newFilePath = Path.Combine(Application.Preferences.ReceiveFileLocation, 
+													String.Format("{0}({1}){2}",
 													Path.GetFileNameWithoutExtension(sd.name),
 													fileInstance,
 													Path.GetExtension(sd.name)));
