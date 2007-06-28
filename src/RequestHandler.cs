@@ -38,6 +38,7 @@ namespace Giver
 		public long size;
 		public string type;
 		public int count;
+		public string userName;
 		public HttpListenerContext context;
 
 		public SessionData()
@@ -85,7 +86,10 @@ namespace Giver
 
 		private void HandleSendRequest(HttpListenerContext context)
 		{
+			Logger.Debug("HandleSendRequest called");
+
 			if(pendingSession != null) {
+				Logger.Debug("HandleSendRequest: Found a pending Session... closing it");
 				pendingSession.context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
 				pendingSession.context.Response.StatusDescription = Protocol.ResponseDeclined;
 				pendingSession.context.Response.OutputStream.Close();
@@ -94,7 +98,7 @@ namespace Giver
 			}
 
 			if(currentNotification != null) {
-				Logger.Debug("Current notification != null");
+				Logger.Debug("HandleSendRequest: Found a notification... closing it");
 				currentNotification.Close();
 				currentNotification = null;
 			}
@@ -104,30 +108,43 @@ namespace Giver
 			sd.count = Convert.ToInt32(context.Request.Headers[Protocol.Count]);
 			sd.name = context.Request.Headers[Protocol.Name];
 			sd.type = context.Request.Headers[Protocol.Type];
+			sd.userName = context.Request.Headers[Protocol.UserName];
 			sd.size = Convert.ToInt32(context.Request.Headers[Protocol.Size]);
 			sd.sessionID = System.Guid.NewGuid().ToString();
 			sd.context = context;
 
-			pendingSession = sd;
+			try {
+				// place this request into the pending requests and notify the user of the request
+				string summary = String.Format(Catalog.GetString("{0} wants to \"Give\""), sd.userName);
+				string body = String.Format(Catalog.GetString("{0}\nSize: {1} bytes"), sd.name, sd.size);
 
-			// place this request into the pending requests and notify the user of the request
-			Notification notify = new Notification(	"Incoming File", 
-													"Someone wants to give you a file",
-													Utilities.GetIcon("File", 48));
-			notify.Timeout = 60000;
-			
+				Notification notify = new Notification(	summary, 
+														body,
+														Utilities.GetIcon ("giver-48", 48));
+				notify.Timeout = 60000;
+				
 
-			notify.AddAction("Accept", Catalog.GetString("Accept"), AcceptNotificationHandler);
-			notify.AddAction("Decline", Catalog.GetString("Decline"), DeclineNotificationHandler);
-			notify.Closed += ClosedNotificationHandler;
-			currentNotification = notify;
+				notify.AddAction("Accept", Catalog.GetString("Accept"), AcceptNotificationHandler);
+				notify.AddAction("Decline", Catalog.GetString("Decline"), DeclineNotificationHandler);
+				notify.Closed += ClosedNotificationHandler;
+				currentNotification = notify;
+				pendingSession = sd;
 
-			Application.ShowAppNotification(notify);
-			Gnome.Sound.Play(Path.Combine(Giver.Defines.SoundDir, "notify.wav"));
-			
+				Gtk.Application.Invoke( delegate {
+					Application.ShowAppNotification(notify);
+					Gnome.Sound.Play(Path.Combine(Giver.Defines.SoundDir, "notify.wav"));
+				} );
+			} catch (Exception e) {
+				Logger.Debug("Exception attempting to notify {0}", e);
 
-			// Ask the user to accept at this point, then do the following if they accept
-
+				pendingSession.context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+				pendingSession.context.Response.StatusDescription = Protocol.ResponseDeclined;
+				pendingSession.context.Response.OutputStream.Close();
+				pendingSession.context.Response.Close();
+				pendingSession.context = null;
+				pendingSession = null;
+				currentNotification = null;
+			}			
 		}
 
 

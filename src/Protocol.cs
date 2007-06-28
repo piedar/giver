@@ -50,6 +50,7 @@ namespace Giver
 		public const string Type = "Type";
 		public const string Size = "Size";
 		public const string Response = "Response";
+		public const string UserName = "UserName";
 
 
 		

@@ -115,14 +115,16 @@ namespace Giver
 						args);
 
 			preferences = new Preferences();
-			requestHandler = new RequestHandler();
-			sendingHandler = new SendingHandler();
 
 			GLib.Idle.Add(InitializeIdle);
 		}
 	
 		private bool InitializeIdle()
 		{
+			requestHandler = new RequestHandler();
+			sendingHandler = new SendingHandler();
+			sendingHandler.Start();
+
 			try {
 				locator = new ServiceLocator();
 			} catch (Exception e) {
@@ -222,6 +224,7 @@ namespace Giver
 		{
 			Logger.Info ("OnQuitAction called - terminating application");
 
+			sendingHandler.Stop();
 			service.Stop();
 			locator.Stop();
 
@@ -236,13 +239,13 @@ namespace Giver
 			GiverMenuItem gmi = (GiverMenuItem)sender;
 
             FileSelection fs = new FileSelection(Catalog.GetString("Select a File")); 
-            int fsreturn = fs.Run(); 
-            fs.Hide(); 
+            int fsreturn = fs.Run();
+            fs.Hide();
              
             if(fsreturn == -5) { 
 				Logger.Debug("Sending file {0}", fs.Filename);
 
-				sendingHandler.SendFile(gmi.Service, fs.Filename);
+				sendingHandler.QueueFileSend(gmi.Service, fs.Filename);
             } 
 		}
 		

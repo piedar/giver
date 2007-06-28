@@ -31,7 +31,7 @@ RESOURCES = \
 	-resource:$(top_srcdir)/data/images/giver-24.png \
 	-resource:$(top_srcdir)/data/images/giveroff-24.png \
 	-resource:$(top_srcdir)/data/images/giver-32.png \
-	-resource:$(top_srcdir)/data/images/giver-48.png 
+	-resource:$(top_srcdir)/data/images/giver-48.png \
 	-resource:$(top_srcdir)/data/images/giver-256.png 
 
 ASSEMBLIES =  \

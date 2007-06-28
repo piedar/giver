@@ -1,3 +1,11 @@
+2007-06-27  Calvin Gaisford <calvinrg@gmail.com> 
+
+	* src/SendingHandler.cs: added username and threaded the sending of
+	  files
+	* src/RequestHandler.cs, src/Protocol.cs: added username
+	* src/Application.cs: Fixed some startup issues
+	* src/Makefile.am: Fixed makefile issue with giver 256 icon
+
 2007-06-27  Scott Reeves <sreeves@novell.com> 
 
 	* src/PreferencesDialog.cs, src/Defines.cs.in, src/Application.cs,
