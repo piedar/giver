@@ -20,6 +20,8 @@
 // **********************************************************************
 
 using System;
+using System.Xml;
+using System.IO;
 
 namespace Giver
 {
@@ -28,36 +30,117 @@ namespace Giver
 	// </summary>
 	public class Preferences
 	{
+		public const string None = "none";
+		public const string Local = "local";
+		public const string Gravatar = "gravatar";
+		public const string Uri = "uri";
 		// public static event PreferenceChangedEventHandler PreferenceChanged;
 		
 //	   	public const string CustomAvailableMessages = "/apps/banter/custom_available_messages";
 //	   	public const string CustomBusyMessages = "/apps/banter/custom_busy_messages";
-		private string photoLocation;
-		private bool hasPhoto;
-		private bool isUri;
+		private System.Xml.XmlDocument document;
+		private string location;
 
-		public bool HasPhoto
+		public string PhotoType
 		{
-			get { return hasPhoto; }
-		}
-
-		public bool PhotoIsUri
-		{
-			get { return isUri; }
+			get
+			{ 
+				XmlNodeList list = document.GetElementsByTagName("PhotoType");
+				XmlElement element = (XmlElement) list[0];
+				if(element == null)
+					return "none";
+				else
+					return element.InnerText;
+			}
+			
+			set
+			{
+				XmlNodeList list = document.GetElementsByTagName("PhotoType");
+				XmlElement element = (XmlElement) list[0];
+				if(element == null) {
+					element = document.CreateElement("PhotoType");
+					document.DocumentElement.AppendChild(element);
+				}
+				element.InnerText = value; 
+				SavePrefs();
+			}
 		}
 
 		public string PhotoLocation
 		{
-			get { return photoLocation; }
-			set { photoLocation = value; }
+			get
+			{ 
+				XmlNodeList list = document.GetElementsByTagName("PhotoLocation");
+				XmlElement element = (XmlElement) list[0];
+				if(element == null)
+					return "";
+				else
+					return element.InnerText;
+			}
+			
+			set
+			{
+				XmlNodeList list = document.GetElementsByTagName("PhotoLocation");
+				XmlElement element = (XmlElement) list[0];
+				if(element == null) {
+					element = document.CreateElement("PhotoLocation");
+					document.DocumentElement.AppendChild(element);
+				}
+				element.InnerText = value; 
+				SavePrefs();
+			}
 		}
 
 		public Preferences ()
 		{
-			isUri = false;
-			photoLocation = null;
-			hasPhoto = false;
-			// Initialize the preferences
+			document = new XmlDocument();
+			location = Path.Combine(Environment.GetFolderPath(
+			Environment.SpecialFolder.ApplicationData), "giver/preferences");
+			if(!File.Exists(location)) {
+				CreateDefaultPrefs();
+			} else {
+				document.Load(location);
+			}
+		}
+
+		private void SavePrefs()
+		{
+			XmlTextWriter writer = new XmlTextWriter(location, System.Text.Encoding.UTF8);
+			writer.Formatting = Formatting.Indented;
+			document.WriteTo( writer );
+			writer.Flush();
+			writer.Close();
+		}
+
+		private void CreateDefaultPrefs()
+		{
+			try {
+				Directory.CreateDirectory(Path.GetDirectoryName(location));
+
+       			document.LoadXml("<giverprefs>" +
+                   				"  <PhotoType>none</PhotoType>" +
+                   				"  <PhotoLocation></PhotoLocation>" +
+								"  <UserName></UserName>" +
+								"  <ReceiveFileLocation></ReceiveFileLocation>" +
+                  			 "</giverprefs>");
+				SavePrefs();
+/* 
+		       // Create a new element node.
+		       XmlNode newElem = doc.CreateNode("element", "pages", "");  
+		       newElem.InnerText = "290";
+		     
+		       Console.WriteLine("Add the new element to the document...");
+		       XmlElement root = doc.DocumentElement;
+		       root.AppendChild(newElem);
+		     
+		       Console.WriteLine("Display the modified XML document...");
+		       Console.WriteLine(doc.OuterXml);
+*/
+			} catch (Exception e) {
+				Logger.Debug("Exception thrown in Preferences {0}", e);
+				return;
+			}
+
 		}
 	}
 }

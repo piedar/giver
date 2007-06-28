@@ -269,14 +269,7 @@ namespace Giver
 		private void HandlePhoto(HttpListenerContext context)
 		{
 			// get the information about what wants to be sent
-			if(!Application.Preferences.HasPhoto) {
-				context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-				context.Response.StatusDescription = Protocol.ResponseNoPhoto;
-				context.Response.Close();			
-				return;
-			}
-
-			if(Application.Preferences.PhotoIsUri)
+			if(Application.Preferences.PhotoType.CompareTo(Preferences.Local) != 0)
 			{
 				context.Response.StatusCode = (int)HttpStatusCode.NotFound;
 				context.Response.StatusDescription = Application.Preferences.PhotoLocation;

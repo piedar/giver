@@ -115,22 +115,29 @@ namespace Giver
 					Logger.Debug("Adding Avahi Service  _giver._tcp");
 					string[] txtStrings;
 
-					if(	Application.Preferences.HasPhoto && 
-						Application.Preferences.PhotoIsUri &&
-						(Application.Preferences.PhotoLocation != null) ) {
+					if( Application.Preferences.PhotoType.CompareTo(Preferences.Local) == 0) {
 						txtStrings = new string[] { "User Name=" + Environment.UserName, 
 													"Machine Name=" + Environment.MachineName, 
 													"Version=" + Defines.Version,
-													"Photo=" + Application.Preferences.PhotoLocation };
-					} else if( Application.Preferences.HasPhoto && (!Application.Preferences.PhotoIsUri) ) {
+													"PhotoType=" + Preferences.Local,
+													"Photo=none" };
+					} else if( Application.Preferences.PhotoType.CompareTo(Preferences.Gravatar) == 0) {
 						txtStrings = new string[] { "User Name=" + Environment.UserName, 
 													"Machine Name=" + Environment.MachineName, 
 													"Version=" + Defines.Version,
-													"Photo=local" };
+													"PhotoType=" + Preferences.Gravatar,
+													"Photo=" + Giver.Utilities.GetMd5Sum(Application.Preferences.PhotoLocation) };	
+					} else if( Application.Preferences.PhotoType.CompareTo(Preferences.Uri) == 0) {
+						txtStrings = new string[] { "User Name=" + Environment.UserName, 
+													"Machine Name=" + Environment.MachineName, 
+													"Version=" + Defines.Version,
+													"PhotoType=" + Preferences.Uri,
+													"Photo=" + Application.Preferences.PhotoLocation };	
 					} else {
 						txtStrings = new string[] { "User Name=" + Environment.UserName, 
 													"Machine Name=" + Environment.MachineName, 
 													"Version=" + Defines.Version,
+													"PhotoType=" + Preferences.None,
 													"Photo=none" };
 					}
 

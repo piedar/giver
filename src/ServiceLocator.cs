@@ -56,10 +56,8 @@ namespace Giver {
 		private string userName;
 		private string name;
 		private string version;
-		private string photoValue;
-		private string photoUri;
-		private bool isUri;
-		private bool hasPhoto;
+		private string photoType;
+		private string photoLocation;
 		private Gdk.Pixbuf photo;
 
         public IPAddress Address 
@@ -98,43 +96,16 @@ namespace Giver {
 			set { this.version = value; }
 		}
 
-		public string PhotoValue
+		public string PhotoType
 		{
-			get { return photoValue; }
-			set
-			{ 
-				this.photoValue = value;
-
-				if(photoValue.CompareTo("none") == 0) {
-					Logger.Debug("Service found with no photo");
-					hasPhoto = false;
-				} else if(photoValue.CompareTo("local") == 0) {
-					Logger.Debug("Service found with local photo");
-					hasPhoto = true;
-					isUri = false;
-					photoUri = null;
-				} else {
-					Logger.Debug("Service found with Uri photo");
-					hasPhoto = true;
-					isUri = true;
-					photoUri = photoValue;
-				}
-			}
+			get { return photoType; }
+			set { this.photoType = value; }
 		}
 
-		public bool HasPhoto
+		public string PhotoLocation
 		{
-			get { return hasPhoto; }
-		}
-
-		public bool IsURI
-		{
-			get { return isUri; }
-		}
-
-		public string PhotoURI
-		{
-			get { return photoUri; }
+			get { return photoLocation; }
+			set { this.photoLocation = value; }
 		}
 
 		public Gdk.Pixbuf Photo
@@ -151,11 +122,9 @@ namespace Giver {
             this.machineName = "";
 			this.userName = "";
 			this.version = "";
-			this.photoValue = "none";
+			this.photoType = Preferences.None;
+			this.photoLocation = "";
 			this.photo = null;
-			this.photoUri = null;
-			this.isUri = false;
-			this.hasPhoto = false;
         }
 
         public override string ToString()
@@ -282,21 +251,29 @@ namespace Giver {
 					svc.MachineName = splitstr[1];
 				if(splitstr[0].CompareTo("Version") == 0)
 					svc.Version = splitstr[1];
-				if(splitstr[0].CompareTo("Photo") == 0) {
-					svc.PhotoValue = splitstr[1];
-				}
+				if(splitstr[0].CompareTo("PhotoType") == 0)
+					svc.PhotoType = splitstr[1];
+				if(splitstr[0].CompareTo("Photo") == 0)
+					svc.PhotoLocation = splitstr[1];
             }
 
-			if(svc.HasPhoto) {
-				try {
+			try {
+				if(svc.PhotoType.CompareTo(Preferences.Local) == 0 ) {
 					SendingHandler.GetPhoto(svc);
-				} catch (Exception e) {
-					Logger.Debug("Exception getting photo {0}", e.Message);
+					svc.Photo = svc.Photo.ScaleSimple(48, 48, Gdk.InterpType.Bilinear);
+				} else if(svc.PhotoType.CompareTo(Preferences.Gravatar) == 0 ){
+					string uri = Utilities.GetGravatarUri(svc.PhotoLocation);
+					svc.Photo = Utilities.GetPhotoFromUri(uri);
+				} else if(svc.PhotoType.CompareTo(Preferences.Uri) == 0) {
+					svc.Photo = Utilities.GetPhotoFromUri(svc.PhotoLocation);
+					svc.Photo = svc.Photo.ScaleSimple(48, 48, Gdk.InterpType.Bilinear);
+				} else {
+					svc.Photo = Utilities.GetIcon("computer", 48);
 				}
-			} else {
+			} catch (Exception e) {
+				Logger.Debug("Exception getting photo {0}", e);
 				svc.Photo = Utilities.GetIcon("computer", 48);
 			}
-
 			lock(locker) {
 				services[svc.Name] = svc;
 			}

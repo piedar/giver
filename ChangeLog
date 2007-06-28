@@ -1,3 +1,11 @@
+2007-06-27  Calvin Gaisford <calvinrg@gmail.com> 
+
+	* src/Utilities.cs, src/ServiceLocator.cs, src/RequestHandler.cs,
+	  src/GiverService.cs: Added uri and gravatar support
+	* src/Preferences.cs: updated to use XML and saves it
+	* giver.mdp: Added XML for preferences
+	* src/PreferencesDialog.cs: debug
+
 2007-06-27  Scott Reeves <sreeves@novell.com> 
 
 	* src/PreferencesDialog.cs, src/Application.cs: preferences update

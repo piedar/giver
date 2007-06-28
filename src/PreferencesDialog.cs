@@ -98,7 +98,7 @@ namespace Giver
 		private void LoadPreferences()
 		{
 			string location = Path.Combine(Environment.GetFolderPath(
-			Environment.SpecialFolder.ApplicationData), "giver/preferences");
+				Environment.SpecialFolder.ApplicationData), "giver/preferences");
 
 			string photoLocation = "/tmp"; // open key/value file location, parse key PhotoLocation 
 			photo_location_chooser.SetFilename(photoLocation);
