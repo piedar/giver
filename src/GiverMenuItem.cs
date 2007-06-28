@@ -29,21 +29,21 @@ namespace Giver
 	/// </summary>
 	public class GiverMenuItem : ComplexMenuItem
 	{   
-		private Service service;
+		private ServiceInfo serviceInfo;
 
-		public Service Service
+		public ServiceInfo ServiceInfo
 		{
-			get { return service; }
+			get { return serviceInfo; }
 		}
 
-	    public GiverMenuItem(Service service) : base(false)
+	    public GiverMenuItem(ServiceInfo serviceInfo) : base(false)
 	    {
-			this.service = service;
+			this.serviceInfo = serviceInfo;
 
 	        HBox hbox = new HBox(false, 10);
 			Gtk.Image image;			
-			if(service.Photo != null)
-				image = new Gtk.Image(service.Photo);
+			if(serviceInfo.Photo != null)
+				image = new Gtk.Image(serviceInfo.Photo);
 			else
 			 	image = new Gtk.Image(Utilities.GetIcon("giver-48", 48));
 			hbox.PackStart(image, false, false, 0);
@@ -56,7 +56,7 @@ namespace Giver
 			label.UseMarkup = true;
 			label.UseUnderline = false;
 			label.Markup = string.Format ("<span weight=\"bold\" size=\"large\">{0}</span>",
-                    						service.UserName);
+                    						serviceInfo.UserName);
 			vbox.PackStart(label, true, true, 0);
 
 			label = new Label();
@@ -66,7 +66,7 @@ namespace Giver
 			label.UseMarkup = true;
 			label.UseUnderline = false;
 			label.Markup = string.Format ("<span size=\"small\">{0}</span>",
-                    						service.MachineName);
+                    						serviceInfo.MachineName);
 
 			vbox.PackStart(label, true, true, 0);
 
@@ -77,7 +77,7 @@ namespace Giver
 			label.UseMarkup = true;
 			label.UseUnderline = false;
 			label.Markup = string.Format ("<span style=\"italic\" size=\"small\">{0}:{1}</span>",
-                    						service.Address, service.Port);
+                    						serviceInfo.Address, serviceInfo.Port);
 
 			vbox.PackStart(label, true, true, 0);
 	        hbox.ShowAll();

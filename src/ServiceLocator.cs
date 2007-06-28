@@ -24,6 +24,7 @@ using System.Net;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 
 using Avahi;
 
@@ -34,113 +35,32 @@ namespace Giver {
 
     public class ServiceArgs : EventArgs 
 	{
-
-        private Service service;
+        private ServiceInfo serviceInfo;
         
-        public Service Service 
+        public ServiceInfo ServiceInfo 
 		{
-            get { return service; }
+            get { return serviceInfo; }
         }
         
-        public ServiceArgs (Service service) 
+        public ServiceArgs (ServiceInfo serviceInfo) 
 		{
-            this.service = service;
+            this.serviceInfo = serviceInfo;
         }
     }
 
-    public class Service 
-	{
-        private IPAddress address;
-        private ushort port;
-        private string machineName;
-		private string userName;
-		private string name;
-		private string version;
-		private string photoType;
-		private string photoLocation;
-		private Gdk.Pixbuf photo;
 
-        public IPAddress Address 
-		{
-            get { return address; }
-			set { this.address = value; }
-        }
-
-        public ushort Port 
-		{
-            get { return port; }
-			set { this.port = value; }
-        }
-
-        public string MachineName 
-		{
-            get { return machineName; }
-			set { this.machineName = value; }
-        }
-
-		public string Name
-		{
-			get { return name; }
-			set { this.name = value; }
-		}
-
-		public string UserName
-		{
-			get { return userName; }
-			set { this.userName = value; }
-		}
-
-		public string Version
-		{
-			get { return version; }
-			set { this.version = value; }
-		}
-
-		public string PhotoType
-		{
-			get { return photoType; }
-			set { this.photoType = value; }
-		}
-
-		public string PhotoLocation
-		{
-			get { return photoLocation; }
-			set { this.photoLocation = value; }
-		}
-
-		public Gdk.Pixbuf Photo
-		{
-			get { return photo; }
-			set { this.photo = value; }
-		}
-
-        public Service (string name, IPAddress address, ushort port)
-		{
-			this.name = name;
-            this.address = address;
-            this.port = port;
-            this.machineName = "";
-			this.userName = "";
-			this.version = "";
-			this.photoType = Preferences.None;
-			this.photoLocation = "";
-			this.photo = null;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("{0}@{1}:{2} ({3}) - {4}", UserName, Address, Port, MachineName, Version);
-        }
-    }
-    
-    
     public class ServiceLocator 
 	{
 		private System.Object locker;
+		private System.Object resolverLocker;
         private Avahi.Client client;
         private ServiceBrowser browser;
-        private Dictionary <string, Service> services;
+        private Dictionary <string, ServiceInfo> services;
         private List <ServiceResolver> resolvers;
+		private Queue <ServiceResolver> resolverQueue;
+		private Thread resolverThread;
+		private AutoResetEvent resetResolverEvent;
+		private bool runningResolverThread;
         private bool showLocals = true;
 
         public event ServiceHandler Found;
@@ -164,14 +84,14 @@ namespace Giver {
 			}
 		}
         
-        public Service[] Services 
+        public ServiceInfo[] Services 
 		{
             get 
 			{
-				List<Service> serviceList;
+				List<ServiceInfo> serviceList;
 
 				lock(locker) { 
-					serviceList = new List<Service> (services.Values);
+					serviceList = new List<ServiceInfo> (services.Values);
 				}
 				return serviceList.ToArray();
 			}
@@ -180,8 +100,11 @@ namespace Giver {
         public ServiceLocator () 
 		{
 			locker = new Object();
-			services = new Dictionary <string, Service> ();
+			resolverLocker = new Object();
+			services = new Dictionary <string, ServiceInfo> ();
         	resolvers = new List <ServiceResolver> ();
+			resolverQueue = new Queue<ServiceResolver> ();
+			resetResolverEvent = new AutoResetEvent(false);
 			Start();
         }
 
@@ -193,10 +116,17 @@ namespace Giver {
                 browser.ServiceAdded += OnServiceAdded;
                 browser.ServiceRemoved += OnServiceRemoved;
             }
+
+			runningResolverThread = true;
+			resolverThread  = new Thread(ResolverThreadLoop);
+			resolverThread.Start();
         }
 
         public void Stop () 
 		{
+			runningResolverThread = false;
+			resetResolverEvent.Set();
+
             if (client != null) {
 				lock(locker) {
                 	services.Clear ();
@@ -226,65 +156,20 @@ namespace Giver {
 			ServiceResolver sr = (ServiceResolver) o;
 
             resolvers.Remove (sr);
-            sr.Dispose ();
 
-            string name = args.Service.Name;
-
-			lock(locker) {
-				if (services.ContainsKey(args.Service.Name)) {
-					return; // we already have it somehow
-            	}
+			lock(resolverLocker) {
+				resolverQueue.Enqueue(sr);
 			}
-
-            Service svc = new Service (name, args.Service.Address, args.Service.Port);
-
-            foreach (byte[] txt in args.Service.Text) {
-                string txtstr = Encoding.UTF8.GetString (txt);
-                string[] splitstr = txtstr.Split('=');
-
-                if (splitstr.Length < 2)
-                    continue;
-
-				if(splitstr[0].CompareTo("User Name") == 0)
-					svc.UserName = splitstr[1];
-				if(splitstr[0].CompareTo("Machine Name") == 0)
-					svc.MachineName = splitstr[1];
-				if(splitstr[0].CompareTo("Version") == 0)
-					svc.Version = splitstr[1];
-				if(splitstr[0].CompareTo("PhotoType") == 0)
-					svc.PhotoType = splitstr[1];
-				if(splitstr[0].CompareTo("Photo") == 0)
-					svc.PhotoLocation = splitstr[1];
-            }
-
-			try {
-				if(svc.PhotoType.CompareTo(Preferences.Local) == 0 ) {
-					SendingHandler.GetPhoto(svc);
-					svc.Photo = svc.Photo.ScaleSimple(48, 48, Gdk.InterpType.Bilinear);
-				} else if(svc.PhotoType.CompareTo(Preferences.Gravatar) == 0 ){
-					string uri = Utilities.GetGravatarUri(svc.PhotoLocation);
-					svc.Photo = Utilities.GetPhotoFromUri(uri);
-				} else if(svc.PhotoType.CompareTo(Preferences.Uri) == 0) {
-					svc.Photo = Utilities.GetPhotoFromUri(svc.PhotoLocation);
-					svc.Photo = svc.Photo.ScaleSimple(48, 48, Gdk.InterpType.Bilinear);
-				} else {
-					svc.Photo = Utilities.GetIcon("computer", 48);
-				}
-			} catch (Exception e) {
-				Logger.Debug("Exception getting photo {0}", e);
-				svc.Photo = Utilities.GetIcon("computer", 48);
-			}
-			lock(locker) {
-				services[svc.Name] = svc;
-			}
-
-            if (Found != null)
-                Found (this, new ServiceArgs (svc));
+			resetResolverEvent.Set();
         }
 
         private void OnServiceTimeout (object o, EventArgs args) 
 		{
 			Logger.Debug("Service timed out");
+			ServiceResolver sr = (ServiceResolver) o;
+
+            resolvers.Remove (sr);
+            sr.Dispose ();
         }
 
         private void OnServiceRemoved (object o, ServiceInfoArgs args) 
@@ -293,15 +178,89 @@ namespace Giver {
 
 			lock(locker) {
 				if(services.ContainsKey(args.Service.Name)) {
-					Service svc = services[args.Service.Name];
-	            	if (svc != null)
-	                	services.Remove (svc.Name);
+					ServiceInfo serviceInfo = services[args.Service.Name];
+	            	if (serviceInfo != null)
+	                	services.Remove (serviceInfo.Name);
 
 	                if (Removed != null)
-	                    Removed (this, new ServiceArgs (svc));
+	                    Removed (this, new ServiceArgs (serviceInfo));
 	            }
 			}
         }
+
+
+		private void ResolverThreadLoop()
+		{
+			while(runningResolverThread) {
+
+				resetResolverEvent.WaitOne();
+
+				ServiceResolver sr = null;
+				resetResolverEvent.Reset();
+
+				lock(resolverLocker) {
+					if(resolverQueue.Count > 0)
+						sr = resolverQueue.Dequeue();
+				}
+
+				// if there was nothing to do, re-loop
+				if(sr == null)
+					continue;
+
+	            string name = sr.Service.Name;
+
+				lock(locker) {
+					if (services.ContainsKey(sr.Service.Name)) {
+						continue; // we already have it somehow
+	            	}
+				}
+
+	            ServiceInfo serviceInfo = new ServiceInfo (name, sr.Service.Address, sr.Service.Port);
+
+	            foreach (byte[] txt in sr.Service.Text) {
+	                string txtstr = Encoding.UTF8.GetString (txt);
+	                string[] splitstr = txtstr.Split('=');
+
+	                if (splitstr.Length < 2)
+	                    continue;
+
+					if(splitstr[0].CompareTo("User Name") == 0)
+						serviceInfo.UserName = splitstr[1];
+					if(splitstr[0].CompareTo("Machine Name") == 0)
+						serviceInfo.MachineName = splitstr[1];
+					if(splitstr[0].CompareTo("Version") == 0)
+						serviceInfo.Version = splitstr[1];
+					if(splitstr[0].CompareTo("PhotoType") == 0)
+						serviceInfo.PhotoType = splitstr[1];
+					if(splitstr[0].CompareTo("Photo") == 0)
+						serviceInfo.PhotoLocation = splitstr[1];
+	            }
+
+				try {
+					if(serviceInfo.PhotoType.CompareTo(Preferences.Local) == 0 ) {
+						SendingHandler.GetPhoto(serviceInfo);
+						serviceInfo.Photo = serviceInfo.Photo.ScaleSimple(48, 48, Gdk.InterpType.Bilinear);
+					} else if(serviceInfo.PhotoType.CompareTo(Preferences.Gravatar) == 0 ){
+						string uri = Utilities.GetGravatarUri(serviceInfo.PhotoLocation);
+						serviceInfo.Photo = Utilities.GetPhotoFromUri(uri);
+					} else if(serviceInfo.PhotoType.CompareTo(Preferences.Uri) == 0) {
+						serviceInfo.Photo = Utilities.GetPhotoFromUri(serviceInfo.PhotoLocation);
+						serviceInfo.Photo = serviceInfo.Photo.ScaleSimple(48, 48, Gdk.InterpType.Bilinear);
+					} else {
+						serviceInfo.Photo = Utilities.GetIcon("computer", 48);
+					}
+				} catch (Exception e) {
+					Logger.Debug("Exception getting photo {0}", e);
+					serviceInfo.Photo = Utilities.GetIcon("computer", 48);
+				}
+				lock(locker) {
+					services[serviceInfo.Name] = serviceInfo;
+				}
+
+	            if (Found != null)
+	                Found (this, new ServiceArgs (serviceInfo));
+			}
+		}
 
     }
 

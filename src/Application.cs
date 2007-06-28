@@ -250,7 +250,7 @@ namespace Giver
             if(fsreturn == -5) { 
 				Logger.Debug("Sending file {0}", fs.Filename);
 
-				sendingHandler.QueueFileSend(gmi.Service, fs.Filename);
+				sendingHandler.QueueFileSend(gmi.ServiceInfo, fs.Filename);
             } 
 		}
 		
@@ -277,8 +277,7 @@ namespace Giver
       			separator = new SeparatorMenuItem ();
       			popupMenu.Add (separator);
 
-      			ImageMenuItem quit = new ImageMenuItem (
-      					Catalog.GetString ("Quit"));
+      			ImageMenuItem quit = new ImageMenuItem ( Gtk.Stock.Quit, null);
       			quit.Activated += OnQuit;
       			popupMenu.Add (quit);
       			
@@ -294,7 +293,7 @@ namespace Giver
  			Menu popupMenu = new Menu();
  			
 //			Logger.Debug("looping through found services");
-			foreach(Giver.Service s in locator.Services) {
+			foreach(Giver.ServiceInfo s in locator.Services) {
 //				Logger.Debug("A Service was found!");
 				foundItems = true;
 

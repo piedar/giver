@@ -22,6 +22,7 @@ CSFILES = \
 	$(srcdir)/Protocol.cs \
 	$(srcdir)/RequestHandler.cs \
 	$(srcdir)/SendingHandler.cs \
+	$(srcdir)/ServiceInfo.cs \
 	$(srcdir)/ServiceLocator.cs \
 	$(srcdir)/TrayLib.cs \
 	$(srcdir)/Utilities.cs 

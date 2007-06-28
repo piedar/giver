@@ -31,7 +31,7 @@ namespace Giver
 {
 	public class SendingHolder
 	{
-		public Service service;
+		public ServiceInfo serviceInfo;
 		public string path;
 		public bool isFile;
 
@@ -67,12 +67,12 @@ namespace Giver
 			resetEvent.Set();
 		}
 
-		public void QueueFileSend(Service service, string file)
+		public void QueueFileSend(ServiceInfo serviceInfo, string file)
 		{
 			lock(locker) {
 				SendingHolder sh = new SendingHolder();
 				sh.isFile = true;
-				sh.service = service;
+				sh.serviceInfo = serviceInfo;
 				sh.path = file;
 
 				queue.Enqueue(sh);
@@ -98,10 +98,10 @@ namespace Giver
 				if(sh == null)
 					continue;
 
-				Service service = sh.service;
+				ServiceInfo serviceInfo = sh.serviceInfo;
 				string file = sh.path;
 
-				UriBuilder urib = new UriBuilder("http", service.Address.ToString(), (int)service.Port);
+				UriBuilder urib = new UriBuilder("http", serviceInfo.Address.ToString(), (int)serviceInfo.Port);
 				Logger.Debug("Sending request to URI: {0}", urib.Uri.ToString());
 				System.Net.HttpWebRequest request = (HttpWebRequest) HttpWebRequest.Create(urib.Uri);
 
@@ -182,9 +182,9 @@ namespace Giver
 		}
 
 
-		public static void GetPhoto(Service service)
+		public static void GetPhoto(ServiceInfo serviceInfo)
 		{
-			UriBuilder urib = new UriBuilder("http", service.Address.ToString(), (int)service.Port);
+			UriBuilder urib = new UriBuilder("http", serviceInfo.Address.ToString(), (int)serviceInfo.Port);
 			Logger.Debug("Sending request to URI: {0}", urib.Uri.ToString());
 			System.Net.HttpWebRequest request = (HttpWebRequest) HttpWebRequest.Create(urib.Uri);
 
@@ -223,7 +223,7 @@ namespace Giver
 					Logger.Debug("Exception {0}", e);
 				}
 
-				service.Photo = new Gdk.Pixbuf(buffer);
+				serviceInfo.Photo = new Gdk.Pixbuf(buffer);
 
 			} else {
 				Logger.Debug("Unable to get the photo because {0}", response.StatusDescription);

@@ -1,5 +1,15 @@
 2007-06-28  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/ServiceInfo.cs, src/GiverMenuItem.cs, src/SendingHandler.cs:
+	  Renamed Service to ServiceInfo
+	* src/ServiceLocator.cs: Renamed Service to ServiceInfo and threaded
+	  the resolver to get icons on a thread
+	* src/Application.cs: Added stock quit menu item
+	* src/Makefile.am: Added ServiceInfo
+	* giver.mdp: Added ServiceInfo class
+
+2007-06-28  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/RequestHandler.cs: updated to use save location 
 	* src/GiverService.cs: added full name publish if the preference is set
 	* src/Preferences.cs: added full name and save location
