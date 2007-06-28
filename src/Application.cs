@@ -157,14 +157,19 @@ namespace Giver
 			return false;
 		}
   
- 
-	 	private void OnServicesChanged (object o, ServiceArgs args)
+		private void UpdateTrayIcon()
 		{
 			if(locator.Count > 0)
 				trayImage.Pixbuf = onPixBuf;
 			else
 				trayImage.Pixbuf = offPixBuf;
-
+		}
+ 
+	 	private void OnServicesChanged (object o, ServiceArgs args)
+		{
+			Gtk.Application.Invoke( delegate {
+				UpdateTrayIcon();
+			} );
 		}
 
 		private void OnClientConnected (HttpListenerContext context)

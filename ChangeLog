@@ -1,5 +1,9 @@
 2007-06-27  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/Application.cs: Fixed another anoying gui threading problem
+
+2007-06-27  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/ServiceLocator.cs: Added protection for services
 	* src/Application.cs: Removed Gtk.App stuff for Gnome.App stuff
 
