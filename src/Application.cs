@@ -147,8 +147,8 @@ namespace Giver
 				throw e;
 			}
 
-			locator.Removed += OnServicesChanged;
-			locator.Found += OnServicesChanged;
+			locator.ServiceRemoved += OnServicesChanged;
+			locator.ServiceAdded += OnServicesChanged;
 			service.ClientConnected += OnClientConnected;
 
 			//tray = new NotificationArea("RtcApplication");
@@ -224,6 +224,11 @@ namespace Giver
 			Giver.PreferencesDialog dialog = new PreferencesDialog();
 			dialog.Run();
 		}
+
+		private void OnShowTargets (object sender, EventArgs args)
+		{
+			TargetWindow.ShowWindow(locator);
+		}
 		
 		private void OnQuit (object sender, EventArgs args)
 		{
@@ -236,36 +241,20 @@ namespace Giver
 			//Gtk.Main.Quit ();
 			program.Quit (); // Should this be called instead?
 		}
-
-		private void OnSelectedService (object sender, EventArgs args)
-		{
-			Logger.Debug("OnSelectedService... sending file");
-
-			GiverMenuItem gmi = (GiverMenuItem)sender;
-
-            FileSelection fs = new FileSelection(Catalog.GetString("Select a File")); 
-            int fsreturn = fs.Run();
-            fs.Hide();
-             
-            if(fsreturn == -5) { 
-				Logger.Debug("Sending file {0}", fs.Filename);
-
-				sendingHandler.QueueFileSend(gmi.ServiceInfo, fs.Filename);
-            } 
-		}
 		
 		private void OnTrayIconClick (object o, ButtonPressEventArgs args) // handler for mouse click
 		{
 			if (args.Event.Button == 1) {
-				ShowGiverTargets(args);
+				TargetWindow.ShowWindow(locator);
 			} else if (args.Event.Button == 3) {
    				// FIXME: Eventually get all these into UIManagerLayout.xml file
       			Menu popupMenu = new Menu();
       			
-      			ImageMenuItem status = new ImageMenuItem (
-						Catalog.GetString ("Show online status ..."));
-      			//status.Activated += OnPeople;
-      			popupMenu.Add (status);
+      			ImageMenuItem targets = new ImageMenuItem (
+						Catalog.GetString ("Show giver targets ..."));
+				targets.Image = new Gtk.Image(Utilities.GetIcon ("giver-24", 24));
+      			targets.Activated += OnShowTargets;
+      			popupMenu.Add (targets);
       			
       			SeparatorMenuItem separator = new SeparatorMenuItem ();
       			popupMenu.Add (separator);
@@ -286,35 +275,6 @@ namespace Giver
       			popupMenu.Popup(null, null, null, args.Event.Button, args.Event.Time);
    			}
 		}		
-
-		private void ShowGiverTargets(ButtonPressEventArgs args)
-		{
-			bool foundItems = false;
- 			Menu popupMenu = new Menu();
- 			
-//			Logger.Debug("looping through found services");
-			foreach(Giver.ServiceInfo s in locator.Services) {
-//				Logger.Debug("A Service was found!");
-				foundItems = true;
-
-				GiverMenuItem item = new GiverMenuItem(s);
-
-//	 			ImageMenuItem item = new ImageMenuItem (s.UserName + "@" + s.MachineName + 
-//									" (" + s.Address + ":" + s.Port.ToString() + ")");
-	 			item.Activated += OnSelectedService;
-	 			popupMenu.Add (item);
-			}
-
-			
-			if(!foundItems) {
-				ImageMenuItem item = new ImageMenuItem("No giver targets found!");
-				popupMenu.Add(item);
-			}
- 			
-			popupMenu.ShowAll(); // shows everything
- 			//popupMenu.Popup(null, null, null, IntPtr.Zero, args.Event.Button, args.Event.Time);
- 			popupMenu.Popup(null, null, null, args.Event.Button, args.Event.Time);
-		}
 		
 		
 		#endregion		
@@ -379,6 +339,12 @@ namespace Giver
             notification.AttachToWidget(Giver.Application.Instance.trayIcon);
             notification.Show();
         }
+
+
+		public static void EnqueueFileSend(ServiceInfo serviceInfo, string fileName)
+		{
+			Giver.Application.Instance.sendingHandler.QueueFileSend(serviceInfo, fileName);
+		}
 
 		#endregion
 		

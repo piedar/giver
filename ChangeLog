@@ -1,3 +1,14 @@
+2007-06-28  Calvin Gaisford <calvinrg@gmail.com> 
+
+	* src/ServiceInfo.cs: Added ID
+	* src/TargetWindow.cs: New Window to choose targets
+	* src/ServiceLocator.cs: Modified Event names to make sense
+	* src/Application.cs: Modified events and removed menu that shows
+	  targets
+	* src/Makefile.am: Added new widgets to build
+	* src/TargetService.cs: New Widget to show services
+	* giver.mdp: Added TargetService and TargetWindow Widgets
+
 2007-06-28  Scott Reeves <sreeves@novell.com> 
 
 	* src/PreferencesDialog.cs, src/Preferences.cs,

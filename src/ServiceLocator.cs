@@ -63,8 +63,8 @@ namespace Giver {
 		private bool runningResolverThread;
         private bool showLocals = true;
 
-        public event ServiceHandler Found;
-        public event ServiceHandler Removed;
+        public event ServiceHandler ServiceAdded;
+        public event ServiceHandler ServiceRemoved;
 
         public bool ShowLocalServices 
 		{
@@ -182,8 +182,8 @@ namespace Giver {
 	            	if (serviceInfo != null)
 	                	services.Remove (serviceInfo.Name);
 
-	                if (Removed != null)
-	                    Removed (this, new ServiceArgs (serviceInfo));
+	                if (ServiceRemoved != null)
+	                    ServiceRemoved (this, new ServiceArgs (serviceInfo));
 	            }
 			}
         }
@@ -257,8 +257,15 @@ namespace Giver {
 					services[serviceInfo.Name] = serviceInfo;
 				}
 
-	            if (Found != null)
-	                Found (this, new ServiceArgs (serviceInfo));
+	            if (ServiceAdded != null)
+				{
+					Logger.Debug("About to call ServiceAdded");
+	                ServiceAdded (this, new ServiceArgs (serviceInfo));
+					Logger.Debug("ServiceAdded was just called");
+				} else {
+					Logger.Debug("ServiceAdded was null and not called");
+				}
+
 			}
 		}
 

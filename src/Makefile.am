@@ -24,6 +24,8 @@ CSFILES = \
 	$(srcdir)/SendingHandler.cs \
 	$(srcdir)/ServiceInfo.cs \
 	$(srcdir)/ServiceLocator.cs \
+	$(srcdir)/TargetService.cs \
+	$(srcdir)/TargetWindow.cs \
 	$(srcdir)/TrayLib.cs \
 	$(srcdir)/Utilities.cs 
 

@@ -37,6 +37,7 @@ namespace Giver
 		private string version;
 		private string photoType;
 		private string photoLocation;
+		private string id;
 		private Gdk.Pixbuf photo;
 
         public IPAddress Address 
@@ -93,17 +94,24 @@ namespace Giver
 			set { this.photo = value; }
 		}
 
+		public string ID
+		{
+			get { return id; }
+			set { this.id = value; }
+		}
+
         public ServiceInfo (string name, IPAddress address, ushort port)
 		{
 			this.name = name;
             this.address = address;
             this.port = port;
-            this.machineName = "";
+            this.machineName = address.ToString();
 			this.userName = "";
 			this.version = "";
 			this.photoType = Preferences.None;
 			this.photoLocation = "";
 			this.photo = null;
+			this.id = String.Format("{0}@{1}:{2}", name, address.ToString(), port);
         }
 
         public override string ToString()
