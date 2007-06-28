@@ -104,12 +104,11 @@ namespace Giver
 		#region Private Methods
 		private void Init(string[] args)
 		{
+//			Gtk.Application.Init ();
 
-//			Logger.Debug ("Giver::Application::Init - called");
-			Gtk.Application.Init ();
 			program = 
 				new Gnome.Program (
-						"giver",
+						"Giver",
 						Defines.Version,
 						Gnome.Modules.UI,
 						args);
@@ -147,6 +146,7 @@ namespace Giver
 
 				throw e;
 			}
+
 			locator.Removed += OnServicesChanged;
 			locator.Found += OnServicesChanged;
 			service.ClientConnected += OnClientConnected;
@@ -228,8 +228,8 @@ namespace Giver
 			service.Stop();
 			locator.Stop();
 
-			Gtk.Main.Quit ();
-			//program.Quit (); // Should this be called instead?
+			//Gtk.Main.Quit ();
+			program.Quit (); // Should this be called instead?
 		}
 
 		private void OnSelectedService (object sender, EventArgs args)

@@ -1,5 +1,10 @@
 2007-06-27  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/ServiceLocator.cs: Added protection for services
+	* src/Application.cs: Removed Gtk.App stuff for Gnome.App stuff
+
+2007-06-27  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/SendingHandler.cs: added username and threaded the sending of
 	  files
 	* src/RequestHandler.cs, src/Protocol.cs: added username

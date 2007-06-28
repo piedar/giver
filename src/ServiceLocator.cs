@@ -167,6 +167,7 @@ namespace Giver {
     
     public class ServiceLocator 
 	{
+		private System.Object locker;
         private Avahi.Client client;
         private ServiceBrowser browser;
         private Dictionary <string, Service> services;
@@ -184,16 +185,32 @@ namespace Giver {
 
 		public int Count
 		{
-			get { return services.Count; }
+			get 
+			{
+				int count;
+				lock(locker) {
+					count = services.Count;
+				}
+				return count;
+			}
 		}
         
-        public IEnumerable Services 
+        public Service[] Services 
 		{
-            get { return services.Values; }
+            get 
+			{
+				List<Service> serviceList;
+
+				lock(locker) { 
+					serviceList = new List<Service> (services.Values);
+				}
+				return serviceList.ToArray();
+			}
         }
         
         public ServiceLocator () 
 		{
+			locker = new Object();
 			services = new Dictionary <string, Service> ();
         	resolvers = new List <ServiceResolver> ();
 			Start();
@@ -212,7 +229,9 @@ namespace Giver {
         public void Stop () 
 		{
             if (client != null) {
-                services.Clear ();
+				lock(locker) {
+                	services.Clear ();
+				}
                 browser.Dispose ();
                 client.Dispose ();
                 client = null;
@@ -242,9 +261,11 @@ namespace Giver {
 
             string name = args.Service.Name;
 
-			if (services.ContainsKey(args.Service.Name)) {
-                return; // we already have it somehow
-            }
+			lock(locker) {
+				if (services.ContainsKey(args.Service.Name)) {
+					return; // we already have it somehow
+            	}
+			}
 
             Service svc = new Service (name, args.Service.Address, args.Service.Port);
 
@@ -276,7 +297,9 @@ namespace Giver {
 				svc.Photo = Utilities.GetIcon("computer", 48);
 			}
 
-            services[svc.Name] = svc;
+			lock(locker) {
+				services[svc.Name] = svc;
+			}
 
             if (Found != null)
                 Found (this, new ServiceArgs (svc));
@@ -291,14 +314,16 @@ namespace Giver {
 		{
 			Logger.Debug("A Service was removed: {0}", args.Service.Name);
 
-			if(services.ContainsKey(args.Service.Name)) {
-				Service svc = services[args.Service.Name];
-            	if (svc != null)
-                	services.Remove (svc.Name);
+			lock(locker) {
+				if(services.ContainsKey(args.Service.Name)) {
+					Service svc = services[args.Service.Name];
+	            	if (svc != null)
+	                	services.Remove (svc.Name);
 
-                if (Removed != null)
-                    Removed (this, new ServiceArgs (svc));
-            }
+	                if (Removed != null)
+	                    Removed (this, new ServiceArgs (svc));
+	            }
+			}
         }
 
     }
