@@ -1,5 +1,6 @@
 GLADE_FILES = \
-	$(srcdir)/giver-prefs.glade 
+	$(srcdir)/giver-prefs.glade \
+	$(srcdir)/gravatar.gif
 
 GLADEDIR = $(DESTDIR)$(datadir)/giver/glade
 

@@ -34,7 +34,8 @@ namespace Giver
 		private Window window;
 
 		private Tooltips tips = new Tooltips();
-		private FileChooserButton photo_location_chooser;
+		private FileChooserButton storage_location_chooser;
+		private FileChooserButton photo_local_location;
 
 		public PreferencesDialog()
 		{
@@ -86,30 +87,60 @@ namespace Giver
 
 		private void BuildWindow()
 		{
-			photo_location_chooser = new FileChooserButton("Select photo location",
+			storage_location_chooser = new FileChooserButton("Select storage location",
 			    FileChooserAction.Open);
-			(Glade["photo_location_container"] as Container).Add(photo_location_chooser);
-			(Glade["photo_location_label"] as Label).MnemonicWidget = photo_location_chooser;
-			photo_location_chooser.Show();
+			(Glade["storage_location_container"] as Container).Add(storage_location_chooser);
+			(Glade["storage_location_label"] as Label).MnemonicWidget = storage_location_chooser;
+			storage_location_chooser.Show();
 
-			tips.SetTip(Glade["photo_location_label"], "Location of your photo", "photo_location");
+			photo_local_location = new FileChooserButton("Select photo location",
+			    FileChooserAction.Open);
+			(Glade["photo_local_location"] as Container).Add(photo_local_location);
+			photo_local_location.Show();
+
+			tips.SetTip(Glade["storage_location_label"], "Location to store incoming files", "storage_location");
 		}
 
 		private void LoadPreferences()
 		{
-			string location = Path.Combine(Environment.GetFolderPath(
-				Environment.SpecialFolder.ApplicationData), "giver/preferences");
+			//string location = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "giver/preferences");
+			string photoLocation = Application.Preferences.PhotoLocation;
+			string photoType = Application.Preferences.PhotoType;
 
-			string photoLocation = "/tmp"; // open key/value file location, parse key PhotoLocation 
-			photo_location_chooser.SetFilename(photoLocation);
+			if(photoType.Equals(Preferences.None))
+			{
+				//Logger.Debug("photo type is none");
+			   (Glade["none_radiobutton"] as RadioButton).Active = true;
+			}
+			else if(photoType.Equals(Preferences.Local))
+			{
+				Logger.Debug("photo type is local");
+			   (Glade["local_radiobutton"] as RadioButton).Active = true;
+				Image photo = new Image(photoLocation);
+			   (Glade["local_radiobutton"] as RadioButton).Image = photo;
+			   //(Glade["photo_local_image"] as Image).SetFromIconName(photoLocation, IconSize.Button);
+			}
+			else if(photoType.Equals(Preferences.Gravatar))
+			{
+				Logger.Debug("photo type is gravatar");
+			   (Glade["gravatar_radiobutton"] as RadioButton).Active = true;
+			   (Glade["gravatar_email"] as Entry).Text = photoLocation;
+			}
+			else if(photoType.Equals(Preferences.Uri))
+			{
+			   (Glade["uri_radiobutton"] as RadioButton).Active = true;
+			}
+			           
+			
+			//storage_location_chooser.SetFilename(photoLocation);
 
 			//OnPhotoFileChanged(null, null);
 		}
 
 		private void ConnectEvents()
 		{
-			photo_location_chooser.SelectionChanged += delegate {
-				Application.Preferences.PhotoLocation = photo_location_chooser.Filename;
+			storage_location_chooser.SelectionChanged += delegate {
+				Application.Preferences.ReceiveFileLocation = storage_location_chooser.Filename;
 			};
 
 			//photo.Changed += OnPhotoFileChanged;

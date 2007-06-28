@@ -48,7 +48,7 @@ namespace Giver
 				XmlNodeList list = document.GetElementsByTagName("PhotoType");
 				XmlElement element = (XmlElement) list[0];
 				if(element == null)
-					return "none";
+					return Preferences.None;
 				else
 					return element.InnerText;
 			}

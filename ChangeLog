@@ -1,3 +1,9 @@
+2007-06-28  Scott Reeves <sreeves@novell.com> 
+
+	* src/PreferencesDialog.cs, src/Preferences.cs,
+	  data/glade/giver-prefs.glade, data/glade/Makefile.am,
+	  data/glade/gravatar.gif: updated prefs dialog, read values
+
 2007-06-28  Calvin Gaisford <calvinrg@gmail.com> 
 
 	* src/ServiceInfo.cs, src/GiverMenuItem.cs, src/SendingHandler.cs:
