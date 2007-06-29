@@ -17,6 +17,7 @@ CSFILES = \
 	$(srcdir)/GiverMenuItem.cs \
 	$(srcdir)/GiverService.cs \
 	$(srcdir)/Logger.cs \
+	$(srcdir)/PhotoService.cs \
 	$(srcdir)/Preferences.cs \
 	$(srcdir)/PreferencesDialog.cs \
 	$(srcdir)/Protocol.cs \

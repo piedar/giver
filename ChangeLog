@@ -1,3 +1,7 @@
+2007-06-29  Brady Anderson <brady.anderson@gmail.com> 
+
+	added PhotoService
+
 2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
 
 	* src/SendingHandler.cs, src/Application.cs, src/TransferStatusArgs.cs:
