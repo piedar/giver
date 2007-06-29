@@ -1,5 +1,11 @@
 2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/SendingHandler.cs: ReadOnly file transfers
+	* src/RequestHandler.cs: Fixed the readonly file stuff
+	* configure.ac: Bumped the version
+
+2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/RequestHandler.cs: Fixed up the root folder transfer conflicter
 	  thingy
 

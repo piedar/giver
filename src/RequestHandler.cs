@@ -438,7 +438,8 @@ namespace Giver
 
 			try
 			{
-				FileStream fs = new FileStream(Application.Preferences.PhotoLocation, FileMode.Open);
+				FileStream fs = 
+					File.Open(Application.Preferences.PhotoLocation, FileMode.Open, FileAccess.Read);
 				Stream stream = context.Response.OutputStream;
 				context.Response.ContentLength64 = fs.Length;
 				context.Response.StatusCode = (int)HttpStatusCode.OK;

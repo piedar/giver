@@ -258,7 +258,7 @@ namespace Giver
 						request.Headers.Set(Protocol.RelativePath, filePair.relativePath);
 
 						try {
-							System.IO.FileStream filestream = new FileStream(filePair.file, FileMode.Open);
+							System.IO.FileStream filestream = File.Open(filePair.file, FileMode.Open, FileAccess.Read);
 							request.ContentLength = filestream.Length;
 							Stream stream = request.GetRequestStream();
 							
