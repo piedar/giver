@@ -56,7 +56,7 @@ namespace Giver
 		// Protocol Types
 		public const string ProtocolTypeFiles = "Files";
 		public const string ProtocolTypeFile = "File";
-
+		public const string ProtocolTypeTomboy = "Tomboy";
 		
 		public Protocol()
 		{

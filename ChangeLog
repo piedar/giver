@@ -1,5 +1,11 @@
 2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/ServiceLocator.cs, src/SendingHandler.cs, src/RequestHandler.cs,
+	  src/Protocol.cs, src/TargetService.cs: Added TomBoy Hack
+	* data/glade/giver-prefs.glade: Fixed up spacing
+
+2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/SendingHandler.cs, src/RequestHandler.cs: Added new prompts
 	* src/Application.cs: Added About dialog
 

@@ -28,6 +28,7 @@ using System.Threading;
 using System.Collections.Generic;
 using Notifications;
 using Mono.Unix;
+using System.Diagnostics;
 
 namespace Giver
 {
@@ -119,8 +120,17 @@ namespace Giver
 				// place this request into the pending requests and notify the user of the request
 				string summary = String.Format(Catalog.GetString("{0} wants to give"), sd.userName);
 				string body;
-				if(sd.count == 1)
-					body = String.Format(Catalog.GetString("{0}\nSize: {1} bytes"), sd.name, sd.size);
+				if(sd.count == 1) {
+//				*** TOMBOY HACK **
+					if(sd.type.CompareTo(Protocol.ProtocolTypeTomboy) == 0) {
+						body = String.Format(Catalog.GetString("Tomboy Note:\n{0}"), sd.name);
+					}
+					else
+						body = String.Format(Catalog.GetString("{0}\nSize: {1} bytes"), sd.name, sd.size);
+
+				}
+//				*** END TOMBOY HACK **
+//						body = String.Format(Catalog.GetString("{0}\nSize: {1} bytes"), sd.name, sd.size);
 				else
 					body = String.Format(Catalog.GetString("{0} files\nSize: {1} bytes"), sd.count, sd.size);
 
@@ -129,10 +139,20 @@ namespace Giver
 				//Logger.Debug("RECEIVE: About to do a Gtk.Application.Invoke for the notify dude.");
 				Gtk.Application.Invoke( delegate {
 
+
 					//Logger.Debug("RECEIVE: Inside the Gtk.Application.Invoke dude");
-					Notification notify = new Notification(	summary, 
+					Gdk.Pixbuf pixbuf = null;
+
+					if(sd.type.CompareTo(Protocol.ProtocolTypeTomboy) == 0)
+						pixbuf = Gtk.IconTheme.Default.LoadIcon ("tomboy", 48, 0);
+					
+					if(pixbuf == null)
+						pixbuf = Utilities.GetIcon ("giver-48", 48);
+
+					Notification notify = new Notification(	summary,
 															body,
-															Utilities.GetIcon ("giver-48", 48));
+															pixbuf);
+
 					notify.Timeout = 60000;
 
 					notify.AddAction("Accept", Catalog.GetString("Accept"), AcceptNotificationHandler);
@@ -317,6 +337,12 @@ namespace Giver
 
 				string newFilePath = Path.Combine(basePath, fileName);
 
+//				*** TOMBOY HACK
+				if(Path.GetExtension(fileName).CompareTo(".note") == 0) {
+					basePath = "/tmp";
+					newFilePath = Path.Combine("/tmp", fileName);
+				}
+
 				fileInstance++;
 				// Loop until there is no file conflict
 				while(File.Exists(newFilePath)) {
@@ -345,6 +371,21 @@ namespace Giver
 				sd.bytesReceived += totalRead;
 
 				Logger.Debug("RECEIVE: We've read {0} files and {1} bytes", sd.countReceived, sd.bytesReceived);
+
+//				*** TOMBOY HACK
+				if(Path.GetExtension(newFilePath).CompareTo(".note") == 0) {
+					Process p = new Process ();
+					p.StartInfo.UseShellExecute = false;
+					p.StartInfo.RedirectStandardOutput = true;
+					// TODO: Is calling /sbin/lsmod safe enough?  i.e., can we be guaranteed it's gonna be there?
+					p.StartInfo.FileName = "tomboy";
+					p.StartInfo.Arguments = "--open-note " + newFilePath;
+					p.StartInfo.CreateNoWindow = true;
+					p.Start ();
+					p.StandardOutput.ReadToEnd ();
+					p.WaitForExit ();
+				}
+
 			
 				// if we've received everything we agreed to, remove the session
 				if( (sd.count <= sd.countReceived) || (sd.size <= sd.bytesReceived) ) {

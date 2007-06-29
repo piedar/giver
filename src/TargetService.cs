@@ -35,7 +35,7 @@ namespace Giver
 	public enum DragTargetType
 	{
 		UriList,
-		RootWindow
+		TomBoyNote
 	};
 
 	/// <summary>
@@ -144,12 +144,32 @@ namespace Giver
 				case (uint) DragTargetType.UriList:
 				{
                     UriList uriList = new UriList(args.SelectionData);
-					if(!isManual) {
-						Application.EnqueueFileSend(serviceInfo, uriList.ToLocalPaths());
-					} else {
-						// Prompt for the info to send here
-					}
+					string[] paths = uriList.ToLocalPaths();
 
+					if(paths.Length > 0)
+					{
+						if(!isManual) {
+							Application.EnqueueFileSend(serviceInfo, uriList.ToLocalPaths());
+						} else {
+							// Prompt for the info to send here
+						}
+					} else {
+						// check for a tomboy notes
+						foreach(Uri uri in uriList) {
+							if( (uri.Scheme.CompareTo("note") == 0) &&
+								(uri.Host.CompareTo("tomboy") == 0) ) {
+								string[] files = new string[1];
+								string tomboyID = uri.AbsolutePath.Substring(1);
+
+								string homeFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
+								string path = System.IO.Path.Combine(homeFolder, ".tomboy");
+								path = System.IO.Path.Combine(path, tomboyID + ".note");
+								files[0] = path;
+								Logger.Debug("Go and get the tomboy note {0}", path);
+								Application.EnqueueFileSend(serviceInfo, files);
+							}
+						}
+					}
 					break;
 				}
 				default:

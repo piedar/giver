@@ -28,6 +28,7 @@ using System.Threading;
 using System.Collections.Generic;
 using Notifications;
 using Mono.Unix;
+using System.Xml;
 
 namespace Giver
 {
@@ -171,8 +172,50 @@ namespace Giver
 				request.Headers.Set(Protocol.UserName, Application.Preferences.UserName);
 				request.Headers.Set(Protocol.Type, Protocol.ProtocolTypeFiles);
 				request.Headers.Set(Protocol.Count, sh.fileCount.ToString());
-				if(sh.fileCount == 1)
-					request.Headers.Set(Protocol.Name, sh.files[0]);
+//				*** START OF TOMBOY HACK ***
+
+				if(sh.fileCount == 1) {
+					// Complete and total hack for TomBoy
+					Logger.Debug("The extension is: {0}", Path.GetExtension(sh.files[0]));
+					if(Path.GetExtension(sh.files[0]).CompareTo(".note") == 0) {
+						Logger.Debug("I got a Note file");
+						try {
+							StreamReader reader = new StreamReader (sh.files[0]);
+							string noteXml = reader.ReadToEnd ();
+							string title = null;
+							reader.Close ();
+							XmlTextReader xml = new XmlTextReader (new StringReader (noteXml));
+							xml.Namespaces = false;
+							while (xml.Read ()) {
+								switch (xml.NodeType) {
+									case XmlNodeType.Element:
+										switch (xml.Name) {
+											case "title":
+												title = xml.ReadString ();
+												break;
+										}
+										break;
+								}
+							}
+							if(title != null) {
+								request.Headers.Set(Protocol.Name, title);
+								request.Headers.Set(Protocol.Type, Protocol.ProtocolTypeTomboy);
+							} else {
+								Logger.Debug("The node is null");
+								request.Headers.Set(Protocol.Name, Path.GetFileName(sh.files[0]));
+							}
+						} catch (Exception e) {
+							Logger.Debug("Exception getting note {0}", e);
+							request.Headers.Set(Protocol.Name, Path.GetFileName(sh.files[0]));
+						}	
+					} else {
+						request.Headers.Set(Protocol.Name, Path.GetFileName(sh.files[0]));
+					}
+				}
+//				*** END OF TOMBOY HACK ***
+
+//				if(sh.fileCount == 1)
+//					request.Headers.Set(Protocol.Name, Path.GetFileName(sh.files[0]));
 				else
 					request.Headers.Set(Protocol.Name, "many");
 
