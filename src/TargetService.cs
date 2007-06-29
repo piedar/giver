@@ -32,25 +32,38 @@ namespace Giver
 	public class TargetService : Gtk.Button
 	{
 		private ServiceInfo serviceInfo;
+		private bool isManual;
 		
 		public TargetService(ServiceInfo serviceInfo)
 		{
 			this.serviceInfo = serviceInfo;
+			isManual = false;
+			Init();
+		}
 
-			this.BorderWidth = 0;
-			this.Relief = Gtk.ReliefStyle.None;
-
+		public TargetService()
+		{
+			isManual = true;
 			Init();
 		}
 
 		private void Init()
 		{
+			this.BorderWidth = 0;
+			this.Relief = Gtk.ReliefStyle.None;
+			this.CanFocus = false;
+
 	        HBox hbox = new HBox(false, 10);
-			Gtk.Image image;			
-			if(serviceInfo.Photo != null)
-				image = new Gtk.Image(serviceInfo.Photo);
-			else
-			 	image = new Gtk.Image(Utilities.GetIcon("giver-48", 48));
+			Gtk.Image image;
+			if(isManual) {
+				image = new Gtk.Image(Utilities.GetIcon("computer", 48));
+			} else {
+				if(serviceInfo.Photo != null)
+					image = new Gtk.Image(serviceInfo.Photo);
+				else
+				 	image = new Gtk.Image(Utilities.GetIcon("giver-48", 48));
+			}
+
 			hbox.PackStart(image, false, false, 0);
 			VBox vbox = new VBox();
 			hbox.PackStart(vbox, false, false, 0);
@@ -60,31 +73,43 @@ namespace Giver
 			label.LineWrap = false;
 			label.UseMarkup = true;
 			label.UseUnderline = false;
-			label.Markup = string.Format ("<span weight=\"bold\" size=\"large\">{0}</span>",
+			if(isManual)
+				label.Markup = "<span weight=\"bold\" size=\"large\">User Specified</span>";
+			else
+				label.Markup = string.Format ("<span weight=\"bold\" size=\"large\">{0}</span>",
                     						serviceInfo.UserName);
 			vbox.PackStart(label, true, true, 0);
 
 			label = new Label();
 			label.Justify = Gtk.Justification.Left;
             label.SetAlignment (0.0f, 0.5f);
-			label.LineWrap = false;
 			label.UseMarkup = true;
 			label.UseUnderline = false;
-			label.Markup = string.Format ("<span size=\"small\">{0}</span>",
-                    						serviceInfo.MachineName);
+
+			if(isManual) {
+				label.LineWrap = true;
+				label.Markup = "<span style=\"italic\" size=\"small\">Use this target to enter\ninformation manually.</span>";
+			} else {
+				label.LineWrap = false;
+				label.Markup = string.Format ("<span size=\"small\">{0}</span>",
+	                    						serviceInfo.MachineName);
+			}
 
 			vbox.PackStart(label, true, true, 0);
 
-			label = new Label();
-			label.Justify = Gtk.Justification.Left;
-            label.SetAlignment (0.0f, 0.5f);
-			label.LineWrap = false;
-			label.UseMarkup = true;
-			label.UseUnderline = false;
-			label.Markup = string.Format ("<span style=\"italic\" size=\"small\">{0}:{1}</span>",
-                    						serviceInfo.Address, serviceInfo.Port);
+			if(!isManual) {
+				label = new Label();
+				label.Justify = Gtk.Justification.Left;
+	            label.SetAlignment (0.0f, 0.5f);
+				label.LineWrap = false;
+				label.UseMarkup = true;
+				label.UseUnderline = false;
+				label.Markup = string.Format ("<span style=\"italic\" size=\"small\">{0}:{1}</span>",
+	                    						serviceInfo.Address, serviceInfo.Port);
 
-			vbox.PackStart(label, true, true, 0);
+				vbox.PackStart(label, true, true, 0);
+			}
+
 	        hbox.ShowAll();
 	        Add(hbox);
 		}
@@ -106,7 +131,11 @@ namespace Giver
 
 			if(chooser.Run() == (int)ResponseType.Ok) {
 				Logger.Debug("Giving file {0}", chooser.Filename);
-				Giver.Application.EnqueueFileSend(serviceInfo, chooser.Filename);
+				if(!isManual) {
+					Giver.Application.EnqueueFileSend(serviceInfo, chooser.Filename);
+				} else {
+					// Prompt for the info to send here
+				}
 			}
 
 			chooser.Destroy();
@@ -128,8 +157,11 @@ namespace Giver
 			chooser.LocalOnly = true;
 
 			if(chooser.Run() == (int)ResponseType.Ok) {
-				Logger.Debug("Sending folder {0}", chooser.Filename);
-//				Giver.Application.EnqueueFileSend(serviceInfo, chooser.Filename);
+				if(!isManual) {
+	//				Giver.Application.EnqueueFileSend(serviceInfo, chooser.Filename);
+				} else {
+					// Prompt for the info to send here
+				}
 			}
 
 			chooser.Destroy();

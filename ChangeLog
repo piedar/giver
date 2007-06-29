@@ -1,3 +1,8 @@
+2007-06-28  Calvin Gaisford <calvinrg@gmail.com> 
+
+	* src/TargetWindow.cs, src/Application.cs, src/TargetService.cs:
+	  Updated to save window and hide it
+
 2007-06-28  Scott Reeves <sreeves@novell.com> 
 
 	* src/PreferencesDialog.cs: store name, location, partial type

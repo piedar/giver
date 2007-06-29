@@ -154,6 +154,8 @@ namespace Giver
 			//tray = new NotificationArea("RtcApplication");
 			SetupTrayIcon();
 
+			TargetWindow.ShowWindow(locator);
+
 			return false;
 		}
   

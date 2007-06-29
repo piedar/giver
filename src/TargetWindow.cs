@@ -34,11 +34,14 @@ namespace Giver
 	{
 		#region Private Types
 		private static TargetWindow targetWindow = null;
+		private static int lastXPos;
+		private static int lastYPos;
+
 
 		// Widgets
 		private ScrolledWindow scrolledWindow;
 		private VBox targetVBox;
-		private Button manualEntryButton;
+		private TargetService manualTarget;
 		private Dictionary<string, TargetService> targets;
 
 		private ServiceLocator serviceLocator;
@@ -97,32 +100,45 @@ namespace Giver
 			
 			this.DefaultSize = new Gdk.Size (300, 500); 			
 
+			// Start with an event box to paint the background white
+			EventBox eb = new EventBox();
+			eb.BorderWidth = 0;
+            eb.ModifyBg(StateType.Normal, new Gdk.Color(255,255,255));
+            eb.ModifyBase(StateType.Normal, new Gdk.Color(255,255,255));
+
 			VBox mainVBox = new VBox();
 			mainVBox.BorderWidth = 0;
 			mainVBox.Show ();
-			this.Add (mainVBox);
+			eb.Add(mainVBox);
+			this.Add (eb);
 
 			scrolledWindow = new ScrolledWindow ();
 			scrolledWindow.VscrollbarPolicy = PolicyType.Automatic;
-			scrolledWindow.HscrollbarPolicy = PolicyType.Automatic;
-			scrolledWindow.ShadowType = ShadowType.EtchedIn;
+			scrolledWindow.HscrollbarPolicy = PolicyType.Never;
+			//scrolledWindow.ShadowType = ShadowType.None;
+			scrolledWindow.BorderWidth = 0;
 			scrolledWindow.CanFocus = true;
 			scrolledWindow.Show ();
 			mainVBox.PackStart (scrolledWindow, true, true, 0);
 
+			// Add a second Event box in the scrolled window so it will also be white
+			EventBox innerEb = new EventBox();
+			innerEb.BorderWidth = 0;
+            innerEb.ModifyBg(StateType.Normal, new Gdk.Color(255,255,255));
+            innerEb.ModifyBase(StateType.Normal, new Gdk.Color(255,255,255));
+
 			targetVBox = new VBox();
 			targetVBox.BorderWidth = 0;
 			targetVBox.Show ();
-			scrolledWindow.AddWithViewport(targetVBox);
+			innerEb.Add(targetVBox);
 
-			manualEntryButton = new Button ();
-			manualEntryButton.CanFocus = true;
-			manualEntryButton.Label = Catalog.GetString ("Enter Manual _Address");
-			manualEntryButton.UseUnderline = true;
-			manualEntryButton.Image = new Image (Stock.GoBack, IconSize.Menu);
-			manualEntryButton.Show ();
-			mainVBox.PackStart (manualEntryButton, false, false, 0);
-						
+			scrolledWindow.AddWithViewport(innerEb);
+
+			//mainVBox.PackStart (targetVBox, false, false, 0);
+			manualTarget = new TargetService();
+			manualTarget.Show ();
+			mainVBox.PackStart(manualTarget, false, false, 0);
+
 			Shown += OnWindowShown;
 			DeleteEvent += WindowDeleted;
 		}
@@ -170,6 +186,14 @@ namespace Giver
 		///</summary>	
 		private void WindowDeleted (object sender, DeleteEventArgs args)
 		{
+            int x;
+            int y;
+
+            this.GetPosition(out x, out y);
+            
+            lastXPos = x;
+            lastYPos = y;
+            
 			Logger.Debug("WindowDeleted was called");
 			TearDownLocatorEvents();
 			targetWindow = null;
@@ -212,10 +236,35 @@ namespace Giver
 
 		public static void ShowWindow(ServiceLocator serviceLocator)
 		{
-			if(TargetWindow.targetWindow != null) {
-				targetWindow.Show();
+			if(targetWindow != null) {
+				if(targetWindow.IsActive) {
+		            int x;
+		            int y;
+
+		            targetWindow.GetPosition(out x, out y);
+		            
+		            lastXPos = x;
+		            lastYPos = y;
+
+					targetWindow.Hide();
+				} else {
+					if(!targetWindow.Visible) {
+			        	int x = lastXPos;
+						int y = lastYPos;
+
+						if (x >= 0 && y >= 0)
+							targetWindow.Move(x, y);						
+					}
+					targetWindow.Present();
+				}
 			} else {
 				TargetWindow.targetWindow = new TargetWindow(serviceLocator);
+	        	int x = lastXPos;
+				int y = lastYPos;
+
+				if (x >= 0 && y >= 0)
+					targetWindow.Move(x, y);						
+
 				targetWindow.ShowAll();
 			}
 		}
