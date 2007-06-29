@@ -1,3 +1,8 @@
+2007-06-29  Boyd Timothy <btimothy@gmail.com> 
+
+	* src/TargetService.cs: Stubbed out a ProgressBar and ProgressLabel. 
+	  Commented-out the handlers.
+
 2007-06-29  Scott Reeves <sreeves@novell.com> 
 
 	* src/Application.cs, src/Makefile.am: add start of popup status

@@ -46,6 +46,9 @@ namespace Giver
 		private ServiceInfo serviceInfo;
 		private bool isManual;
 		
+		private ProgressBar progressBar;
+		private Label progressLabel;
+		
 		public TargetService(ServiceInfo serviceInfo)
 		{
 			this.serviceInfo = serviceInfo;
@@ -64,7 +67,8 @@ namespace Giver
 			this.BorderWidth = 0;
 			this.Relief = Gtk.ReliefStyle.None;
 			this.CanFocus = false;
-
+			
+			VBox outerVBox = new VBox (false, 4);
 	        HBox hbox = new HBox(false, 10);
 			Gtk.Image image;
 			if(isManual) {
@@ -123,7 +127,26 @@ namespace Giver
 			}
 
 	        hbox.ShowAll();
-	        Add(hbox);
+	        outerVBox.PackStart (hbox, true, true, 0);
+	        
+	        progressBar = new ProgressBar ();
+	        progressBar.Orientation = ProgressBarOrientation.LeftToRight;
+	        progressBar.BarStyle = ProgressBarStyle.Continuous;
+	        
+	        progressBar.NoShowAll = true;
+	        outerVBox.PackStart (progressBar, true, false, 0);
+	        
+			progressLabel = new Label ();
+			progressLabel.UseMarkup = true;
+			progressLabel.Xalign = 1;
+			progressLabel.UseUnderline = false;
+			progressLabel.LineWrap = true;
+			progressLabel.Wrap = true;
+			progressLabel.NoShowAll = true;
+			outerVBox.PackStart (progressLabel, false, false, 0);
+	        
+	        outerVBox.ShowAll ();
+	        Add(outerVBox);
 
 			TargetEntry[] targets = new TargetEntry[] {
 	                		new TargetEntry ("text/uri-list", 0, (uint) DragTargetType.UriList) };
@@ -256,9 +279,56 @@ namespace Giver
 		#endregion
 
 		#region Event Handlers
+/*		
+		private void OnStartSendEvent (TransferStatusArgs args)
+		{
+			Gtk.Application.Invoke ({
+				progressBar.Show ();
+				progressLabel.Show ();
+			});
+		}
+		
+		private void OnStartFileEvent (stuff)
+		{
+			Gtk.Application.Invoke ({
+				ProgressText = string.Format (
+					Catalog.GetString ("Giving \"{0}\"..."),
+					fileName);
+				progressBar.Text = string.Format (
+					Catalog.GetString ("{0} of {1}"),
+					currentFileCount,
+					totalFileCount);
+			});
+		}
+		
+		private void OnFileProgressEvent (stuff)
+		{
+			double fraction = bytesSent / totalBytes;
+			Gtk.Application.Invoke (delegate {
+				progressBar.Fraction = fraction;
+			});
+		}
+		
+		private void OnEndSendEvent (stuff)
+		{
+			Gtk.Application.Invoke (delegate {
+				progressBar.Hide ();
+				ProgressText = string.Empty;
+				progressLabel.Hide ();
+			});
+		}
+*/
 		#endregion
 
 		#region Public Properties
+		public string ProgressText
+		{
+			set {
+				progressLabel.Markup =
+					string.Format ("<span size=\"small\" style=\"italic\">{0}</span>",
+						value);
+			}
+		}
 		#endregion
 	}
 }
