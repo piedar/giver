@@ -4,6 +4,10 @@ Giver NEWS
 Please send questions and suggestions to
 <calvinrg@gmail.com>.
 
+Version 0.1.4
+* Added Avatars, progressbars, notification, and other goodies
+* Added Sharing of Tomboy notes
+
 Version 0.1.1
 * Giver support drag and drop of files and folder to send
 * many UI improvments
