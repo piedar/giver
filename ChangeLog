@@ -1,5 +1,9 @@
 2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/ServiceLocator.cs: Removed local computers from view
+
+2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/TargetWindow.cs: debug
 	* src/SendingHandler.cs: multiple files and folders
 	* src/RequestHandler.cs: Multiple files and folders

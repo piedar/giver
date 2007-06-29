@@ -61,7 +61,7 @@ namespace Giver {
 		private Thread resolverThread;
 		private AutoResetEvent resetResolverEvent;
 		private bool runningResolverThread;
-        private bool showLocals = true;
+        private bool showLocals = false;
 
         public event ServiceHandler ServiceAdded;
         public event ServiceHandler ServiceRemoved;
