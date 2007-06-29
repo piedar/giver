@@ -62,6 +62,11 @@ namespace Giver
 		private EventBox eb;
 		#endregion
 	
+    	public TransferStartedHandler TransferStarted;
+    	public FileTransferStartedHandler FileTransferStarted;
+    	public TransferProgressHandler TransferProgress;
+    	public TransferEndedHandler TransferEnded;
+
 		#region Public Static Properties
 		public static Application Instance
 		{
@@ -122,6 +127,11 @@ namespace Giver
 			requestHandler = new RequestHandler();
 			sendingHandler = new SendingHandler();
 			sendingHandler.Start();
+
+			sendingHandler.TransferStarted += TransferStartedHandler;
+			sendingHandler.FileTransferStarted += FileTransferStartedHandler;
+			sendingHandler.TransferProgress += TransferProgressHandler;
+			sendingHandler.TransferEnded += TransferEndedHandler;
 
 			try {
 				locator = new ServiceLocator();
@@ -205,6 +215,31 @@ namespace Giver
 			trayIcon.LeaveNotifyEvent += OnTrayIconLeaveNotifyEvent;
 			// showing the trayicon
 			trayIcon.ShowAll();			
+		}
+
+		private void TransferStartedHandler (TransferStatusArgs args)
+		{
+			if(TransferStarted != null)
+				TransferStarted(args);
+		}
+
+		private void FileTransferStartedHandler (TransferStatusArgs args)
+		{
+			if(FileTransferStarted != null)
+				FileTransferStarted(args);
+		}
+
+		private void TransferProgressHandler (TransferStatusArgs args)
+		{
+
+			if(TransferProgress != null)
+				TransferProgress(args);
+		}
+
+		private void TransferEndedHandler (TransferStatusArgs args)
+		{
+			if(TransferEnded != null)
+				TransferEnded(args);
 		}
 
 

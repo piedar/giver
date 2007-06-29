@@ -257,7 +257,7 @@ namespace Giver
 					if(TransferStarted != null) {
 						TransferStarted(new TransferStatusArgs(sh.fileCount, 0, "",
 											Protocol.ProtocolTypeFile, sh.totalSize,
-											0, request.ContentLength, 0 ));
+											0, request.ContentLength, 0, serviceInfo ));
 					}
 
 
@@ -283,7 +283,7 @@ namespace Giver
 							if(FileTransferStarted != null) {
 								FileTransferStarted(new TransferStatusArgs(sh.fileCount, counter, filePair.file,
 													Protocol.ProtocolTypeFile, sh.totalSize,
-													entireSize, request.ContentLength, totalRead ));
+													entireSize, request.ContentLength, totalRead, serviceInfo ));
 							}
 
 
@@ -298,7 +298,7 @@ namespace Giver
 								if(TransferProgress != null) {
 									TransferProgress(new TransferStatusArgs(sh.fileCount, counter, filePair.file,
 														Protocol.ProtocolTypeFile, sh.totalSize,
-														entireSize, request.ContentLength, totalRead ));
+														entireSize, request.ContentLength, totalRead, serviceInfo ));
 								}
 
 
@@ -336,7 +336,7 @@ namespace Giver
 					if(TransferEnded != null) {
 						TransferEnded(new TransferStatusArgs(sh.fileCount, counter, "",
 											Protocol.ProtocolTypeFile, sh.totalSize,
-											entireSize, request.ContentLength, 0 ));
+											entireSize, request.ContentLength, 0, serviceInfo ));
 					}
 
 

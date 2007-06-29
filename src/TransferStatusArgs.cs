@@ -38,6 +38,7 @@ namespace Giver
 		private long totalBytesTransferred;
 		private long currentBytes;
 		private long currentBytesTransferred;
+		private ServiceInfo serviceInfo;
 
 		///<summary>
 		///	TotalCount
@@ -105,6 +106,16 @@ namespace Giver
 
 
 		///<summary>
+		///	ServiceInfo
+		/// The serviceInfo for this send.. This will be null on the receiving end
+		///</summary>
+		public ServiceInfo TargetServiceInfo
+		{
+			get { return this.serviceInfo; }
+		}
+
+
+		///<summary>
 		///	CurrentBytesTransferred
 		/// The number of bytes that have been transfered in the current file
 		///</summary>
@@ -115,7 +126,7 @@ namespace Giver
 
 		public TransferStatusArgs(int totalCount, int currentCount, string name, string type,
 									long totalBytes, long totalBytesTransferred, long currentBytes,
-									long currentBytesTransferred )
+									long currentBytesTransferred, ServiceInfo serviceInfo )
 		{
 			this.totalCount = totalCount;
 			this.currentCount = currentCount;
@@ -125,6 +136,7 @@ namespace Giver
 			this.totalBytesTransferred = totalBytesTransferred;
 			this.currentBytes = currentBytes;
 			this.currentBytesTransferred = currentBytesTransferred;
+			this.serviceInfo = serviceInfo;
 		}
 	}
 }
