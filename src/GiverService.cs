@@ -174,14 +174,14 @@ namespace Giver
 		private void TcpServerThread()
 		{
 			while(running) {
-		        Logger.Debug("GiverService: Waiting for a connection... ");
+		        //Logger.Debug("RECEIVE: GiverService: Waiting for a connection... ");
 		        
 				try
 				{
 					HttpListenerContext context = listener.GetContext();
 
 		        	//TcpClient client = server.AcceptTcpClient();            
-		        	Logger.Debug("GiverService: Connected!");
+		        	// Logger.Debug("RECEIVE: GiverService: Connected!");
 
 					// Fire off an event here and hand off the connected TcpClient to be handled
 					if(ClientConnected != null) {

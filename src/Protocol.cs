@@ -51,7 +51,11 @@ namespace Giver
 		public const string Size = "Size";
 		public const string Response = "Response";
 		public const string UserName = "UserName";
+		public const string RelativePath = "RelativePath";
 
+		// Protocol Types
+		public const string ProtocolTypeFiles = "Files";
+		public const string ProtocolTypeFile = "File";
 
 		
 		public Protocol()

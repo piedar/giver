@@ -37,11 +37,7 @@ using Notifications;
 
 namespace Giver
 {
-	public enum DragTargetType
-	{
-		UriList,
-		RootWindow
-	};
+
 
 	class Application
 	{
@@ -174,11 +170,11 @@ namespace Giver
 			} );
 		}
 
+
 		private void OnClientConnected (HttpListenerContext context)
 		{
 			requestHandler.HandleRequest(context);
 		}
-
 
 
 		private void SetupTrayIcon ()
@@ -203,21 +199,6 @@ namespace Giver
 			trayIcon.Add(eb);
 			// showing the trayicon
 			trayIcon.ShowAll();			
-
-			TargetEntry[] targets = new TargetEntry[] {
-	                		new TargetEntry ("text/uri-list", 0, (uint) DragTargetType.UriList) };
-
-			trayIcon.DragDataReceived += DragDataReceivedHandler;
-
-			Gtk.Drag.DestSet(trayIcon,
-						 DestDefaults.All | DestDefaults.Highlight,
-						 targets,
-						 Gdk.DragAction.Copy );
-		}
-
-		public void DragDataReceivedHandler (object o, DragDataReceivedArgs args)
-		{
-			Logger.Debug("DragDataReceivedHandler called");
 		}
 
 		private void OnPreferences (object sender, EventArgs args)
@@ -289,16 +270,10 @@ namespace Giver
 			{
 				Utilities.SetProcessName ("Giver");
 				application = GetApplicationWithArgs(args);
-/*				Banter.Application.RegisterSessionManagerRestart (
-					Environment.GetEnvironmentVariable ("RTC_PATH"),
-					args);
-*/
 				application.StartMainLoop ();
 			} 
 			catch (Exception e)
 			{
-				//TODO log
-				//Console.WriteLine (e.Message);
 				Giver.Logger.Debug("Exception is: {0}", e);
 				Exit (-1);
 			}
@@ -343,9 +318,9 @@ namespace Giver
         }
 
 
-		public static void EnqueueFileSend(ServiceInfo serviceInfo, string fileName)
+		public static void EnqueueFileSend(ServiceInfo serviceInfo, string[] files)
 		{
-			Giver.Application.Instance.sendingHandler.QueueFileSend(serviceInfo, fileName);
+			Giver.Application.Instance.sendingHandler.QueueFileSend(serviceInfo, files);
 		}
 
 		#endregion

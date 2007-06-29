@@ -21,11 +21,23 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections;
+using System.IO;
 using Gtk;
 using Mono.Unix;
 
 namespace Giver
 {
+	///<summary>
+	///	TargetWindow
+	/// Window holding all drop targets for giver
+	///</summary>
+	public enum DragTargetType
+	{
+		UriList,
+		RootWindow
+	};
+
 	/// <summary>
 	/// Widget used to show Avahi Services for Giver
 	/// </summary>
@@ -112,8 +124,37 @@ namespace Giver
 
 	        hbox.ShowAll();
 	        Add(hbox);
+
+			TargetEntry[] targets = new TargetEntry[] {
+	                		new TargetEntry ("text/uri-list", 0, (uint) DragTargetType.UriList) };
+
+			this.DragDataReceived += DragDataReceivedHandler;
+
+			Gtk.Drag.DestSet(this,
+						 DestDefaults.All | DestDefaults.Highlight,
+						 targets,
+						 Gdk.DragAction.Copy );
 		}
-		
+
+
+		private void DragDataReceivedHandler (object o, DragDataReceivedArgs args)
+		{
+			//args.Context.
+			switch(args.Info) {
+				case (uint) DragTargetType.UriList:
+				{
+                    UriList uriList = new UriList(args.SelectionData);
+					Application.EnqueueFileSend(serviceInfo, uriList.ToLocalPaths());
+					break;
+				}
+				default:
+					break;
+			}
+
+			//Logger.Debug("DragDataReceivedHandler called");
+            Gtk.Drag.Finish (args.Context, true, false, args.Time);
+		}
+
 
 		private void OnSendFile (object sender, EventArgs args)
 		{
@@ -132,7 +173,7 @@ namespace Giver
 			if(chooser.Run() == (int)ResponseType.Ok) {
 				Logger.Debug("Giving file {0}", chooser.Filename);
 				if(!isManual) {
-					Giver.Application.EnqueueFileSend(serviceInfo, chooser.Filename);
+					Giver.Application.EnqueueFileSend(serviceInfo, chooser.Filenames);
 				} else {
 					// Prompt for the info to send here
 				}

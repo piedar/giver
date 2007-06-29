@@ -1,3 +1,14 @@
+2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
+
+	* src/TargetWindow.cs: debug
+	* src/SendingHandler.cs: multiple files and folders
+	* src/RequestHandler.cs: Multiple files and folders
+	* src/UriList.cs: new class for drag and drop
+	* src/GiverService.cs: Debug
+	* src/Protocol.cs: Support for multiple files and folders
+	* src/Application.cs, src/Makefile.am, src/TargetService.cs, giver.mdp:
+	  Updated drag and drop support
+
 2007-06-28  Calvin Gaisford <calvinrg@gmail.com> 
 
 	* src/TargetWindow.cs, src/Application.cs, src/TargetService.cs:

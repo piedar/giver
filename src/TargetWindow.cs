@@ -26,6 +26,7 @@ using Mono.Unix;
 
 namespace Giver
 {
+
 	///<summary>
 	///	TargetWindow
 	/// Window holding all drop targets for giver
@@ -65,6 +66,7 @@ namespace Giver
 
 
 		#region Private Methods
+
 		///<summary>
 		///	SetupLocatorEvents
 		/// Connects all serviceLocator event handlers
@@ -141,6 +143,7 @@ namespace Giver
 
 			Shown += OnWindowShown;
 			DeleteEvent += WindowDeleted;
+
 		}
 
 		private void PopulateInitialTargets()

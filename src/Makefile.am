@@ -27,6 +27,7 @@ CSFILES = \
 	$(srcdir)/TargetService.cs \
 	$(srcdir)/TargetWindow.cs \
 	$(srcdir)/TrayLib.cs \
+	$(srcdir)/UriList.cs \
 	$(srcdir)/Utilities.cs 
 
 RESOURCES = \

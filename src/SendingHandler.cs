@@ -29,13 +29,30 @@ using System.Collections.Generic;
 
 namespace Giver
 {
+	public class SendFilePair
+	{
+		public string file;
+		public string relativePath;
+
+		public SendFilePair(string file, string relativePath)
+		{
+			this.file = file;
+			this.relativePath = relativePath;
+		}
+	}
+
 	public class SendingHolder
 	{
 		public ServiceInfo serviceInfo;
-		public string path;
-		public bool isFile;
+		public string[] files;
+		public List<SendFilePair> filePairs;
+		public int fileCount;
+		public long totalSize;
 
-		public SendingHolder() {}
+		public SendingHolder()
+		{
+			filePairs = new List<Giver.SendFilePair> ();
+		}
 	}
 
 	public class SendingHandler
@@ -67,17 +84,54 @@ namespace Giver
 			resetEvent.Set();
 		}
 
-		public void QueueFileSend(ServiceInfo serviceInfo, string file)
+		public void QueueFileSend(ServiceInfo serviceInfo, string[] files)
 		{
 			lock(locker) {
+				Logger.Debug("SEND: Queueing up {0} files to send", files.Length);
 				SendingHolder sh = new SendingHolder();
-				sh.isFile = true;
+				sh.files = files;
 				sh.serviceInfo = serviceInfo;
-				sh.path = file;
 
 				queue.Enqueue(sh);
 			}
 			resetEvent.Set();
+		}
+
+		private void CalculateSendingHolderData(SendingHolder sh)
+		{
+			sh.fileCount = 0;
+			sh.totalSize = 0;
+			sh.filePairs.Clear();
+
+			foreach(string file in sh.files) {
+				if(File.Exists(file)) {
+					//Logger.Debug("SEND: About to send file: {0}", file);
+					// this is a file, figure it out
+					FileInfo fi = new FileInfo(file);
+					sh.totalSize += fi.Length;
+					sh.filePairs.Add(new SendFilePair(file, ""));
+					sh.fileCount++;
+				} else if(Directory.Exists(file)) {
+					DirectoryInfo di = new DirectoryInfo(file);
+					CalculateFolderData(sh, di, di.Name);
+				}
+			}
+		}
+
+		private void CalculateFolderData(SendingHolder sh, DirectoryInfo dirInfo, string relativePath)
+		{
+			foreach(FileInfo file in dirInfo.GetFiles())
+			{
+				//Logger.Debug("SEND: About to send file: {0}", file);
+				sh.totalSize += file.Length;
+				sh.filePairs.Add(new SendFilePair(file.FullName, relativePath));
+				sh.fileCount++;
+			}
+
+			foreach(DirectoryInfo di in dirInfo.GetDirectories())
+			{
+				CalculateFolderData(sh, di, Path.Combine(relativePath, di.Name));
+			}
 		}
 
 		private void SendFileThread()
@@ -99,25 +153,30 @@ namespace Giver
 					continue;
 
 				ServiceInfo serviceInfo = sh.serviceInfo;
-				string file = sh.path;
+
+				// Calculate how many files to send and how big they are
+				CalculateSendingHolderData(sh);
+				//Logger.Debug("SEND: About to request send for {0} files at {1} bytes", sh.fileCount, sh.totalSize);
 
 				UriBuilder urib = new UriBuilder("http", serviceInfo.Address.ToString(), (int)serviceInfo.Port);
-				Logger.Debug("Sending request to URI: {0}", urib.Uri.ToString());
+				//Logger.Debug("SEND: Sending request to URI: {0}", urib.Uri.ToString());
+
 				System.Net.HttpWebRequest request = (HttpWebRequest) HttpWebRequest.Create(urib.Uri);
 
-				string fileName = System.IO.Path.GetFileName(file);
 				// Send request to send the file
-				request.Method = "POST";
+				request.Method = "GET";
 				request.Headers.Set(Protocol.Request, Protocol.Send);
-				request.Headers.Set(Protocol.UserName, Environment.UserName);
-				request.Headers.Set(Protocol.Type, "File");
-				request.Headers.Set(Protocol.Count, "1");
-				request.Headers.Set(Protocol.Name, fileName);
-				FileInfo fi = new FileInfo(file);			
-				request.Headers.Set(Protocol.Size, fi.Length.ToString());
-				request.ContentLength = 0;
-				request.GetRequestStream().Close();
+				request.Headers.Set(Protocol.UserName, Application.Preferences.UserName);
+				request.Headers.Set(Protocol.Type, Protocol.ProtocolTypeFiles);
+				request.Headers.Set(Protocol.Count, sh.fileCount.ToString());
+				if(sh.fileCount == 1)
+					request.Headers.Set(Protocol.Name, sh.files[0]);
+				else
+					request.Headers.Set(Protocol.Name, "many");
 
+				request.Headers.Set(Protocol.Size, sh.totalSize.ToString());
+
+				//Logger.Debug("SEND: about to perform a GET for the file send request");
 				HttpWebResponse response;
 
 				// Read the response to the request
@@ -127,57 +186,82 @@ namespace Giver
 					if(we.Response != null)
 						response = (HttpWebResponse)we.Response;
 					else {
-						Logger.Debug("Exception in getting response {0}", we.Message);
-						return;
+						Logger.Debug("SEND: Exception in getting response {0}", we.Message);
+						continue;
 					}
+				} catch (Exception e) {
+					Logger.Debug("SEND: Exception in request.GetResponse(): {0}", e);
+					continue;
 				}
 			
-				Logger.Debug("Response Status code {0}", response.StatusCode);
+				Logger.Debug("SEND: Response Status code {0}", response.StatusCode);
 
 				if( response.StatusCode == HttpStatusCode.OK ) {
-					Logger.Debug("Response was OK");
+					//Logger.Debug("SEND: Response was OK");
 
 					string sessionID = response.Headers[Protocol.SessionID];
 					response.Close();
-					
-					request = (HttpWebRequest) HttpWebRequest.Create(urib.Uri);
-					request.Method = "POST";
-					request.Headers.Set(Protocol.SessionID, sessionID);
-					request.Headers.Set(Protocol.Request, Protocol.Payload);
-					request.Headers.Set(Protocol.Type, "File");
-					request.Headers.Set(Protocol.Count, "1");
-					request.Headers.Set(Protocol.Name, fileName);
+					int counter = 0;
+					foreach(SendFilePair filePair in sh.filePairs) {
+						request = (HttpWebRequest) HttpWebRequest.Create(urib.Uri);
+						request.Method = "POST";
+						request.Headers.Set(Protocol.SessionID, sessionID);
+						request.Headers.Set(Protocol.Request, Protocol.Payload);
+						request.Headers.Set(Protocol.Type, Protocol.ProtocolTypeFile);
+						request.Headers.Set(Protocol.Count, counter.ToString());
+						request.Headers.Set(Protocol.Name, Path.GetFileName(filePair.file));
+						request.Headers.Set(Protocol.RelativePath, filePair.relativePath);
 
-					try {
-						System.IO.FileStream filestream = new FileStream(file, FileMode.Open);
-						request.ContentLength = filestream.Length;
-						Stream stream = request.GetRequestStream();
-						
-						int sizeRead = 0;
-						int totalRead = 0;
-						byte[] buffer = new byte[2048];
+						try {
+							System.IO.FileStream filestream = new FileStream(filePair.file, FileMode.Open);
+							request.ContentLength = filestream.Length;
+							Stream stream = request.GetRequestStream();
+							
+							int sizeRead = 0;
+							int totalRead = 0;
+							byte[] buffer = new byte[2048];
 
-						do {
-							sizeRead = filestream.Read(buffer, 0, 2048);
-							totalRead += sizeRead;
-							if(sizeRead > 0) {
-								stream.Write(buffer, 0, sizeRead);
+							do {
+								sizeRead = filestream.Read(buffer, 0, 2048);
+								totalRead += sizeRead;
+								if(sizeRead > 0) {
+									stream.Write(buffer, 0, sizeRead);
+								}
+							} while(sizeRead == 2048);
+							//Logger.Debug("SEND: We Read from the file {0} bytes", totalRead);
+							//Logger.Debug("SEND: The content length is {0} bytes", filestream.Length);
+
+							stream.Close();
+							filestream.Close();
+
+							// Read the response to the request
+							try {
+								response = (HttpWebResponse)request.GetResponse();
+							} catch(System.Net.WebException we) {
+								if(we.Response != null)
+									response = (HttpWebResponse)we.Response;
+								else {
+									Logger.Debug("SEND: Exception in getting response {0}", we.Message);
+									continue;
+								}
+							} catch (Exception e) {
+								Logger.Debug("SEND: Exception in request.GetResponse(): {0}", e);
+								continue;
 							}
-						} while(sizeRead == 2048);
-						Logger.Debug("We Read from the file {0} bytes", totalRead);
-						Logger.Debug("The content length is {0} bytes", filestream.Length);
 
-						stream.Close();
-						filestream.Close();
-					} catch (Exception e) {
-						Logger.Debug("Exception when sending file: {0}", e.Message);
-						Logger.Debug("Exception {0}", e);
-					}			
+							response.Close();
+
+						} catch (Exception e) {
+							Logger.Debug("SEND: Exception when sending file: {0}", e.Message);
+							Logger.Debug("SEND: Exception {0}", e);
+						}
+						counter++;		
+					}
 				} else {
-					Logger.Debug("Not OKToSend");
+					Logger.Debug("SEND: Not OKToSend");
 				}
 			
-				Logger.Debug("Done with Sending file");
+				Logger.Debug("SEND: Done with Sending file");
 			}
 		}
 

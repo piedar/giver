@@ -38,11 +38,16 @@ namespace Giver
 		public long size;
 		public string type;
 		public int count;
+		public int countReceived;
+		public long bytesReceived;
 		public string userName;
 		public HttpListenerContext context;
+		public Dictionary<string, string> renameFolders;
 
 		public SessionData()
 		{
+			countReceived = 0;
+			renameFolders = new Dictionary<string,string> ();
 		}
 	}
 
@@ -55,9 +60,11 @@ namespace Giver
 		private Dictionary<string, SessionData> sessions;
 		private SessionData pendingSession;
 		private Notification currentNotification;
+		private System.Object sessionLocker;
 
 		public RequestHandler()
 		{
+			sessionLocker = new Object();
 			sessions = new Dictionary<string, SessionData> ();
 			pendingSession = null;
 			currentNotification = null;
@@ -65,8 +72,8 @@ namespace Giver
 
 		public void HandleRequest(HttpListenerContext context)
 		{
-			Logger.Debug("Request:{0} came in from {1}", context.Request.Headers[Protocol.Request], 
-													context.Request.RemoteEndPoint.Address.ToString());
+			//Logger.Debug("Request:{0} came in from {1}", context.Request.Headers[Protocol.Request], 
+			//										context.Request.RemoteEndPoint.Address.ToString());
 
 			if(context.Request.Headers[Protocol.Request].CompareTo(Protocol.Send) == 0) {
 				HandleSendRequest(context);
@@ -86,21 +93,15 @@ namespace Giver
 
 		private void HandleSendRequest(HttpListenerContext context)
 		{
-			Logger.Debug("HandleSendRequest called");
+			//Logger.Debug("RECEIVE: HandleSendRequest called");
 
 			if(pendingSession != null) {
-				Logger.Debug("HandleSendRequest: Found a pending Session... closing it");
+				Logger.Debug("RECEIVE: HandleSendRequest: Found a pending Session... closing it");
 				pendingSession.context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
 				pendingSession.context.Response.StatusDescription = Protocol.ResponseDeclined;
 				pendingSession.context.Response.OutputStream.Close();
 				pendingSession.context.Response.Close();
 				pendingSession = null;
-			}
-
-			if(currentNotification != null) {
-				Logger.Debug("HandleSendRequest: Found a notification... closing it");
-				currentNotification.Close();
-				currentNotification = null;
 			}
 
 			// get the information about what wants to be sent
@@ -113,29 +114,43 @@ namespace Giver
 			sd.sessionID = System.Guid.NewGuid().ToString();
 			sd.context = context;
 
+			//Logger.Debug("RECEIVE: Preparing Notification");
 			try {
 				// place this request into the pending requests and notify the user of the request
 				string summary = String.Format(Catalog.GetString("{0} wants to \"Give\""), sd.userName);
-				string body = String.Format(Catalog.GetString("{0}\nSize: {1} bytes"), sd.name, sd.size);
+				string body;
+				if(sd.count == 1)
+					body = String.Format(Catalog.GetString("{0}\nSize: {1} bytes"), sd.name, sd.size);
+				else
+					body = String.Format(Catalog.GetString("{0} files\nSize: {1} bytes"), sd.count, sd.size);
 
-				Notification notify = new Notification(	summary, 
-														body,
-														Utilities.GetIcon ("giver-48", 48));
-				notify.Timeout = 60000;
-				
-
-				notify.AddAction("Accept", Catalog.GetString("Accept"), AcceptNotificationHandler);
-				notify.AddAction("Decline", Catalog.GetString("Decline"), DeclineNotificationHandler);
-				notify.Closed += ClosedNotificationHandler;
-				currentNotification = notify;
 				pendingSession = sd;
 
+				//Logger.Debug("RECEIVE: About to do a Gtk.Application.Invoke for the notify dude.");
 				Gtk.Application.Invoke( delegate {
+
+					//Logger.Debug("RECEIVE: Inside the Gtk.Application.Invoke dude");
+					Notification notify = new Notification(	summary, 
+															body,
+															Utilities.GetIcon ("giver-48", 48));
+					notify.Timeout = 60000;
+
+					notify.AddAction("Accept", Catalog.GetString("Accept"), AcceptNotificationHandler);
+					notify.AddAction("Decline", Catalog.GetString("Decline"), DeclineNotificationHandler);
+					notify.Closed += ClosedNotificationHandler;
+
+					if(currentNotification != null) {
+						Logger.Debug("RECEIVE: HandleSendRequest: Found a notification... closing it");
+						currentNotification.Close();
+						currentNotification = null;
+					}
+
+					currentNotification = notify;
 					Application.ShowAppNotification(notify);
 					Gnome.Sound.Play(Path.Combine(Giver.Defines.SoundDir, "notify.wav"));
 				} );
 			} catch (Exception e) {
-				Logger.Debug("Exception attempting to notify {0}", e);
+				Logger.Debug("RECEIVE: Exception attempting to notify {0}", e);
 
 				pendingSession.context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
 				pendingSession.context.Response.StatusDescription = Protocol.ResponseDeclined;
@@ -154,15 +169,19 @@ namespace Giver
         /// </summary>
         private void AcceptNotificationHandler (object o, ActionArgs args)
         {
-			if(pendingSession != null) {
-				pendingSession.context.Response.Headers.Set(Protocol.SessionID, pendingSession.sessionID);
-				sessions.Add(pendingSession.sessionID, pendingSession);
-				pendingSession.context.Response.StatusCode = (int)HttpStatusCode.OK;
-				pendingSession.context.Response.StatusDescription = Protocol.ResponseOKToSend;
-				pendingSession.context.Response.OutputStream.Close();
-				pendingSession.context.Response.Close();
-				pendingSession.context = null;
-				pendingSession = null;
+			lock(sessionLocker) {
+				if(pendingSession != null) {
+					pendingSession.context.Response.Headers.Set(Protocol.SessionID, pendingSession.sessionID);
+					sessions.Add(pendingSession.sessionID, pendingSession);
+					pendingSession.countReceived = 0;
+					pendingSession.bytesReceived = 0;
+					pendingSession.context.Response.StatusCode = (int)HttpStatusCode.OK;
+					pendingSession.context.Response.StatusDescription = Protocol.ResponseOKToSend;
+					pendingSession.context.Response.OutputStream.Close();
+					pendingSession.context.Response.Close();
+					pendingSession.context = null;
+					pendingSession = null;
+				}
 			}
 			currentNotification = null;
         }
@@ -174,13 +193,15 @@ namespace Giver
         /// </summary>
         private void DeclineNotificationHandler (object o, ActionArgs args)
         {
-			if(pendingSession != null) {
-				pendingSession.context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-				pendingSession.context.Response.StatusDescription = Protocol.ResponseDeclined;
-				pendingSession.context.Response.OutputStream.Close();
-				pendingSession.context.Response.Close();
-				pendingSession.context = null;
-				pendingSession = null;
+			lock(sessionLocker) {
+				if(pendingSession != null) {
+					pendingSession.context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+					pendingSession.context.Response.StatusDescription = Protocol.ResponseDeclined;
+					pendingSession.context.Response.OutputStream.Close();
+					pendingSession.context.Response.Close();
+					pendingSession.context = null;
+					pendingSession = null;
+				}
 			}
 			currentNotification = null;
         }
@@ -192,13 +213,15 @@ namespace Giver
         /// </summary>
         private void ClosedNotificationHandler (object o, EventArgs args)
         {
-			if(pendingSession != null) {
-				pendingSession.context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-				pendingSession.context.Response.StatusDescription = Protocol.ResponseDeclined;
-				pendingSession.context.Response.OutputStream.Close();
-				pendingSession.context.Response.Close();
-				pendingSession.context = null;
-				pendingSession = null;
+			lock(sessionLocker) {
+				if(pendingSession != null) {
+					pendingSession.context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+					pendingSession.context.Response.StatusDescription = Protocol.ResponseDeclined;
+					pendingSession.context.Response.OutputStream.Close();
+					pendingSession.context.Response.Close();
+					pendingSession.context = null;
+					pendingSession = null;
+				}
 			}
 			currentNotification = null;
         }
@@ -207,7 +230,6 @@ namespace Giver
 		private void HandlePayload(HttpListenerContext context)
 		{
 			// get the information about what wants to be sent
-
 			string sessionID = context.Request.Headers[Protocol.SessionID];
 			if( (sessionID == null) || (sessionID.Length < 1) ) {
 				context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -216,30 +238,93 @@ namespace Giver
 				return;
 			}
 
-			if(!sessions.ContainsKey(sessionID)) {
-				context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-				context.Response.StatusDescription = Protocol.ResponseInvalidSession;
-				context.Response.Close();			
-				return;
+			SessionData sd;
+
+			lock(sessionLocker) {
+				if(!sessions.ContainsKey(sessionID)) {
+					context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+					context.Response.StatusDescription = Protocol.ResponseInvalidSession;
+					context.Response.Close();			
+					return;
+				}
+				else
+					sd = sessions[sessionID];
 			}
 
-			SessionData sd = sessions[sessionID];
-			if(sd.name.CompareTo(context.Request.Headers[Protocol.Name]) == 0) {
+			try{
+
+				// type context.Request.Headers[Protocol.Type]
+				// count context.Request.Headers[Protocol.Count]
+				string fileName = context.Request.Headers[Protocol.Name];
+				string relativePath = context.Request.Headers[Protocol.RelativePath];
+
 				byte[] buffer = new byte[2048];
 				int readCount = 0;
 				long totalRead = 0;
 				int fileInstance = 1;
 
 				// Create the local file path
-				string newFilePath = Path.Combine(Application.Preferences.ReceiveFileLocation, sd.name);
+				string basePath;
+				if(relativePath.Length > 0)
+				{
+					Logger.Debug("RECEIVE: We got a file with a relativePath of {0}", relativePath);
+					// first check to see if we have fixed up the base of this path
+					string localPath = Path.Combine(Application.Preferences.ReceiveFileLocation, relativePath);
+					string rootPath = Directory.GetParent(localPath).FullName;
 
+					string keyPath = relativePath;
+					int pathIndex = relativePath.IndexOf(Path.DirectorySeparatorChar);
+					if(pathIndex > 0)
+						keyPath = relativePath.Substring(0, pathIndex);
+
+					// Logger.Debug("RECEIVE: Looking for the key String {0}", keyPath);
+
+					if(sd.renameFolders.ContainsKey(keyPath))
+					{
+						if(keyPath.CompareTo(relativePath) == 0) {
+							relativePath = sd.renameFolders[keyPath];
+						} else {
+							string newPath = sd.renameFolders[keyPath] + relativePath.Substring(keyPath.Length);
+							relativePath = newPath;
+						}
+					} else if(rootPath.CompareTo(Application.Preferences.ReceiveFileLocation) == 0) {
+						//Logger.Debug("RECEIVE: This is a root folder... do some checking");
+						// this is a root folder to be created in the target location
+						if(Directory.Exists(localPath)) {
+							//Logger.Debug("RECEIVE: Oh Darn, it already exists at {0}", localPath);
+							string newRelativePath = relativePath;	
+							fileInstance = 1;
+							while(Directory.Exists(localPath)) {
+								newRelativePath = String.Format("{0}({1})", relativePath, fileInstance);
+								localPath = Path.Combine(Application.Preferences.ReceiveFileLocation, newRelativePath);
+								fileInstance++;
+							}
+							//Logger.Debug("RECEIVE: replacing {0} with {1}", relativePath, newRelativePath);
+							sd.renameFolders.Add(relativePath, newRelativePath);
+							relativePath = newRelativePath;
+						}
+					}
+					Logger.Debug("RECEIVE: Relative Path is now {0}", relativePath);
+
+					basePath = Path.Combine(Application.Preferences.ReceiveFileLocation, relativePath);
+				}
+				else
+					basePath = Application.Preferences.ReceiveFileLocation;
+
+
+				if(!Directory.Exists(basePath))
+					Directory.CreateDirectory(basePath);
+
+				string newFilePath = Path.Combine(basePath, fileName);
+
+				fileInstance++;
 				// Loop until there is no file conflict
 				while(File.Exists(newFilePath)) {
-					newFilePath = Path.Combine(Application.Preferences.ReceiveFileLocation, 
+					newFilePath = Path.Combine(basePath, 
 													String.Format("{0}({1}){2}",
-													Path.GetFileNameWithoutExtension(sd.name),
+													Path.GetFileNameWithoutExtension(fileName),
 													fileInstance,
-													Path.GetExtension(sd.name)));
+													Path.GetExtension(fileName)));
 					fileInstance++;
 				}
 
@@ -252,16 +337,31 @@ namespace Giver
 						fs.Write(buffer, 0, readCount);					
 				} while( (readCount > 0) && (totalRead <= context.Request.ContentLength64) );
 
-				Logger.Debug("We Read from the input stream {0} bytes", totalRead);
-				Logger.Debug("The content length is {0} bytes", context.Request.ContentLength64);
+				//Logger.Debug("RECEIVE: We Read from the input stream {0} bytes", totalRead);
+				//Logger.Debug("RECEIVE: The content length is {0} bytes", context.Request.ContentLength64);
 				fs.Close();
-			}
 
+				sd.countReceived++;
+				sd.bytesReceived += totalRead;
+
+				Logger.Debug("RECEIVE: We've read {0} files and {1} bytes", sd.countReceived, sd.bytesReceived);
+			
+				// if we've received everything we agreed to, remove the session
+				if( (sd.count <= sd.countReceived) || (sd.size <= sd.bytesReceived) ) {
+					Logger.Debug("RECEIVE: We've either received the number or bytes we should... no more!");
+					lock(sessionLocker) {
+						sessions.Remove(sessionID);
+					}
+				}
+		
+			} catch (Exception e) {
+				Logger.Debug("RECEIVE: Exception handing payload {0}", e);
+			}
 			context.Response.StatusCode = (int)HttpStatusCode.OK;
 			context.Response.StatusDescription = Protocol.ResponsePayloadReceived;
 			context.Response.OutputStream.Close();
 			context.Response.Close();
-			sessions.Remove(sessionID);
+
 		}
 
 
