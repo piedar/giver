@@ -1,5 +1,10 @@
 2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/ServiceLocator.cs, src/Makefile.am, data/images/blankphoto.png,
+	  data/images/Makefile.am: added blank photo
+
+2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/TargetWindow.cs, src/SendingHandler.cs, src/TargetService.cs,
 	  giver.mdp: Added Bitch'n events
 

@@ -40,6 +40,7 @@ RESOURCES = \
 	-resource:$(top_srcdir)/data/images/giver-32.png \
 	-resource:$(top_srcdir)/data/images/giver-48.png \
 	-resource:$(top_srcdir)/data/images/gravatar.png \
+	-resource:$(top_srcdir)/data/images/blankphoto.png \
 	-resource:$(top_srcdir)/data/images/giver-256.png 
 
 ASSEMBLIES =  \

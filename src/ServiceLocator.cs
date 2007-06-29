@@ -236,7 +236,7 @@ namespace Giver {
 						serviceInfo.PhotoLocation = splitstr[1];
 	            }
 
-				serviceInfo.Photo = Utilities.GetIcon("computer", 48);
+				serviceInfo.Photo = Utilities.GetIcon("blankphoto", 48);
 				lock(locker) {
 					services[serviceInfo.Name] = serviceInfo;
 					
