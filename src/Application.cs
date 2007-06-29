@@ -38,6 +38,7 @@ using Notifications;
 namespace Giver
 {
 
+    public delegate void AvatarUpdatedHandler (ServiceInfo serviceInfo);
 
 	class Application
 	{
@@ -67,6 +68,7 @@ namespace Giver
     	public FileTransferStartedHandler FileTransferStarted;
     	public TransferProgressHandler TransferProgress;
     	public TransferEndedHandler TransferEnded;
+    	public AvatarUpdatedHandler AvatarUpdated;
 
 		#region Public Static Properties
 		public static Application Instance
@@ -209,11 +211,10 @@ namespace Giver
 		
 		private void UpdatePhoto (ServiceInfo serviceInfo)
 		{
-			Logger.Debug ("Update the photo");
+			if (AvatarUpdated != null)
+				AvatarUpdated (serviceInfo);
 		}
 		
-
-
 		private void SetupTrayIcon ()
 		{
 //			Logger.Debug ("Creating TrayIcon");
