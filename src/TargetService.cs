@@ -45,6 +45,7 @@ namespace Giver
 	{
 		private ServiceInfo serviceInfo;
 		private bool isManual;
+		private Gtk.Image image;
 		
 		private ProgressBar progressBar;
 		private Label progressLabel;
@@ -70,7 +71,6 @@ namespace Giver
 			
 			VBox outerVBox = new VBox (false, 4);
 	        HBox hbox = new HBox(false, 10);
-			Gtk.Image image;
 			if(isManual) {
 				image = new Gtk.Image(Utilities.GetIcon("computer", 48));
 			} else {
@@ -330,5 +330,13 @@ namespace Giver
 			}
 		}
 		#endregion
+		
+		#region Public Methods		
+		public void UpdateImage (Gdk.Pixbuf newImage)
+		{
+			image = new Gtk.Image(newImage);
+		}
+		#endregion
+		
 	}
 }

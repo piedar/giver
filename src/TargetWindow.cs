@@ -155,6 +155,16 @@ namespace Giver
 //	 			item.Activated += OnSelectedService;
 			}
 		}
+		
+		public void OnPhotoUpdate (ServiceInfo serviceInfo)
+		{
+			try {
+				TargetService target = targets[serviceInfo.ID];
+				target.UpdateImage (serviceInfo.Photo);
+			} catch (Exception opu) {
+				Logger.Debug (opu.Message);
+			}
+		}
 
     	public void OnServiceAdded (object o, ServiceArgs args)
 		{
