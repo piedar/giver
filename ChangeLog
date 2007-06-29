@@ -1,5 +1,9 @@
 2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* configure.ac, data/images/gravatar.png: Added gravatar.png
+
+2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/PreferencesDialog.cs: polished the preferences
 	* src/Application.cs: fixed hiding prefs dialog
 	* src/Makefile.am: Added gravatar image to exe
