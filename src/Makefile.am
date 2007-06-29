@@ -28,6 +28,7 @@ CSFILES = \
 	$(srcdir)/TargetWindow.cs \
 	$(srcdir)/TransferStatusArgs.cs \
 	$(srcdir)/TrayLib.cs \
+	$(srcdir)/TrayPopupWindow.cs \
 	$(srcdir)/UriList.cs \
 	$(srcdir)/Utilities.cs 
 

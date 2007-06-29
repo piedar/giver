@@ -57,6 +57,9 @@ namespace Giver
 		private RequestHandler requestHandler;
 		private SendingHandler sendingHandler;
 		private Preferences preferences;
+		private bool cursorOverTrayIcon;
+		private Gtk.Window popup;
+		private EventBox eb;
 		#endregion
 	
 		#region Public Static Properties
@@ -181,7 +184,7 @@ namespace Giver
 		{
 //			Logger.Debug ("Creating TrayIcon");
 			
-			EventBox eb = new EventBox();
+			eb = new EventBox();
 			onPixBuf = Utilities.GetIcon ("giver-24", 24);
 			offPixBuf = Utilities.GetIcon ("giveroff-24", 24);
 			if(locator.Count > 0)
@@ -198,13 +201,84 @@ namespace Giver
 			trayIcon = new Egg.TrayIcon("Giver");
 			trayIcon.Add(eb); 
 
-			trayIcon.EnterNotifyEvent += OnNotifyEvent;
+			trayIcon.EnterNotifyEvent += OnTrayIconEnterNotifyEvent;
+			trayIcon.LeaveNotifyEvent += OnTrayIconLeaveNotifyEvent;
 			// showing the trayicon
 			trayIcon.ShowAll();			
 		}
 
-		private void OnNotifyEvent(object o, EventArgs args)
+
+
+		private void PositionWidget (Widget widget, 
+						 out int x, 
+						 out int y, 
+						 int yPadding) {
+			int button_y, panel_width, panel_height;
+			
+			Gtk.Requisition requisition = widget.SizeRequest ();
+			
+			eb.GdkWindow.GetOrigin (out x, out button_y);
+			(eb.Toplevel as Gtk.Window).GetSize(out panel_width, out panel_height);
+			
+			y = (button_y + panel_height + requisition.Height >= eb.Screen.Height) 
+				? button_y - requisition.Height - yPadding
+				: button_y + panel_height + yPadding;
+		}
+		
+		private void PositionPopup () {
+			int x, y;
+			
+			Gtk.Requisition event_box_req;
+			
+			event_box_req = eb.SizeRequest();
+			Gtk.Requisition popup_req = popup.SizeRequest();
+			
+			PositionWidget(popup, out x, out y, 5);
+			
+			x = x - (popup_req.Width / 2) + (event_box_req.Width / 2);	 
+			if (x + popup_req.Width >= eb.Screen.Width) { 
+				x = eb.Screen.Width - popup_req.Width - 5;
+			}
+			
+			popup.Move (x, y);
+		}
+
+
+
+		private void OnTrayIconEnterNotifyEvent(object o, EventArgs args)
 		{
+			cursorOverTrayIcon = true;
+			if (cursorOverTrayIcon) {
+				// only show the popup when the cursor is still over the
+				// tray icon after 500ms
+				GLib.Timeout.Add (500, delegate {
+					if (cursorOverTrayIcon){ 
+						Logger.Info("Mousing over tray icon");
+						popup = new TrayPopupWindow();
+						//popup.Move(500, 600);
+						this.PositionPopup();
+						popup.ShowAll();
+					}
+					return false;
+				});
+			}			//(EnterNotifyEventArgs) args;
+			//EventCrossing eventCrossing = args.Event
+
+
+		
+		}
+
+		private void OnTrayIconLeaveNotifyEvent(object o, EventArgs args)
+		{
+			//(EnterNotifyEventArgs) args;
+			//EventCrossing eventCrossing = args.Event;
+			cursorOverTrayIcon = false;
+			Logger.Info("Mouse is leaving tray icon");
+			if(popup != null){
+				popup.Destroy();
+				popup = null;
+			}
+		
 		}
 
 		private void OnPreferences (object sender, EventArgs args)
