@@ -26,6 +26,7 @@ CSFILES = \
 	$(srcdir)/ServiceLocator.cs \
 	$(srcdir)/TargetService.cs \
 	$(srcdir)/TargetWindow.cs \
+	$(srcdir)/TransferStatusArgs.cs \
 	$(srcdir)/TrayLib.cs \
 	$(srcdir)/UriList.cs \
 	$(srcdir)/Utilities.cs 

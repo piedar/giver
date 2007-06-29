@@ -66,6 +66,11 @@ namespace Giver
 		private Thread sendingThread;
 		private AutoResetEvent resetEvent;
 
+    	public TransferStartedHandler TransferStarted;
+    	public FileTransferStartedHandler FileTransferStarted;
+    	public TransferProgressHandler TransferProgress;
+    	public TransferEndedHandler TransferEnded;
+
 		public SendingHandler()
 		{
 			resetEvent = new AutoResetEvent(false);
@@ -247,6 +252,15 @@ namespace Giver
 					string sessionID = response.Headers[Protocol.SessionID];
 					response.Close();
 					int counter = 0;
+					long entireSize = 0;
+
+					if(TransferStarted != null) {
+						TransferStarted(new TransferStatusArgs(sh.fileCount, 0, "",
+											Protocol.ProtocolTypeFile, sh.totalSize,
+											0, request.ContentLength, 0 ));
+					}
+
+
 					foreach(SendFilePair filePair in sh.filePairs) {
 						request = (HttpWebRequest) HttpWebRequest.Create(urib.Uri);
 						request.Method = "POST";
@@ -266,12 +280,28 @@ namespace Giver
 							int totalRead = 0;
 							byte[] buffer = new byte[2048];
 
+							if(FileTransferStarted != null) {
+								FileTransferStarted(new TransferStatusArgs(sh.fileCount, counter, filePair.file,
+													Protocol.ProtocolTypeFile, sh.totalSize,
+													entireSize, request.ContentLength, totalRead ));
+							}
+
+
 							do {
 								sizeRead = filestream.Read(buffer, 0, 2048);
 								totalRead += sizeRead;
+								entireSize += sizeRead;
 								if(sizeRead > 0) {
 									stream.Write(buffer, 0, sizeRead);
 								}
+
+								if(TransferProgress != null) {
+									TransferProgress(new TransferStatusArgs(sh.fileCount, counter, filePair.file,
+														Protocol.ProtocolTypeFile, sh.totalSize,
+														entireSize, request.ContentLength, totalRead ));
+								}
+
+
 							} while(sizeRead == 2048);
 							//Logger.Debug("SEND: We Read from the file {0} bytes", totalRead);
 							//Logger.Debug("SEND: The content length is {0} bytes", filestream.Length);
@@ -302,6 +332,14 @@ namespace Giver
 						}
 						counter++;		
 					}
+
+					if(TransferEnded != null) {
+						TransferEnded(new TransferStatusArgs(sh.fileCount, counter, "",
+											Protocol.ProtocolTypeFile, sh.totalSize,
+											entireSize, request.ContentLength, 0 ));
+					}
+
+
 
 					//Logger.Debug("RECEIVE: About to do a Gtk.Application.Invoke for the notify dude.");
 					Gtk.Application.Invoke( delegate {
