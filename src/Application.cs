@@ -208,6 +208,42 @@ namespace Giver
 			dialog.Run();
 		}
 
+		private void OnAbout (object sender, EventArgs args)
+		{
+            string [] authors = new string [] {
+                "Calvin Gaisford <calvinrg@gmail.com>",
+                "Scott Reeves <sreeves@gmail.com>",
+                "Travis Hansen <thansen@novell.com>"
+            };
+
+           /* string [] documenters = new string [] {
+                "Calvin Gaisford <calvinrg@gmail.com>"
+            };
+
+			string translators = Catalog.GetString ("translator-credits");
+            if (translators == "translator-credits")
+                translators = null;
+			*/
+
+            Gtk.AboutDialog about = new Gtk.AboutDialog ();
+            about.Name = "Giver";
+            about.Version = Defines.Version;
+            about.Logo = Utilities.GetIcon("giver-48", 48);
+            about.Copyright =
+                Catalog.GetString ("Copyright \xa9 2007 Calvin Gaisford");
+            about.Comments = Catalog.GetString ("A simple and easy to use desktop " +
+                                "file-sharing application.");
+            about.Website = "http://idea.opensuse.org/content/ideas/easy-file-sharing";
+            about.WebsiteLabel = Catalog.GetString("Homepage");
+            about.Authors = authors;
+            //about.Documenters = documenters;
+            //about.TranslatorCredits = translators;
+            about.IconName = "giver";
+            about.Run ();
+            about.Destroy ();
+		}
+
+
 		private void OnShowTargets (object sender, EventArgs args)
 		{
 			TargetWindow.ShowWindow(locator);
@@ -234,7 +270,7 @@ namespace Giver
       			Menu popupMenu = new Menu();
       			
       			ImageMenuItem targets = new ImageMenuItem (
-						Catalog.GetString ("Show giver targets ..."));
+						Catalog.GetString ("Giver Recipients ..."));
 				targets.Image = new Gtk.Image(Utilities.GetIcon ("giver-24", 24));
       			targets.Activated += OnShowTargets;
       			popupMenu.Add (targets);
@@ -245,6 +281,10 @@ namespace Giver
       			ImageMenuItem preferences = new ImageMenuItem (Gtk.Stock.Preferences, null);
       			preferences.Activated += OnPreferences;
       			popupMenu.Add (preferences);
+
+      			ImageMenuItem about = new ImageMenuItem (Gtk.Stock.About, null);
+      			about.Activated += OnAbout;
+      			popupMenu.Add (about);
 
       			separator = new SeparatorMenuItem ();
       			popupMenu.Add (separator);

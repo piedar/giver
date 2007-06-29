@@ -1,5 +1,10 @@
 2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/SendingHandler.cs, src/RequestHandler.cs: Added new prompts
+	* src/Application.cs: Added About dialog
+
+2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* configure.ac: bumped version
 	* NEWS: updated for release
 

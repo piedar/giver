@@ -26,6 +26,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Collections.Generic;
+using Notifications;
+using Mono.Unix;
 
 namespace Giver
 {
@@ -257,8 +259,31 @@ namespace Giver
 						}
 						counter++;		
 					}
+
+					//Logger.Debug("RECEIVE: About to do a Gtk.Application.Invoke for the notify dude.");
+					Gtk.Application.Invoke( delegate {
+						string body = String.Format(Catalog.GetString("{0} has received the file(s)."), serviceInfo.UserName);
+						//Logger.Debug("RECEIVE: Inside the Gtk.Application.Invoke dude");
+						Notification notify = new Notification(	Catalog.GetString("Done Giving Files"), 
+																body,
+																serviceInfo.Photo);
+
+						Application.ShowAppNotification(notify);
+						Gnome.Sound.Play(Path.Combine(Giver.Defines.SoundDir, "notify.wav"));
+					} );
+
 				} else {
-					Logger.Debug("SEND: Not OKToSend");
+					//Logger.Debug("RECEIVE: About to do a Gtk.Application.Invoke for the notify dude.");
+					Gtk.Application.Invoke( delegate {
+						string body = String.Format(Catalog.GetString("{0} declined your request to give files."), serviceInfo.UserName);
+						//Logger.Debug("RECEIVE: Inside the Gtk.Application.Invoke dude");
+						Notification notify = new Notification(	Catalog.GetString("Giving Was Declined"), 
+																body,
+																serviceInfo.Photo);
+
+						Application.ShowAppNotification(notify);
+						Gnome.Sound.Play(Path.Combine(Giver.Defines.SoundDir, "notify.wav"));
+					} );
 				}
 			
 				Logger.Debug("SEND: Done with Sending file");
