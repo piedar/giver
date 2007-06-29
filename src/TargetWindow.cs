@@ -61,11 +61,16 @@ namespace Giver
 			targets = new Dictionary<string,Giver.TargetService> ();
 			InitWindow();
 			SetupLocatorEvents();
+			SetupApplicationEvents ();
 		}
 		#endregion
 
 
 		#region Private Methods
+		private void SetupApplicationEvents ()
+		{
+			Application.Instance.AvatarUpdated += OnAvatarUpdated;
+		}
 
 		///<summary>
 		///	SetupLocatorEvents
@@ -156,8 +161,9 @@ namespace Giver
 			}
 		}
 		
-		public void OnPhotoUpdate (ServiceInfo serviceInfo)
+		public void OnAvatarUpdated (ServiceInfo serviceInfo)
 		{
+			Logger.Debug ("TargetWindow::OnAvatarUpdated - called");
 			try {
 				TargetService target = targets[serviceInfo.ID];
 				target.UpdateImage (serviceInfo.Photo);

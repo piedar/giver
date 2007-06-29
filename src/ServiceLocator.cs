@@ -236,29 +236,16 @@ namespace Giver {
 						serviceInfo.PhotoLocation = splitstr[1];
 	            }
 
-/*
-				try {
-					if(serviceInfo.PhotoType.CompareTo(Preferences.Local) == 0 ) {
-						SendingHandler.GetPhoto(serviceInfo);
-						serviceInfo.Photo = serviceInfo.Photo.ScaleSimple(48, 48, Gdk.InterpType.Bilinear);
-					} else if(serviceInfo.PhotoType.CompareTo(Preferences.Gravatar) == 0 ){
-						string uri = Utilities.GetGravatarUri(serviceInfo.PhotoLocation);
-						serviceInfo.Photo = Utilities.GetPhotoFromUri(uri);
-					} else if(serviceInfo.PhotoType.CompareTo(Preferences.Uri) == 0) {
-						serviceInfo.Photo = Utilities.GetPhotoFromUri(serviceInfo.PhotoLocation);
-						serviceInfo.Photo = serviceInfo.Photo.ScaleSimple(48, 48, Gdk.InterpType.Bilinear);
-					} else {
-						serviceInfo.Photo = Utilities.GetIcon("computer", 48);
-					}
-				} catch (Exception e) {
-					Logger.Debug("Exception getting photo {0}", e);
-					serviceInfo.Photo = Utilities.GetIcon("computer", 48);
-				}
-*/
 				serviceInfo.Photo = Utilities.GetIcon("computer", 48);
-
 				lock(locker) {
 					services[serviceInfo.Name] = serviceInfo;
+					
+					if(serviceInfo.PhotoType.CompareTo(Preferences.Local) == 0 ||
+						serviceInfo.PhotoType.CompareTo (Preferences.Gravatar) == 0) {
+						
+						// Queue the resolution of the photo
+						PhotoService.QueueResolve (serviceInfo);
+					}		
 				}
 
 	            if (ServiceAdded != null)

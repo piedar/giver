@@ -204,6 +204,7 @@ namespace Giver
 		
 		private void OnPhotoResolved (ServiceInfo serviceInfo)
 		{
+			Logger.Debug ("OnPhotoResolved called");
 			Gtk.Application.Invoke( delegate {
 				UpdatePhoto (serviceInfo);
 			} );
@@ -213,6 +214,8 @@ namespace Giver
 		{
 			if (AvatarUpdated != null)
 				AvatarUpdated (serviceInfo);
+			else
+				Logger.Debug ("No registered providers for AvatarUpdated");
 		}
 		
 		private void SetupTrayIcon ()

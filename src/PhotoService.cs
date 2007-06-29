@@ -44,6 +44,7 @@ namespace Giver
 		{
 			running = true;
 			
+			//Thread.Sleep (2000);
 			while (running) {
 
 				PhotoService.photoServiceEvent.WaitOne ();
@@ -69,6 +70,7 @@ namespace Giver
 					} else if (serviceInfo.PhotoType.CompareTo (Preferences.Gravatar) == 0 ){
 						string uri = Utilities.GetGravatarUri (serviceInfo.PhotoLocation);
 						serviceInfo.Photo = Utilities.GetPhotoFromUri (uri);
+						Logger.Debug ("GetPhotoFromUri - finished");
 					} else if (serviceInfo.PhotoType.CompareTo (Preferences.Uri) == 0) {
 						serviceInfo.Photo = Utilities.GetPhotoFromUri (serviceInfo.PhotoLocation);
 						serviceInfo.Photo = serviceInfo.Photo.ScaleSimple (48, 48, Gdk.InterpType.Bilinear);
@@ -79,6 +81,8 @@ namespace Giver
 					// Call registered listeners
 					if (PhotoResolved != null)
 						PhotoResolved (serviceInfo);
+					else
+						Logger.Debug ("No registered providers for PhotoResoved");
 						
 				} catch (Exception e) {
 				
@@ -93,6 +97,7 @@ namespace Giver
 		#region Public Methods		
 		static public void QueueResolve (ServiceInfo serviceInfo)
 		{
+			Logger.Debug ("QueueResolve called");
 			lock (serviceLocker) {
 				PhotoService.outstanding.Enqueue (serviceInfo);		
 				PhotoService.photoServiceEvent.Set ();
@@ -109,6 +114,8 @@ namespace Giver
 		{
 			running = false;
 			PhotoService.photoServiceEvent.Set ();
+			Thread.Sleep (0);
+			PhotoService.photoServiceEvent.Close ();
         }
 		#endregion
     }

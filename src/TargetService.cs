@@ -334,6 +334,7 @@ namespace Giver
 		#region Public Methods		
 		public void UpdateImage (Gdk.Pixbuf newImage)
 		{
+			Logger.Debug ("TargetService::UpdateImage called");
 			image = new Gtk.Image(newImage);
 		}
 		#endregion
