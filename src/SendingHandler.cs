@@ -268,7 +268,8 @@ namespace Giver
 						request.Headers.Set(Protocol.Request, Protocol.Payload);
 						request.Headers.Set(Protocol.Type, Protocol.ProtocolTypeFile);
 						request.Headers.Set(Protocol.Count, counter.ToString());
-						request.Headers.Set(Protocol.Name, Path.GetFileName(filePair.file));
+						string fileName = Path.GetFileName(filePair.file);
+						request.Headers.Set(Protocol.Name, fileName);
 						request.Headers.Set(Protocol.RelativePath, filePair.relativePath);
 
 						try {
@@ -281,7 +282,7 @@ namespace Giver
 							byte[] buffer = new byte[2048];
 
 							if(FileTransferStarted != null) {
-								FileTransferStarted(new TransferStatusArgs(sh.fileCount, counter, filePair.file,
+								FileTransferStarted(new TransferStatusArgs(sh.fileCount, counter, fileName,
 													Protocol.ProtocolTypeFile, sh.totalSize,
 													entireSize, request.ContentLength, totalRead, serviceInfo ));
 							}
@@ -296,7 +297,7 @@ namespace Giver
 								}
 
 								if(TransferProgress != null) {
-									TransferProgress(new TransferStatusArgs(sh.fileCount, counter, filePair.file,
+									TransferProgress(new TransferStatusArgs(sh.fileCount, counter, fileName,
 														Protocol.ProtocolTypeFile, sh.totalSize,
 														entireSize, request.ContentLength, totalRead, serviceInfo ));
 								}

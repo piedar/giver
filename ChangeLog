@@ -1,3 +1,8 @@
+2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
+
+	* src/TargetWindow.cs, src/SendingHandler.cs, src/TargetService.cs,
+	  giver.mdp: Added Bitch'n events
+
 2007-06-29  Brady Anderson <brady.anderson@gmail.com> 
 
 	updated the image

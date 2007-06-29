@@ -138,11 +138,12 @@ namespace Giver
 	        
 			progressLabel = new Label ();
 			progressLabel.UseMarkup = true;
-			progressLabel.Xalign = 1;
+			progressLabel.Xalign = 0;
 			progressLabel.UseUnderline = false;
 			progressLabel.LineWrap = true;
 			progressLabel.Wrap = true;
 			progressLabel.NoShowAll = true;
+			progressLabel.Ellipsize = Pango.EllipsizeMode.End;
 			outerVBox.PackStart (progressLabel, false, false, 0);
 	        
 	        outerVBox.ShowAll ();
@@ -279,45 +280,41 @@ namespace Giver
 		#endregion
 
 		#region Event Handlers
-/*		
-		private void OnStartSendEvent (TransferStatusArgs args)
+		private void FileTransferStartedHandler (TransferStatusArgs args)
 		{
-			Gtk.Application.Invoke ({
-				progressBar.Show ();
-				progressLabel.Show ();
-			});
-		}
-		
-		private void OnStartFileEvent (stuff)
-		{
-			Gtk.Application.Invoke ({
+			Gtk.Application.Invoke ( delegate {
 				ProgressText = string.Format (
-					Catalog.GetString ("Giving \"{0}\"..."),
-					fileName);
+					Catalog.GetString ("Giving: {0}"),
+					args.Name);
 				progressBar.Text = string.Format (
 					Catalog.GetString ("{0} of {1}"),
-					currentFileCount,
-					totalFileCount);
+					args.CurrentCount,
+					args.TotalCount);
 			});
 		}
 		
-		private void OnFileProgressEvent (stuff)
+		private void TransferProgressHandler (TransferStatusArgs args)
 		{
-			double fraction = bytesSent / totalBytes;
+			double fraction = ((double)args.TotalBytesTransferred) / ((double)args.TotalBytes);
+
 			Gtk.Application.Invoke (delegate {
 				progressBar.Fraction = fraction;
 			});
 		}
 		
-		private void OnEndSendEvent (stuff)
+		private void TransferEndedHandler (TransferStatusArgs args)
 		{
+			Giver.Application.Instance.FileTransferStarted -= FileTransferStartedHandler;
+			Giver.Application.Instance.TransferProgress -= TransferProgressHandler;
+			Giver.Application.Instance.TransferEnded -= TransferEndedHandler;
+
 			Gtk.Application.Invoke (delegate {
 				progressBar.Hide ();
 				ProgressText = string.Empty;
 				progressLabel.Hide ();
 			});
 		}
-*/
+
 		#endregion
 
 		#region Public Properties
@@ -337,6 +334,18 @@ namespace Giver
 			Logger.Debug ("TargetService::UpdateImage called");
 			this.image.FromPixbuf = newImage;
 		}
+
+		public void SetupTransferEventHandlers ()
+		{
+			Gtk.Application.Invoke ( delegate {
+				progressBar.Show ();
+				progressLabel.Show ();
+			});
+			Giver.Application.Instance.FileTransferStarted += FileTransferStartedHandler;
+			Giver.Application.Instance.TransferProgress += TransferProgressHandler;
+			Giver.Application.Instance.TransferEnded += TransferEndedHandler;
+		}
+
 		#endregion
 		
 	}

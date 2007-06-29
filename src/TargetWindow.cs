@@ -149,6 +149,7 @@ namespace Giver
 			Shown += OnWindowShown;
 			DeleteEvent += WindowDeleted;
 
+			Application.Instance.TransferStarted += TransferStartedHandler;
 		}
 
 		private void PopulateInitialTargets()
@@ -160,6 +161,16 @@ namespace Giver
 //	 			item.Activated += OnSelectedService;
 			}
 		}
+
+
+    	private void TransferStartedHandler (TransferStatusArgs args) 
+		{
+			if(targets.ContainsKey(args.TargetServiceInfo.ID)) {
+				TargetService ts = targets[args.TargetServiceInfo.ID];
+				ts.SetupTransferEventHandlers();
+			}		
+		}
+
 		
 		public void OnAvatarUpdated (ServiceInfo serviceInfo)
 		{
@@ -212,6 +223,8 @@ namespace Giver
             
             lastXPos = x;
             lastYPos = y;
+
+			Application.Instance.TransferStarted -= TransferStartedHandler;
             
 			Logger.Debug("WindowDeleted was called");
 			TearDownLocatorEvents();
