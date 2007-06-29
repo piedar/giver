@@ -1,5 +1,5 @@
 
-SUBDIRS = images sounds glade
+SUBDIRS = images sounds 
 
 @INTLTOOL_DESKTOP_RULE@
 

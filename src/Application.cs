@@ -206,6 +206,9 @@ namespace Giver
 			Logger.Info ("OnPreferences called");
 			Giver.PreferencesDialog dialog = new PreferencesDialog();
 			dialog.Run();
+			dialog.Hide();
+			dialog.Destroy();
+	
 		}
 
 		private void OnAbout (object sender, EventArgs args)

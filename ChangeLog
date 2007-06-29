@@ -1,5 +1,16 @@
 2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/PreferencesDialog.cs: polished the preferences
+	* src/Application.cs: fixed hiding prefs dialog
+	* src/Makefile.am: Added gravatar image to exe
+	* giver.mdp: removed glade
+	* configure.ac, data/glade, data/glade/giver-prefs.glade,
+	  data/glade/Makefile.am, data/glade/gravatar.gif: removed glade
+	  (sorry Scott)
+	* data/images/Makefile.am, data/Makefile.am: Added gravatar image
+
+2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/ServiceLocator.cs, src/SendingHandler.cs, src/RequestHandler.cs,
 	  src/Protocol.cs, src/TargetService.cs: Added TomBoy Hack
 	* data/glade/giver-prefs.glade: Fixed up spacing

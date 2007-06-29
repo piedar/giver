@@ -22,159 +22,288 @@
 using System;
 using System.IO;
 using Gtk;
-using Glade;
 using Mono.Unix;
 
 namespace Giver
 {
-	public class PreferencesDialog
+	public class PreferencesDialog : Gtk.Dialog
 	{
-		private string window_name;
-		private Glade.XML glade;
-		private Window window;
+		private FileChooserButton	fileLocationButton;
+		private Gtk.Entry 			nameEntry;
+		private Gtk.RadioButton		noneButton;
+		private Gtk.RadioButton		localButton;
+		private Gtk.RadioButton		webButton;
+		private Gtk.RadioButton		gravatarButton;
+		private Image 				localImage;
+		private Button 				photoButton;
+		private Entry				webEntry;
+		private Entry				gravatarEntry;
 
-		private Tooltips tips = new Tooltips();
-		private FileChooserButton storage_location_chooser;
-		private FileChooserButton photo_local_location;
-
-		public PreferencesDialog()
+		public PreferencesDialog() : base ()
 		{
-			//Glade.XML glade = new Glade.XML(Path.Combine(Defines.GladeDir, "giver-prefs.glade"), "GiverPrefsDialog", "giver");
-			Glade.XML glade = new Glade.XML(Path.Combine(Defines.GladeDir, "giver-prefs.glade"), null, null);
-			window_name = "GiverPrefsDialog";        
-			this.glade = glade; 
-			this.glade.Autoconnect(this);
-			BuildWindow();
+			Init();
 			LoadPreferences();
 			ConnectEvents();
 		}
 
-		public virtual void Destroy()
-		{
-			Window.Destroy();
-		}
 
-		protected Glade.XML Glade
+		private void Init()
 		{
-			get { return glade; }
-		}
+			Logger.Debug("Called Init");
+			this.Icon = Utilities.GetIcon ("giver-48", 48);
+			// Update the window title
+			this.Title = string.Format ("Giver Preferences");	
+			
+			//this.DefaultSize = new Gdk.Size (300, 500); 	
+			this.VBox.Spacing = 0;
+			this.VBox.BorderWidth = 0;
+			this.SetDefaultSize (450, 100);
 
-		public string Name
-		{
-			get { return window_name; }
-		}
 
-		public Window Window
-		{
-			get {
-			if(window == null) {
-				window = (Window)glade.GetWidget(window_name);
-			}
+			this.AddButton(Stock.Close, Gtk.ResponseType.Ok);
+            this.DefaultResponse = ResponseType.Ok;
 
-			return window;
-			}
-		}
+
+			// Start with an event box to paint the background white
+			EventBox eb = new EventBox();
+			eb.Show();
+			eb.BorderWidth = 0;
+            eb.ModifyBg(StateType.Normal, new Gdk.Color(255,255,255));
+            eb.ModifyBase(StateType.Normal, new Gdk.Color(255,255,255));
+
+			VBox mainVBox = new VBox();
+			mainVBox.BorderWidth = 10;
+			mainVBox.Spacing = 5;
+			mainVBox.Show ();
+			eb.Add(mainVBox);
+			this.VBox.PackStart(eb);
+
+			Label label = new Label();
+			label.Show();
+			label.Justify = Gtk.Justification.Left;
+            label.SetAlignment (0.0f, 0.5f);
+			label.LineWrap = false;
+			label.UseMarkup = true;
+			label.UseUnderline = false;
+			label.Markup = "<span weight=\"bold\" size=\"large\">Your Name</span>";
+			mainVBox.PackStart(label, true, true, 0);
+
+			// Name Box at the top of the Widget
+			HBox nameBox = new HBox();
+			nameBox.Show();
+			nameEntry = new Entry();
+			nameEntry.Show();
+			nameBox.PackStart(nameEntry, true, true, 0);
+			nameBox.Spacing = 10;
+			mainVBox.PackStart(nameBox, false, false, 0);
+	
+			label = new Label();
+			label.Show();
+			label.Justify = Gtk.Justification.Left;
+            label.SetAlignment (0.0f, 0.5f);
+			label.LineWrap = false;
+			label.UseMarkup = true;
+			label.UseUnderline = false;
+			label.Markup = "<span weight=\"bold\" size=\"large\">Your Picture</span>";
+			mainVBox.PackStart(label, true, true, 0);
 		
-		public ResponseType Run()
-		{
-		  return (ResponseType)Dialog.Run();
-		}
+			Gtk.Table table = new Table(4, 3, false);
+			table.Show();
+			// None Entry
+			noneButton = new RadioButton((Gtk.RadioButton)null);
+			noneButton.Show();
+			table.Attach(noneButton, 0, 1, 0, 1, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
+			VBox vbox = new VBox();
+			vbox.Show();
+			Gtk.Image image = new Image(Utilities.GetIcon("computer", 48));
+			image.Show();
+			vbox.PackStart(image, false, false, 0);
+			label = new Label("None");
+			label.Show();
+			vbox.PackStart(label, false, false, 0);
+			table.Attach(vbox, 1, 2, 0 ,1, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
+			vbox = new VBox();
+			vbox.Show();
+			table.Attach(vbox, 2,3,1,2, AttachOptions.Expand | AttachOptions.Fill, AttachOptions.Expand | AttachOptions.Fill, 0, 0);
 
-		public Dialog Dialog
-		{
-			get { return (Dialog)Window; }
-		}
+			// Local Entry
+			localButton = new RadioButton(noneButton);
+			localButton.Show();
+			table.Attach(localButton, 0, 1, 1, 2, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
+			vbox = new VBox();
+			vbox.Show();
+			localImage = new Image(Utilities.GetIcon("stock_person", 48));
+			localImage.Show();
+			vbox.PackStart(localImage, false, false, 0);
+			label = new Label("File");
+			label.Show();
+			vbox.PackStart(label, false, false, 0);
+			table.Attach(vbox, 1, 2, 1 ,2, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
+			photoButton = new Button("Change Photo");
+			photoButton.Show();
+			table.Attach(photoButton, 2,3,1,2, AttachOptions.Expand | AttachOptions.Fill, AttachOptions.Shrink, 0, 0);
 
-		private void BuildWindow()
-		{
-			storage_location_chooser = new FileChooserButton("Select storage location",
+			// Web Entry
+			webButton = new RadioButton(noneButton);
+			webButton.Show();
+			table.Attach(webButton, 0, 1, 2, 3, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
+			vbox = new VBox();
+			vbox.Show();
+			image = new Image(Utilities.GetIcon("web-browser", 48));
+			image.Show();
+			vbox.PackStart(image, false, false, 0);
+			label = new Label("Web Link");
+			label.Show();
+			vbox.PackStart(label, false, false, 0);
+			table.Attach(vbox, 1, 2, 2 ,3, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
+			webEntry = new Entry();
+			webEntry.Show();
+			table.Attach(webEntry, 2,3,2,3, AttachOptions.Expand | AttachOptions.Fill, AttachOptions.Expand | AttachOptions.Fill, 0, 0);
+
+			// Gravatar Entry
+			gravatarButton = new RadioButton(noneButton);
+			gravatarButton.Show();
+			table.Attach(gravatarButton, 0, 1, 3, 4, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
+			vbox = new VBox();
+			vbox.Show();
+			image = new Image(Utilities.GetIcon("gravatar", 48));
+			image.Show();
+			vbox.PackStart(image, false, false, 0);
+			label = new Label("Gravatar");
+			label.Show();
+			vbox.PackStart(label, false, false, 0);
+			table.Attach(vbox, 1, 2, 3 ,4, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
+			gravatarEntry = new Entry();
+			gravatarEntry.Show();
+			table.Attach(gravatarEntry, 2,3,3,4, AttachOptions.Expand | AttachOptions.Fill, AttachOptions.Expand | AttachOptions.Fill, 0, 0);
+
+			mainVBox.PackStart(table, true, true, 0);
+
+
+			label = new Label();
+			label.Show();
+			label.Justify = Gtk.Justification.Left;
+            label.SetAlignment (0.0f, 0.5f);
+			label.LineWrap = false;
+			label.UseMarkup = true;
+			label.UseUnderline = false;
+			label.Markup = "<span weight=\"bold\" size=\"large\">Your File Location</span>";
+			mainVBox.PackStart(label, true, true, 0);
+	
+			fileLocationButton = new FileChooserButton("Select storage location",
 			    FileChooserAction.SelectFolder);
-			(Glade["storage_location_container"] as Container).Add(storage_location_chooser);
-			(Glade["storage_location_label"] as Label).MnemonicWidget = storage_location_chooser;
-			storage_location_chooser.Show();
+			fileLocationButton.Show();
 
-			photo_local_location = new FileChooserButton("Select photo location",
-			    FileChooserAction.Open);
-			(Glade["photo_local_location"] as Container).Add(photo_local_location);
-			photo_local_location.Show();
+			mainVBox.PackStart(fileLocationButton, true, true, 0);
 
-			tips.SetTip(Glade["storage_location_label"], "Location to store incoming files", "storage_location");
+			DeleteEvent += WindowDeleted;
 		}
+
+		///<summary>
+		///	WindowDeleted
+		/// Cleans up the conversation object with the ConversationManager
+		///</summary>	
+		private void WindowDeleted (object sender, DeleteEventArgs args)
+		{
+			// Save preferences
+
+		}
+
 
 		private void LoadPreferences()
 		{
-			//string location = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "giver/preferences");
-			string photoLocation = Application.Preferences.PhotoLocation;
-			string photoType = Application.Preferences.PhotoType;
-			string displayName = Application.Preferences.UserName;
-			string storage_location = Application.Preferences.ReceiveFileLocation;
-			
-			(Glade["display_name"] as Entry).Text = displayName;
+			nameEntry.Text = Giver.Application.Preferences.UserName;
+			fileLocationButton.SetFilename(Giver.Application.Preferences.ReceiveFileLocation);
 
-			if(photoType.Equals(Preferences.None))
-			{
-				//Logger.Debug("photo type is none");
-			   (Glade["none_radiobutton"] as RadioButton).Active = true;
-			}
-			else if(photoType.Equals(Preferences.Local))
-			{
+			photoButton.Sensitive = false;
+			webEntry.Sensitive = false;
+
+			if(Giver.Application.Preferences.PhotoType.CompareTo(Giver.Preferences.Local) == 0) {
+				localButton.Active = true;
+				photoButton.Sensitive = true;
+/*
 				Logger.Debug("photo type is local");
 			   (Glade["local_radiobutton"] as RadioButton).Active = true;
 				Image photo = new Image(photoLocation);
 			   (Glade["local_radiobutton"] as RadioButton).Image = photo;
 			   //(Glade["photo_local_image"] as Image).SetFromIconName(photoLocation, IconSize.Button);
+				photoButton
+				localImage
+*/
+			} else if(Giver.Application.Preferences.PhotoType.CompareTo(Giver.Preferences.Uri) == 0) {
+				webButton.Active = true;
+				webEntry.Text = Giver.Application.Preferences.PhotoLocation;
+				webEntry.Sensitive = true;
+			} else if(Giver.Application.Preferences.PhotoType.CompareTo(Giver.Preferences.Gravatar) == 0) {
+				gravatarButton.Active = true;
+				gravatarEntry.Text = Giver.Application.Preferences.PhotoLocation;
+			} else {
+				// make this none
+				noneButton.Active = true;
 			}
-			else if(photoType.Equals(Preferences.Gravatar))
-			{
-				//Logger.Debug("photo type is gravatar");
-			   (Glade["gravatar_radiobutton"] as RadioButton).Active = true;
-			   (Glade["gravatar_email"] as Entry).Text = photoLocation;
-			}
-			else if(photoType.Equals(Preferences.Uri))
-			{
-			   (Glade["uri_radiobutton"] as RadioButton).Active = true;
-				//Logger.Debug("bloody photo location is {0}", photoLocation);
-			   (Glade["photo_uri_location"] as Entry).Text = photoLocation;
-			}
-			           
-			storage_location_chooser.SetFilename(storage_location);
 		}
 
 		private void ConnectEvents()
 		{
-			Entry displayName = (Entry) glade.GetWidget("display_name");
-			displayName.Changed += delegate {
-				Application.Preferences.UserName = displayName.Text;
+			nameEntry.Changed += delegate {
+				Application.Preferences.UserName = nameEntry.Text;
 			};
 			
-			storage_location_chooser.SelectionChanged += delegate {
-				Application.Preferences.ReceiveFileLocation = storage_location_chooser.Filename;
+			fileLocationButton.SelectionChanged += delegate {
+				Application.Preferences.ReceiveFileLocation = fileLocationButton.Filename;
 			};
 
-			RadioButton button = (RadioButton) glade.GetWidget("none_radiobutton");
-			button.Toggled += delegate {
+			noneButton.Toggled += delegate {
 				Logger.Debug("nonebutton was toggled");
-				if(button.Active)
+				if(noneButton.Active)
 				{
 					Application.Preferences.PhotoType = Preferences.None;
+					photoButton.Sensitive = false;
+					webEntry.Sensitive = false;
+					gravatarEntry.Sensitive = false;
 				}
 			};
 
-			button = (RadioButton) glade.GetWidget("local_radiobutton");
-			button.Toggled += delegate {
-				if(button.Active)
+			localButton.Toggled += delegate {
+				if(localButton.Active)
 				{
-					Application.Preferences.PhotoType = Preferences.Local;
-					Application.Preferences.PhotoLocation = photo_local_location.Filename; 
+					photoButton.Sensitive = true;
+					webEntry.Sensitive = false;
+					gravatarEntry.Sensitive = false;
 				}
 			};
-			//photo.Changed += OnPhotoFileChanged;
+
+			webButton.Toggled += delegate {
+				if(webButton.Active)
+				{
+					photoButton.Sensitive = false;
+					webEntry.Sensitive = true;
+					gravatarEntry.Sensitive = false;
+					Application.Preferences.PhotoType = Preferences.Uri;
+					Application.Preferences.PhotoLocation = webEntry.Text;
+				}
+			};
+
+			webEntry.Changed += delegate {
+				Application.Preferences.PhotoLocation = webEntry.Text;
+			};
+
+			gravatarButton.Toggled += delegate {
+				if(gravatarButton.Active)
+				{
+					photoButton.Sensitive = false;
+					webEntry.Sensitive = false;
+					gravatarEntry.Sensitive = true;
+					Application.Preferences.PhotoType = Preferences.Gravatar;
+					Application.Preferences.PhotoLocation = gravatarEntry.Text;
+				}
+			};
+
+			gravatarEntry.Changed += delegate {
+				Application.Preferences.PhotoLocation = gravatarEntry.Text;
+			};
+
 		}
 
-		private void OnPhotoFileChanged(object o, EventArgs args)
-		{
-			(Glade["example_path"] as Label).Markup = String.Format("<small><i>{0}</i></small>",
-			GLib.Markup.EscapeText("giver"));
-		}
 	}
 }
