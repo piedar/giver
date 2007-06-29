@@ -100,7 +100,7 @@ namespace Giver
 
 			if(isManual) {
 				label.LineWrap = true;
-				label.Markup = "<span style=\"italic\" size=\"small\">Use this target to enter\ninformation manually.</span>";
+				label.Markup = "<span style=\"italic\" size=\"small\">Use this recipient to enter\ninformation manually.</span>";
 			} else {
 				label.LineWrap = false;
 				label.Markup = string.Format ("<span size=\"small\">{0}</span>",
@@ -144,7 +144,12 @@ namespace Giver
 				case (uint) DragTargetType.UriList:
 				{
                     UriList uriList = new UriList(args.SelectionData);
-					Application.EnqueueFileSend(serviceInfo, uriList.ToLocalPaths());
+					if(!isManual) {
+						Application.EnqueueFileSend(serviceInfo, uriList.ToLocalPaths());
+					} else {
+						// Prompt for the info to send here
+					}
+
 					break;
 				}
 				default:
@@ -173,7 +178,7 @@ namespace Giver
 			if(chooser.Run() == (int)ResponseType.Ok) {
 				Logger.Debug("Giving file {0}", chooser.Filename);
 				if(!isManual) {
-					Giver.Application.EnqueueFileSend(serviceInfo, chooser.Filenames);
+					Application.EnqueueFileSend(serviceInfo, chooser.Filenames);
 				} else {
 					// Prompt for the info to send here
 				}

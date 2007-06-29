@@ -98,7 +98,7 @@ namespace Giver
 		{
 			this.Icon = Utilities.GetIcon ("giver-48", 48);
 			// Update the window title
-			Title = string.Format ("Giver drop targets");	
+			Title = string.Format ("Giver Recipients");	
 			
 			this.DefaultSize = new Gdk.Size (300, 500); 			
 
@@ -209,7 +209,7 @@ namespace Giver
 		///</summary>			
 		private void OnWindowShown (object sender, EventArgs args)
 		{
-			Logger.Debug("OnWindowShown was called");
+
 		}
 
 

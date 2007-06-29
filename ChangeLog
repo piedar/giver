@@ -1,5 +1,10 @@
 2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/TargetWindow.cs: changed window name
+	* src/TargetService.cs: renamed menu item
+
+2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/ServiceLocator.cs: Removed local computers from view
 
 2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
