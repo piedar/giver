@@ -194,11 +194,17 @@ namespace Giver
 
 
 			// hooking event
-			eb.ButtonPressEvent += new ButtonPressEventHandler (this.OnTrayIconClick);
+			eb.ButtonPressEvent += OnTrayIconClick;
 			trayIcon = new Egg.TrayIcon("Giver");
-			trayIcon.Add(eb);
+			trayIcon.Add(eb); 
+
+			trayIcon.EnterNotifyEvent += OnNotifyEvent;
 			// showing the trayicon
 			trayIcon.ShowAll();			
+		}
+
+		private void OnNotifyEvent(object o, EventArgs args)
+		{
 		}
 
 		private void OnPreferences (object sender, EventArgs args)

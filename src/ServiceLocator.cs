@@ -236,6 +236,7 @@ namespace Giver {
 						serviceInfo.PhotoLocation = splitstr[1];
 	            }
 
+/*
 				try {
 					if(serviceInfo.PhotoType.CompareTo(Preferences.Local) == 0 ) {
 						SendingHandler.GetPhoto(serviceInfo);
@@ -253,6 +254,9 @@ namespace Giver {
 					Logger.Debug("Exception getting photo {0}", e);
 					serviceInfo.Photo = Utilities.GetIcon("computer", 48);
 				}
+*/
+				serviceInfo.Photo = Utilities.GetIcon("computer", 48);
+
 				lock(locker) {
 					services[serviceInfo.Name] = serviceInfo;
 				}
