@@ -56,6 +56,7 @@ namespace Giver
 		private ServiceLocator locator;
 		private RequestHandler requestHandler;
 		private SendingHandler sendingHandler;
+		private Giver.PhotoService photoService;
 		private Preferences preferences;
 		private bool cursorOverTrayIcon;
 		private Gtk.Window popup;
@@ -134,6 +135,16 @@ namespace Giver
 			sendingHandler.TransferEnded += TransferEndedHandler;
 
 			try {
+				photoService = new Giver.PhotoService ();
+				photoService.PhotoResolved += OnPhotoResolved;
+				photoService.Start ();
+			} catch (Exception e) {
+				Logger.Fatal ("Failed to start the Photo Service");
+				throw e;
+			}
+			
+
+			try {
 				locator = new ServiceLocator();
 			} catch (Exception e) {
 				if(e.Message.CompareTo("Daemon not running") == 0) {
@@ -188,6 +199,19 @@ namespace Giver
 		{
 			requestHandler.HandleRequest(context);
 		}
+		
+		private void OnPhotoResolved (ServiceInfo serviceInfo)
+		{
+			Gtk.Application.Invoke( delegate {
+				UpdatePhoto (serviceInfo);
+			} );
+		}
+		
+		private void UpdatePhoto (ServiceInfo serviceInfo)
+		{
+			Logger.Debug ("Update the photo");
+		}
+		
 
 
 		private void SetupTrayIcon ()
@@ -374,6 +398,8 @@ namespace Giver
 			sendingHandler.Stop();
 			service.Stop();
 			locator.Stop();
+			photoService.Stop ();
+			
 
 			//Gtk.Main.Quit ();
 			program.Quit (); // Should this be called instead?
