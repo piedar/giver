@@ -322,6 +322,10 @@ namespace Giver
 							//Logger.Debug("RECEIVE: replacing {0} with {1}", relativePath, newRelativePath);
 							sd.renameFolders.Add(relativePath, newRelativePath);
 							relativePath = newRelativePath;
+						} else {
+							// There is no conflict but we need to set up this parent
+							// for all other incoming files
+							sd.renameFolders.Add(relativePath, relativePath);
 						}
 					}
 					Logger.Debug("RECEIVE: Relative Path is now {0}", relativePath);
