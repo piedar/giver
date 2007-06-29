@@ -40,59 +40,6 @@ namespace Giver
 			//photoServiceEvent = new AutoResetEvent (false);
         }
 
-
-		/*
-        private void OnServiceAdded (object o, ServiceInfoArgs args) 
-		{
-            if ((args.Service.Flags & LookupResultFlags.Local) > 0 && !showLocals)
-                return;
-            
-            ServiceResolver resolver = new ServiceResolver (client, args.Service);
-            resolvers.Add (resolver);
-            resolver.Found += OnServiceResolved;
-            resolver.Timeout += OnServiceTimeout;
-
-			//Logger.Debug("ServiceLocator:OnServiceAdded : {0}", args.Service.Name);
-        }
-
-        private void OnServiceResolved (object o, ServiceInfoArgs args) 
-		{
-			ServiceResolver sr = (ServiceResolver) o;
-
-            resolvers.Remove (sr);
-
-			lock(resolverLocker) {
-				resolverQueue.Enqueue(sr);
-			}
-			resetResolverEvent.Set();
-        }
-
-        private void OnServiceTimeout (object o, EventArgs args) 
-		{
-			Logger.Debug("Service timed out");
-			ServiceResolver sr = (ServiceResolver) o;
-
-            resolvers.Remove (sr);
-            sr.Dispose ();
-        }
-
-        private void OnServiceRemoved (object o, ServiceInfoArgs args) 
-		{
-			Logger.Debug("A Service was removed: {0}", args.Service.Name);
-
-			lock(locker) {
-				if(services.ContainsKey(args.Service.Name)) {
-					ServiceInfo serviceInfo = services[args.Service.Name];
-	            	if (serviceInfo != null)
-	                	services.Remove (serviceInfo.Name);
-
-	                if (ServiceRemoved != null)
-	                    ServiceRemoved (this, new ServiceArgs (serviceInfo));
-	            }
-			}
-        }
-        */
-
 		private void PhotoServiceThread ()
 		{
 			running = true;
