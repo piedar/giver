@@ -1,3 +1,7 @@
+2007-06-29  Scott Reeves <sreeves@novell.com> 
+
+	* src/TrayPopupWindow.cs: Add initial popup widow
+
 2007-06-29  Boyd Timothy <btimothy@gmail.com> 
 
 	* src/TargetService.cs: Stubbed out a ProgressBar and ProgressLabel. 
