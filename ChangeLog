@@ -1,3 +1,8 @@
+2007-07-03  Boyd Timothy <btimothy@gmail.com> 
+
+	* configure.ac: Bump the version to 0.1.5 now that
+	  0.1.4 has been released.
+
 2007-06-29  Calvin Gaisford <calvinrg@gmail.com> 
 
 	* configure.ac, NEWS: Update the version
