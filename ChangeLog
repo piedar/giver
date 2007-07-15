@@ -1,3 +1,8 @@
+2007-07-15  Brady Anderson <brady.anderson@gmail.com> 
+
+	* src/ServiceLocator.cs: used a different constructor when newing up
+	  the service class.  asking specifically for IP4 addresses
+
 2007-07-15  Calvin Gaisford <calvinrg@gmail.com> 
 
 	* src/giver.in: fixed up the process name

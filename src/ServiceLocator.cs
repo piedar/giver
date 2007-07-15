@@ -112,7 +112,11 @@ namespace Giver {
 		{
             if (client == null) {
                 client = new Avahi.Client ();
-                browser = new ServiceBrowser (client, "_giver._tcp");
+                
+                browser = 
+                	new ServiceBrowser (client, -1, Avahi.Protocol.IPv4, "_giver._tcp", "local", Avahi.LookupFlags.UseMulticast);
+                //browser = new ServiceBrowser ((client, "_giver._tcp");
+               
                 browser.ServiceAdded += OnServiceAdded;
                 browser.ServiceRemoved += OnServiceRemoved;
             }
