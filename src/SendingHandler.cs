@@ -299,11 +299,13 @@ namespace Giver
 								}
 
 								if(TransferProgress != null) {
-									TransferProgress(new TransferStatusArgs(sh.fileCount, counter, fileName,
+									// only send the signal every so often
+									if(request.ContentLength % (totalRead / 2048) == 0) {
+										TransferProgress(new TransferStatusArgs(sh.fileCount, counter, fileName,
 														Protocol.ProtocolTypeFile, sh.totalSize,
 														entireSize, request.ContentLength, totalRead, serviceInfo ));
+									}
 								}
-
 
 							} while(sizeRead == 2048);
 							//Logger.Debug("SEND: We Read from the file {0} bytes", totalRead);

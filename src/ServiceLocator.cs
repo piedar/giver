@@ -241,8 +241,8 @@ namespace Giver {
 					services[serviceInfo.Name] = serviceInfo;
 					
 					if(serviceInfo.PhotoType.CompareTo(Preferences.Local) == 0 ||
-						serviceInfo.PhotoType.CompareTo (Preferences.Gravatar) == 0) {
-						
+						serviceInfo.PhotoType.CompareTo (Preferences.Gravatar) == 0 ||
+						serviceInfo.PhotoType.CompareTo (Preferences.Uri) == 0) {
 						// Queue the resolution of the photo
 						PhotoService.QueueResolve (serviceInfo);
 					}		

@@ -6,4 +6,4 @@ libdir="@pkglibdir@"
 
 cd ${libdir}
 
-exec mono "Giver.exe" "$@"
+exec -a "Giver" mono "Giver.exe" "$@"

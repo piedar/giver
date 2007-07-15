@@ -403,7 +403,7 @@ namespace Giver
 					//Logger.Debug("RECEIVE: About to do a Gtk.Application.Invoke for the notify dude.");
 					Gtk.Application.Invoke( delegate {
 						string summary = String.Format(Catalog.GetString("{0} is done giving"), sd.userName);
-						string body = String.Format(Catalog.GetString("You have received all of the sent files"));
+						string body = String.Format(Catalog.GetString("You have received all of the sent files...Welcome to the sow shul"));
 
 						//Logger.Debug("RECEIVE: Inside the Gtk.Application.Invoke dude");
 						Notification notify = new Notification(	summary, 

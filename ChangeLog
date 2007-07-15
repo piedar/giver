@@ -1,5 +1,13 @@
 2007-07-15  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* src/giver.in: fixed up the process name
+	* src/ServiceLocator.cs: Added support for web avatars
+	* src/SendingHandler.cs: changed the status messages
+	* src/RequestHandler.cs: Added social message
+	* configure.ac: changed the version after new release
+
+2007-07-15  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/SendingHandler.cs: Updated to not cache the stream on a send
 	* src/RequestHandler.cs: Updated request handler to flush on write
 
