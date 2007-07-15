@@ -363,8 +363,10 @@ namespace Giver
 				do {
 					readCount = context.Request.InputStream.Read(buffer, 0, 2048);
 					totalRead += readCount;
-					if(readCount > 0)
-						fs.Write(buffer, 0, readCount);					
+					if(readCount > 0) {
+						fs.Write(buffer, 0, readCount);
+						fs.Flush();
+					}					
 				} while( (readCount > 0) && (totalRead <= context.Request.ContentLength64) );
 
 				//Logger.Debug("RECEIVE: We Read from the input stream {0} bytes", totalRead);

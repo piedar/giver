@@ -1,3 +1,8 @@
+2007-07-15  Calvin Gaisford <calvinrg@gmail.com> 
+
+	* src/SendingHandler.cs: Updated to not cache the stream on a send
+	* src/RequestHandler.cs: Updated request handler to flush on write
+
 2007-07-03  Boyd Timothy <btimothy@gmail.com> 
 
 	* configure.ac: Bump the version to 0.1.5 now that

@@ -268,6 +268,8 @@ namespace Giver
 						request.Headers.Set(Protocol.Request, Protocol.Payload);
 						request.Headers.Set(Protocol.Type, Protocol.ProtocolTypeFile);
 						request.Headers.Set(Protocol.Count, counter.ToString());
+						// don't buffer the request being sent
+						request.AllowWriteStreamBuffering = false;
 						string fileName = Path.GetFileName(filePair.file);
 						request.Headers.Set(Protocol.Name, fileName);
 						request.Headers.Set(Protocol.RelativePath, filePair.relativePath);
