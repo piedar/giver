@@ -278,7 +278,7 @@ namespace Giver
 				string fileName = context.Request.Headers[Protocol.Name];
 				string relativePath = context.Request.Headers[Protocol.RelativePath];
 
-				byte[] buffer = new byte[2048];
+				byte[] buffer = new byte[8192];
 				int readCount = 0;
 				long totalRead = 0;
 				int fileInstance = 1;
@@ -361,7 +361,7 @@ namespace Giver
 				FileStream fs = new FileStream(newFilePath, FileMode.CreateNew);
 
 				do {
-					readCount = context.Request.InputStream.Read(buffer, 0, 2048);
+					readCount = context.Request.InputStream.Read(buffer, 0, 8192);
 					totalRead += readCount;
 					if(readCount > 0) {
 						fs.Write(buffer, 0, readCount);
@@ -403,7 +403,7 @@ namespace Giver
 					//Logger.Debug("RECEIVE: About to do a Gtk.Application.Invoke for the notify dude.");
 					Gtk.Application.Invoke( delegate {
 						string summary = String.Format(Catalog.GetString("{0} is done giving"), sd.userName);
-						string body = String.Format(Catalog.GetString("You have received all of the sent files...Welcome to the sow shul"));
+						string body = String.Format(Catalog.GetString("You have received all of the sent files...Welcome to the sow shul!"));
 
 						//Logger.Debug("RECEIVE: Inside the Gtk.Application.Invoke dude");
 						Notification notify = new Notification(	summary, 
@@ -449,15 +449,15 @@ namespace Giver
 
 				int sizeRead = 0;
 				int totalRead = 0;
-				byte[] buffer = new byte[2048];
+				byte[] buffer = new byte[8192];
 
 				do {
-					sizeRead = fs.Read(buffer, 0, 2048);
+					sizeRead = fs.Read(buffer, 0, 8192);
 					totalRead += sizeRead;
 					if(sizeRead > 0) {
 						stream.Write(buffer, 0, sizeRead);
 					}
-				} while(sizeRead == 2048);
+				} while(sizeRead == 8192);
 
 				stream.Close();
 				fs.Close();

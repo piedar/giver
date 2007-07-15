@@ -281,7 +281,7 @@ namespace Giver
 							
 							int sizeRead = 0;
 							int totalRead = 0;
-							byte[] buffer = new byte[2048];
+							byte[] buffer = new byte[8192];
 
 							if(FileTransferStarted != null) {
 								FileTransferStarted(new TransferStatusArgs(sh.fileCount, counter, fileName,
@@ -291,7 +291,7 @@ namespace Giver
 
 
 							do {
-								sizeRead = filestream.Read(buffer, 0, 2048);
+								sizeRead = filestream.Read(buffer, 0, 8192);
 								totalRead += sizeRead;
 								entireSize += sizeRead;
 								if(sizeRead > 0) {
@@ -299,15 +299,12 @@ namespace Giver
 								}
 
 								if(TransferProgress != null) {
-									// only send the signal every so often
-									if(request.ContentLength % (totalRead / 2048) == 0) {
-										TransferProgress(new TransferStatusArgs(sh.fileCount, counter, fileName,
-														Protocol.ProtocolTypeFile, sh.totalSize,
-														entireSize, request.ContentLength, totalRead, serviceInfo ));
-									}
+									TransferProgress(new TransferStatusArgs(sh.fileCount, counter, fileName,
+													Protocol.ProtocolTypeFile, sh.totalSize,
+													entireSize, request.ContentLength, totalRead, serviceInfo ));
 								}
 
-							} while(sizeRead == 2048);
+							} while(sizeRead == 8192);
 							//Logger.Debug("SEND: We Read from the file {0} bytes", totalRead);
 							//Logger.Debug("SEND: The content length is {0} bytes", filestream.Length);
 
@@ -348,9 +345,9 @@ namespace Giver
 
 					//Logger.Debug("RECEIVE: About to do a Gtk.Application.Invoke for the notify dude.");
 					Gtk.Application.Invoke( delegate {
-						string body = String.Format(Catalog.GetString("{0} has received the file(s)."), serviceInfo.UserName);
+						string body = String.Format(Catalog.GetString("{0} has received the file(s). Welcome to the sow shul!"), serviceInfo.UserName);
 						//Logger.Debug("RECEIVE: Inside the Gtk.Application.Invoke dude");
-						Notification notify = new Notification(	Catalog.GetString("Done Giving Files"), 
+						Notification notify = new Notification(	Catalog.GetString("Done Giving Files."), 
 																body,
 																serviceInfo.Photo);
 

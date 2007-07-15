@@ -310,25 +310,25 @@ namespace Giver
 
 		private void OnTrayIconEnterNotifyEvent(object o, EventArgs args)
 		{
-			cursorOverTrayIcon = true;
+/*			cursorOverTrayIcon = true;
 			if (cursorOverTrayIcon) {
 				// only show the popup when the cursor is still over the
 				// tray icon after 500ms
-				GLib.Timeout.Add (500, delegate {
-					if (cursorOverTrayIcon){ 
-						Logger.Info("Mousing over tray icon");
-						popup = new TrayPopupWindow();
-						//popup.Move(500, 600);
-						this.PositionPopup();
-						popup.ShowAll();
-					}
-					return false;
-				});
+				//GLib.Timeout.Add (500, delegate {
+				//	if (cursorOverTrayIcon){ 
+				//		Logger.Info("Mousing over tray icon");
+				//		popup = new TrayPopupWindow();
+				//		//popup.Move(500, 600);
+				//		this.PositionPopup();
+				//		popup.ShowAll();
+				//	}
+				//	return false;
+				//});
 			}			//(EnterNotifyEventArgs) args;
 			//EventCrossing eventCrossing = args.Event
 
 
-		
+*/		
 		}
 
 		private void OnTrayIconLeaveNotifyEvent(object o, EventArgs args)

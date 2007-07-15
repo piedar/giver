@@ -46,6 +46,8 @@ namespace Giver
 		private ServiceInfo serviceInfo;
 		private bool isManual;
 		private Gtk.Image image;
+		private double progressFraction;
+		private bool updateProgress;
 		
 		private ProgressBar progressBar;
 		private Label progressLabel;
@@ -68,6 +70,8 @@ namespace Giver
 			this.BorderWidth = 0;
 			this.Relief = Gtk.ReliefStyle.None;
 			this.CanFocus = false;
+			progressFraction = 0;
+			updateProgress = false;
 			
 			VBox outerVBox = new VBox (false, 4);
 	        HBox hbox = new HBox(false, 10);
@@ -291,19 +295,32 @@ namespace Giver
 					args.CurrentCount,
 					args.TotalCount);
 			});
+
+			if(!updateProgress) {
+				updateProgress = true;
+				GLib.Timeout.Add(50, UpdateProgressBar);
+			}
 		}
 		
 		private void TransferProgressHandler (TransferStatusArgs args)
 		{
-			double fraction = ((double)args.TotalBytesTransferred) / ((double)args.TotalBytes);
-
-			Gtk.Application.Invoke (delegate {
-				progressBar.Fraction = fraction;
-			});
+			progressFraction = ((double)args.TotalBytesTransferred) / ((double)args.TotalBytes);
 		}
-		
+
+		private bool UpdateProgressBar()
+		{
+			if(updateProgress) {
+				Gtk.Application.Invoke (delegate {
+					progressBar.Fraction = progressFraction;
+				});
+			}
+			return updateProgress;
+		}
+
+
 		private void TransferEndedHandler (TransferStatusArgs args)
 		{
+			updateProgress = false;
 			Giver.Application.Instance.FileTransferStarted -= FileTransferStartedHandler;
 			Giver.Application.Instance.TransferProgress -= TransferProgressHandler;
 			Giver.Application.Instance.TransferEnded -= TransferEndedHandler;

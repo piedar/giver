@@ -1,3 +1,9 @@
+2007-07-16  Calvin Gaisford <calvinrg@gmail.com> 
+
+	* src/SendingHandler.cs, src/RequestHandler.cs: changed buffer to 8K
+	* src/Application.cs: removed notification window that was broken
+	* src/TargetService.cs: changed progress notification to be time based
+
 2007-07-15  Brady Anderson <brady.anderson@gmail.com> 
 
 	* src/ServiceLocator.cs: used a different constructor when newing up
