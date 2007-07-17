@@ -52,6 +52,7 @@ namespace Giver {
     public class ServiceLocator 
 	{
 		private System.Object locker;
+		private System.Object resolverQueueLocker;
 		private System.Object resolverLocker;
         private Avahi.Client client;
         private ServiceBrowser browser;
@@ -100,6 +101,7 @@ namespace Giver {
         public ServiceLocator () 
 		{
 			locker = new Object();
+			resolverQueueLocker = new Object();
 			resolverLocker = new Object();
 			services = new Dictionary <string, ServiceInfo> ();
         	resolvers = new List <ServiceResolver> ();
@@ -120,6 +122,15 @@ namespace Giver {
                 browser.ServiceAdded += OnServiceAdded;
                 browser.ServiceRemoved += OnServiceRemoved;
             }
+
+			foreach(Avahi.ServiceInfo si in browser.Services) {
+				ServiceResolver resolver = new ServiceResolver (client, si);
+				lock(resolverLocker) {
+	            	resolvers.Add (resolver);
+				}
+	            resolver.Found += OnServiceResolved;
+	            resolver.Timeout += OnServiceTimeout;
+			}
 
 			runningResolverThread = true;
 			resolverThread  = new Thread(ResolverThreadLoop);
@@ -148,7 +159,9 @@ namespace Giver {
                 return;
             
             ServiceResolver resolver = new ServiceResolver (client, args.Service);
-            resolvers.Add (resolver);
+			lock(resolverLocker) {
+            	resolvers.Add (resolver);
+			}
             resolver.Found += OnServiceResolved;
             resolver.Timeout += OnServiceTimeout;
 
@@ -159,9 +172,11 @@ namespace Giver {
 		{
 			ServiceResolver sr = (ServiceResolver) o;
 
-            resolvers.Remove (sr);
-
 			lock(resolverLocker) {
+            	resolvers.Remove (sr);
+			}
+
+			lock(resolverQueueLocker) {
 				resolverQueue.Enqueue(sr);
 			}
 			resetResolverEvent.Set();
@@ -171,8 +186,11 @@ namespace Giver {
 		{
 			Logger.Debug("Service timed out");
 			ServiceResolver sr = (ServiceResolver) o;
+			
+			lock(resolverLocker) {
+            	resolvers.Remove (sr);
+			}
 
-            resolvers.Remove (sr);
             sr.Dispose ();
         }
 
@@ -202,7 +220,7 @@ namespace Giver {
 				ServiceResolver sr = null;
 				resetResolverEvent.Reset();
 
-				lock(resolverLocker) {
+				lock(resolverQueueLocker) {
 					if(resolverQueue.Count > 0)
 						sr = resolverQueue.Dequeue();
 				}

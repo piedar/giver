@@ -1,3 +1,8 @@
+2007-07-18  Calvin Gaisford <calvinrg@gmail.com> 
+
+	* src/ServiceLocator.cs: updated to quickly load all people on the
+	  network
+
 2007-07-16  Brady Anderson <brady.anderson@gmail.com> 
 
 	* src/PhotoService.cs: added code to requeue the avatar update if it
