@@ -90,6 +90,10 @@ namespace Giver
 					// coming from the network
 					Logger.Debug("Exception getting photo {0}", e);
 					//photoInfo.Photo = Utilities.GetIcon ("computer", 48);
+					
+					// Failed to get the avatar requeue
+					lock (PhotoService.serviceLocker)
+						PhotoService.outstanding.Enqueue (serviceInfo);
 				}
 			}
 		}
