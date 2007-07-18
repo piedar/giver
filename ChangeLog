@@ -1,5 +1,10 @@
 2007-07-18  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* configure.ac: updated to release version 0.1.7
+	* NEWS: updated for release
+
+2007-07-18  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* src/ServiceLocator.cs: updated to quickly load all people on the
 	  network
 

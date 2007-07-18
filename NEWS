@@ -4,6 +4,10 @@ Giver NEWS
 Please send questions and suggestions to
 <calvinrg@gmail.com>.
 
+Version 0.1.7
+* Fixed up http communication so speed up the transfers
+* Fixed up Avatar fetching to retry on failure
+
 Version 0.1.4
 * Added Avatars, progressbars, notification, and other goodies
 * Added Sharing of Tomboy notes
