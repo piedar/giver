@@ -1,5 +1,9 @@
 2007-07-18  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* configure.ac: updated for next iteration
+
+2007-07-18  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* configure.ac: updated to release version 0.1.7
 	* NEWS: updated for release
 
