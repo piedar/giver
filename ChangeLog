@@ -1,3 +1,17 @@
+2007-08-02  Calvin Gaisford <calvinrg@gmail.com> 
+
+	* AUTHORS: Updated to contain Calvin and Scott
+	* src/Utilities.cs, src/ServiceInfo.cs, src/TargetWindow.cs,
+	  src/Logger.cs, src/GiverMenuItem.cs, src/PreferencesDialog.cs,
+	  src/Defines.cs.in, src/ServiceLocator.cs, src/SendingHandler.cs,
+	  src/RequestHandler.cs, src/UriList.cs, src/GiverService.cs,
+	  src/Preferences.cs, src/Protocol.cs, src/Application.cs,
+	  src/TransferStatusArgs.cs, src/TrayLib.cs, src/TargetService.cs,
+	  src/PhotoService.cs: Changed header to MIT License
+	* COPYING: Modified to MIT License
+	* MAINTAINERS: Updated to contain everyone
+	* NEWS: minor
+
 2007-07-18  Calvin Gaisford <calvinrg@gmail.com> 
 
 	* configure.ac: updated for next iteration
