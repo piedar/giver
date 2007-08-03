@@ -1,5 +1,11 @@
 2007-08-02  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* AUTHORS, MAINTAINERS: Fixed email address
+	* src/PreferencesDialog.cs: fixed email address
+	* src/Application.cs: Fixed about
+
+2007-08-02  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* AUTHORS: Updated to contain Calvin and Scott
 	* src/Utilities.cs, src/ServiceInfo.cs, src/TargetWindow.cs,
 	  src/Logger.cs, src/GiverMenuItem.cs, src/PreferencesDialog.cs,

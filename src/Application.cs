@@ -365,8 +365,7 @@ namespace Giver
 		{
             string [] authors = new string [] {
                 "Calvin Gaisford <calvinrg@gmail.com>",
-                "Scott Reeves <sreeves@gmail.com>",
-                "Travis Hansen <thansen@novell.com>"
+                "Scott Reeves <sreeves@gmail.com>"
             };
 
            /* string [] documenters = new string [] {
@@ -383,9 +382,8 @@ namespace Giver
             about.Version = Defines.Version;
             about.Logo = Utilities.GetIcon("giver-48", 48);
             about.Copyright =
-                Catalog.GetString ("Copyright \xa9 2007 Calvin Gaisford");
-            about.Comments = Catalog.GetString ("A simple and easy to use desktop " +
-                                "file-sharing application.");
+                Catalog.GetString ("Copyright \xa9 2007 Novell, Inc.");
+            about.Comments = Catalog.GetString ("Easy File Sharing");
             about.Website = "http://idea.opensuse.org/content/ideas/easy-file-sharing";
             about.WebsiteLabel = Catalog.GetString("Homepage");
             about.Authors = authors;

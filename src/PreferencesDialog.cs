@@ -2,7 +2,7 @@
  *  PreferencesDialog.cs
  *
  *  Copyright (C) 2007 Novell, Inc.
- *  Written by Scott Reeves <sreeves@novell.com>
+ *  Written by Scott Reeves <sreeves@gmail.com>
  ****************************************************************************/
 
 /*  THIS FILE IS LICENSED UNDER THE MIT LICENSE AS OUTLINED IMMEDIATELY BELOW: 
