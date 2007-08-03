@@ -3,6 +3,9 @@ Giver NEWS
 Please send questions and suggestions to
 <calvinrg@gmail.com>.
 
+Version 0.1.8
+* Re-licenced to MIT
+
 Version 0.1.7
 * Fixed up http communication so speed up the transfers
 * Fixed up Avatar fetching to retry on failure

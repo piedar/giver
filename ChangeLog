@@ -1,5 +1,9 @@
 2007-08-02  Calvin Gaisford <calvinrg@gmail.com> 
 
+	* NEWS: Updated for Release 0.1.8
+
+2007-08-02  Calvin Gaisford <calvinrg@gmail.com> 
+
 	* AUTHORS, MAINTAINERS: Fixed email address
 	* src/PreferencesDialog.cs: fixed email address
 	* src/Application.cs: Fixed about
