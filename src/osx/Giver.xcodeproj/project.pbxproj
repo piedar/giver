@@ -1,0 +1,358 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3E0ADAFB0CB2F59C00F6315A /* mdns_helper.c in Sources */ = {isa = PBXBuildFile; fileRef = 3E0ADAFA0CB2F59C00F6315A /* mdns_helper.c */; };
+		3E2E0269085B7A1A00D6B206 /* Giver.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3E2E0268085B7A1A00D6B206 /* Giver.icns */; };
+		3E94CFEF0858F7E5009C6B9E /* GiverWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = 3E94CFED0858F7E5009C6B9E /* GiverWindow.nib */; };
+		3E94CFF20858F83A009C6B9E /* GiverWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E94CFF10858F83A009C6B9E /* GiverWindowController.m */; };
+		3E94D0110858FB8B009C6B9E /* GiverAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E94D0100858FB8B009C6B9E /* GiverAppDelegate.m */; };
+		3EE2EB8E08591049006D7047 /* GiverNetService.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EE2EB8D08591049006D7047 /* GiverNetService.m */; };
+		3EF0E6A3085FD82F00C61A36 /* CopyTargetWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = 3EF0E6A1085FD82F00C61A36 /* CopyTargetWindow.nib */; };
+		3EF0E6A6085FD9E200C61A36 /* CopyTargetWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EF0E6A5085FD9E200C61A36 /* CopyTargetWindowController.m */; };
+		8D11072A0486CEB800E47090 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 29B97318FDCFA39411CA2CEA /* MainMenu.nib */; };
+		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
+		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
+		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		29B97319FDCFA39411CA2CEA /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/MainMenu.nib; sourceTree = "<group>"; };
+		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		32CA4F630368D1EE00C91783 /* Giver_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Giver_Prefix.pch; sourceTree = "<group>"; };
+		3E0ADAF90CB2F59C00F6315A /* mdns_helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mdns_helper.h; path = ../common/mdns_helper.h; sourceTree = "<group>"; };
+		3E0ADAFA0CB2F59C00F6315A /* mdns_helper.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mdns_helper.c; path = ../common/mdns_helper.c; sourceTree = "<group>"; };
+		3E2E0268085B7A1A00D6B206 /* Giver.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Giver.icns; sourceTree = "<group>"; };
+		3E94CFEE0858F7E5009C6B9E /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/GiverWindow.nib; sourceTree = "<group>"; };
+		3E94CFF00858F83A009C6B9E /* GiverWindowController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GiverWindowController.h; sourceTree = "<group>"; };
+		3E94CFF10858F83A009C6B9E /* GiverWindowController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = GiverWindowController.m; sourceTree = "<group>"; };
+		3E94D00F0858FB8B009C6B9E /* GiverAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = GiverAppDelegate.h; sourceTree = "<group>"; };
+		3E94D0100858FB8B009C6B9E /* GiverAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = GiverAppDelegate.m; sourceTree = "<group>"; };
+		3EE2EB8C08591049006D7047 /* GiverNetService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GiverNetService.h; sourceTree = "<group>"; };
+		3EE2EB8D08591049006D7047 /* GiverNetService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GiverNetService.m; sourceTree = "<group>"; };
+		3EF0E6A2085FD82F00C61A36 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/CopyTargetWindow.nib; sourceTree = "<group>"; };
+		3EF0E6A4085FD9E200C61A36 /* CopyTargetWindowController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CopyTargetWindowController.h; sourceTree = "<group>"; };
+		3EF0E6A5085FD9E200C61A36 /* CopyTargetWindowController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = CopyTargetWindowController.m; sourceTree = "<group>"; };
+		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		8D1107320486CEB800E47090 /* Giver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Giver.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8D11072E0486CEB800E47090 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		080E96DDFE201D6D7F000001 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				3E94CFF00858F83A009C6B9E /* GiverWindowController.h */,
+				3E94CFF10858F83A009C6B9E /* GiverWindowController.m */,
+				3E94D00F0858FB8B009C6B9E /* GiverAppDelegate.h */,
+				3E94D0100858FB8B009C6B9E /* GiverAppDelegate.m */,
+				3EE2EB8C08591049006D7047 /* GiverNetService.h */,
+				3EE2EB8D08591049006D7047 /* GiverNetService.m */,
+				3EF0E6A4085FD9E200C61A36 /* CopyTargetWindowController.h */,
+				3EF0E6A5085FD9E200C61A36 /* CopyTargetWindowController.m */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		1058C7A2FEA54F0111CA2CBB /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
+				13E42FB307B3F0F600E4EEF1 /* CoreData.framework */,
+				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8D1107320486CEB800E47090 /* Giver.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* Giver */ = {
+			isa = PBXGroup;
+			children = (
+				3ED4C65F0CBD2486003FF73B /* common */,
+				080E96DDFE201D6D7F000001 /* Classes */,
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = Giver;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				32CA4F630368D1EE00C91783 /* Giver_Prefix.pch */,
+				29B97316FDCFA39411CA2CEA /* main.m */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				3E2E0268085B7A1A00D6B206 /* Giver.icns */,
+				8D1107310486CEB800E47090 /* Info.plist */,
+				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
+				29B97318FDCFA39411CA2CEA /* MainMenu.nib */,
+				3E94CFED0858F7E5009C6B9E /* GiverWindow.nib */,
+				3EF0E6A1085FD82F00C61A36 /* CopyTargetWindow.nib */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
+				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3ED4C65F0CBD2486003FF73B /* common */ = {
+			isa = PBXGroup;
+			children = (
+				3E0ADAF90CB2F59C00F6315A /* mdns_helper.h */,
+				3E0ADAFA0CB2F59C00F6315A /* mdns_helper.c */,
+			);
+			name = common;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8D1107260486CEB800E47090 /* Giver */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3E2F15380858EEBD006033D4 /* Build configuration list for PBXNativeTarget "Giver" */;
+			buildPhases = (
+				8D1107290486CEB800E47090 /* Resources */,
+				8D11072C0486CEB800E47090 /* Sources */,
+				8D11072E0486CEB800E47090 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Giver;
+			productInstallPath = "$(HOME)/Applications";
+			productName = Giver;
+			productReference = 8D1107320486CEB800E47090 /* Giver.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 3E2F153C0858EEBD006033D4 /* Build configuration list for PBXProject "Giver" */;
+			hasScannedForEncodings = 1;
+			mainGroup = 29B97314FDCFA39411CA2CEA /* Giver */;
+			projectDirPath = "";
+			targets = (
+				8D1107260486CEB800E47090 /* Giver */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8D1107290486CEB800E47090 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D11072A0486CEB800E47090 /* MainMenu.nib in Resources */,
+				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
+				3E94CFEF0858F7E5009C6B9E /* GiverWindow.nib in Resources */,
+				3E2E0269085B7A1A00D6B206 /* Giver.icns in Resources */,
+				3EF0E6A3085FD82F00C61A36 /* CopyTargetWindow.nib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8D11072C0486CEB800E47090 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D11072D0486CEB800E47090 /* main.m in Sources */,
+				3E94CFF20858F83A009C6B9E /* GiverWindowController.m in Sources */,
+				3E94D0110858FB8B009C6B9E /* GiverAppDelegate.m in Sources */,
+				3EE2EB8E08591049006D7047 /* GiverNetService.m in Sources */,
+				3EF0E6A6085FD9E200C61A36 /* CopyTargetWindowController.m in Sources */,
+				3E0ADAFB0CB2F59C00F6315A /* mdns_helper.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		089C165CFE840E0CC02AAC07 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				089C165DFE840E0CC02AAC07 /* English */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		29B97318FDCFA39411CA2CEA /* MainMenu.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				29B97319FDCFA39411CA2CEA /* English */,
+			);
+			name = MainMenu.nib;
+			sourceTree = "<group>";
+		};
+		3E94CFED0858F7E5009C6B9E /* GiverWindow.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3E94CFEE0858F7E5009C6B9E /* English */,
+			);
+			name = GiverWindow.nib;
+			sourceTree = "<group>";
+		};
+		3EF0E6A1085FD82F00C61A36 /* CopyTargetWindow.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				3EF0E6A2085FD82F00C61A36 /* English */,
+			);
+			name = CopyTargetWindow.nib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		3E2F15390858EEBD006033D4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Giver_Prefix.pch;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				PREBINDING = NO;
+				PRODUCT_NAME = Giver;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		3E2F153A0858EEBD006033D4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Giver_Prefix.pch;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				PREBINDING = NO;
+				PRODUCT_NAME = Giver;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		3E2F153B0858EEBD006033D4 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Giver_Prefix.pch;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				PRODUCT_NAME = Giver;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Default;
+		};
+		3E2F153D0858EEBD006033D4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		3E2F153E0858EEBD006033D4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		3E2F153F0858EEBD006033D4 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Default;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3E2F15380858EEBD006033D4 /* Build configuration list for PBXNativeTarget "Giver" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3E2F15390858EEBD006033D4 /* Debug */,
+				3E2F153A0858EEBD006033D4 /* Release */,
+				3E2F153B0858EEBD006033D4 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		3E2F153C0858EEBD006033D4 /* Build configuration list for PBXProject "Giver" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3E2F153D0858EEBD006033D4 /* Debug */,
+				3E2F153E0858EEBD006033D4 /* Release */,
+				3E2F153F0858EEBD006033D4 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}

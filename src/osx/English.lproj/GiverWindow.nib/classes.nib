@@ -1,0 +1,20 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {toggleSharing = id; }; 
+            CLASS = GiverWindowController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                availableMachinesTable = id; 
+                longerStatusText = id; 
+                serviceNameColumn = id; 
+                serviceNameField = id; 
+                shortStatusText = id; 
+                toggleSharingButton = id; 
+            }; 
+            SUPERCLASS = NSWindowController; 
+        }
+    ); 
+    IBVersion = 1; 
+}

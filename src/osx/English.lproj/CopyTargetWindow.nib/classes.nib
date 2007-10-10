@@ -1,0 +1,19 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {cancel = id; copyFiles = id; }; 
+            CLASS = CopyTargetWindowController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                compTableColumn = id; 
+                compTableView = NSTableView; 
+                copyFilesButton = id; 
+                fileCopyColumn = id; 
+                fileTableView = NSTableView; 
+            }; 
+            SUPERCLASS = NSWindowController; 
+        }, 
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }
+    ); 
+    IBVersion = 1; 
+}

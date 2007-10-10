@@ -1,8 +1,7 @@
 /***************************************************************************
- *  Defines.cs.in
+ *  GiverAppDelegate.h
  *
- *  Copyright (C) 2007 Novell, Inc.
- *  Written by Calvin Gaisford <calvinrg@gmail.com>
+ *  Copyright (C) 2007 Calvin Gaisford <calvinrg@gmail.com>
  ****************************************************************************/
 
 /*  THIS FILE IS LICENSED UNDER THE MIT LICENSE AS OUTLINED IMMEDIATELY BELOW: 
@@ -26,16 +25,32 @@
  *  DEALINGS IN THE SOFTWARE.
  */
 
-using System;
+#import <Cocoa/Cocoa.h>
 
-namespace Giver
+#define	myMasterSwitch	( 1 )
+
+#if		myMasterSwitch
+#define	gLog1(x)	NSLog(x)
+#define	gLog2(x,y)	NSLog(x,y)
+#else
+#define	gLog1(x)
+#define	gLog2(x,y)
+#endif
+
+@interface GiverAppDelegate : NSObject
 {
-	public class Defines
-	{
-		public const string Version          	= "@version@";
-		public const string DataDir          	= "@datadir@";
-		public const string GnomeLocaleDir		= "@datadir@/locale";
-        public const string SoundDir            = "@datadir@/giver/sounds";
-        public const string GladeDir            = "@datadir@/giver/glade";
-	}
+
 }
+
+- (IBAction)showGiverWindow:(id)sender;
+
+//==========================================
+// NSApplication Delegates
+//==========================================
+- (void)applicationDidFinishLaunching:(NSNotification*)notification;
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender;
+- (BOOL)application:(NSApplication *)sender openFile:(NSString *)filename;
+- (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames;
+
+
+@end
