@@ -43,7 +43,7 @@ PKG_CHECK_MODULES([GLIB_SHARP_20], [glib-sharp-2.0])
 PKG_CHECK_MODULES([GNOME_SHARP_20], [gnome-sharp-2.0])
 PKG_CHECK_MODULES([GTK_DOTNET_20], [gtk-dotnet-2.0])
 PKG_CHECK_MODULES([NOTIFY_SHARP], [notify-sharp])
-PKG_CHECK_MODULES([AVAHI_SHARP], [avahi-sharp])
+PKG_CHECK_MODULES([MONO_ZEROCONF], [mono-zeroconf])
 
 
 AC_ARG_ENABLE(debug,

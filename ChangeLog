@@ -1,3 +1,10 @@
+2008-02-13  Andrew Jorgensen <andrew.jorgensen@gmail.com> 
+
+	* src/ServiceLocator.cs, src/GiverService.cs: Replaced avahi-sharp code with
+	  Mono.Zeroconf
+	* src/Makefile.am, giver.mdp, configure.ac: Depends on Mono.Zeroconf instead
+	  of avahi-sharp
+
 2007-08-02  Calvin Gaisford <calvinrg@gmail.com> 
 
 	* configure.ac: updated to 0.1.9

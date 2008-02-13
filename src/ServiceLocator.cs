@@ -33,7 +33,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 
-using Avahi;
+using Mono.Zeroconf;
 
 
 namespace Giver {
@@ -59,16 +59,8 @@ namespace Giver {
     public class ServiceLocator 
 	{
 		private System.Object locker;
-		private System.Object resolverQueueLocker;
-		private System.Object resolverLocker;
-        private Avahi.Client client;
         private ServiceBrowser browser;
         private Dictionary <string, ServiceInfo> services;
-        private List <ServiceResolver> resolvers;
-		private Queue <ServiceResolver> resolverQueue;
-		private Thread resolverThread;
-		private AutoResetEvent resetResolverEvent;
-		private bool runningResolverThread;
         private bool showLocals = true;
 
         public event ServiceHandler ServiceAdded;
@@ -108,100 +100,92 @@ namespace Giver {
         public ServiceLocator () 
 		{
 			locker = new Object();
-			resolverQueueLocker = new Object();
-			resolverLocker = new Object();
 			services = new Dictionary <string, ServiceInfo> ();
-        	resolvers = new List <ServiceResolver> ();
-			resolverQueue = new Queue<ServiceResolver> ();
-			resetResolverEvent = new AutoResetEvent(false);
 			Start();
         }
 
         public void Start () 
 		{
-            if (client == null) {
-                client = new Avahi.Client ();
-                
-                browser = 
-                	new ServiceBrowser (client, -1, Avahi.Protocol.IPv4, "_giver._tcp", "local", Avahi.LookupFlags.UseMulticast);
-                //browser = new ServiceBrowser ((client, "_giver._tcp");
+            if (browser == null) {
+                browser = new ServiceBrowser();
                
                 browser.ServiceAdded += OnServiceAdded;
                 browser.ServiceRemoved += OnServiceRemoved;
+				
+				browser.Browse("_giver._tcp", "local");
             }
-
-			foreach(Avahi.ServiceInfo si in browser.Services) {
-				ServiceResolver resolver = new ServiceResolver (client, si);
-				lock(resolverLocker) {
-	            	resolvers.Add (resolver);
-				}
-	            resolver.Found += OnServiceResolved;
-	            resolver.Timeout += OnServiceTimeout;
-			}
-
-			runningResolverThread = true;
-			resolverThread  = new Thread(ResolverThreadLoop);
-			resolverThread.Start();
         }
 
         public void Stop () 
 		{
-			runningResolverThread = false;
-			resetResolverEvent.Set();
-
-            if (client != null) {
+            if (browser != null) {
 				lock(locker) {
                 	services.Clear ();
 				}
                 browser.Dispose ();
-                client.Dispose ();
-                client = null;
                 browser = null;
             }
         }
 
-        private void OnServiceAdded (object o, ServiceInfoArgs args) 
-		{
-            if ((args.Service.Flags & LookupResultFlags.Local) > 0 && !showLocals)
-                return;
-            
-            ServiceResolver resolver = new ServiceResolver (client, args.Service);
-			lock(resolverLocker) {
-            	resolvers.Add (resolver);
-			}
-            resolver.Found += OnServiceResolved;
-            resolver.Timeout += OnServiceTimeout;
+        private void OnServiceAdded (object o, ServiceBrowseEventArgs args) 
+		{            
+			// Mono.Zeroconf doesn't expose these flags?
+			//if ((args.Service.Flags & LookupResultFlags.Local) > 0 && !showLocals)
+            //    return;
+			
+            args.Service.Resolved += OnServiceResolved;
+			args.Service.Resolve();
 
 			//Logger.Debug("ServiceLocator:OnServiceAdded : {0}", args.Service.Name);
         }
 
-        private void OnServiceResolved (object o, ServiceInfoArgs args) 
+        private void OnServiceResolved (object o, ServiceResolvedEventArgs args)
 		{
-			ServiceResolver sr = (ServiceResolver) o;
+			IResolvableService service = o as IResolvableService;
 
-			lock(resolverLocker) {
-            	resolvers.Remove (sr);
+			lock(locker) {
+				if (services.ContainsKey(service.Name)) {
+					// TODO: When making changes (like name or photo) at runtime becomes possible
+					// this should allow updates to this info
+					return; // we already have it somehow
+            	}
 			}
 
-			lock(resolverQueueLocker) {
-				resolverQueue.Enqueue(sr);
-			}
-			resetResolverEvent.Set();
-        }
+            ServiceInfo serviceInfo = new ServiceInfo (service.Name, service.HostEntry.AddressList[0], (ushort)service.Port);
 
-        private void OnServiceTimeout (object o, EventArgs args) 
-		{
-			Logger.Debug("Service timed out");
-			ServiceResolver sr = (ServiceResolver) o;
+			ITxtRecord record = service.TxtRecord;
+			serviceInfo.UserName = record["User Name"].ValueString;
+			serviceInfo.MachineName = record["Machine Name"].ValueString;
+			serviceInfo.Version = record["Version"].ValueString;
+			serviceInfo.PhotoType = record["PhotoType"].ValueString;
+			serviceInfo.PhotoLocation = record["Photo"].ValueString;
 			
-			lock(resolverLocker) {
-            	resolvers.Remove (sr);
+			Logger.Debug("Setting default photo");
+			serviceInfo.Photo = Utilities.GetIcon("blankphoto", 48);
+			
+			lock(locker) {
+				services[serviceInfo.Name] = serviceInfo;
+				
+				if(serviceInfo.PhotoType.CompareTo(Preferences.Local) == 0 ||
+					serviceInfo.PhotoType.CompareTo (Preferences.Gravatar) == 0 ||
+					serviceInfo.PhotoType.CompareTo (Preferences.Uri) == 0) {
+					// Queue the resolution of the photo
+					PhotoService.QueueResolve (serviceInfo);
+				}		
 			}
 
-            sr.Dispose ();
+            if (ServiceAdded != null)
+			{
+				Logger.Debug("About to call ServiceAdded");
+                ServiceAdded (this, new ServiceArgs (serviceInfo));
+				Logger.Debug("ServiceAdded was just called");
+			} else {
+				Logger.Debug("ServiceAdded was null and not called");
+			}
         }
 
-        private void OnServiceRemoved (object o, ServiceInfoArgs args) 
+
+        private void OnServiceRemoved (object o, ServiceBrowseEventArgs args) 
 		{
 			Logger.Debug("A Service was removed: {0}", args.Service.Name);
 
@@ -216,78 +200,6 @@ namespace Giver {
 	            }
 			}
         }
-
-
-		private void ResolverThreadLoop()
-		{
-			while(runningResolverThread) {
-
-				resetResolverEvent.WaitOne();
-
-				ServiceResolver sr = null;
-				resetResolverEvent.Reset();
-
-				lock(resolverQueueLocker) {
-					if(resolverQueue.Count > 0)
-						sr = resolverQueue.Dequeue();
-				}
-
-				// if there was nothing to do, re-loop
-				if(sr == null)
-					continue;
-
-	            string name = sr.Service.Name;
-
-				lock(locker) {
-					if (services.ContainsKey(sr.Service.Name)) {
-						continue; // we already have it somehow
-	            	}
-				}
-
-	            ServiceInfo serviceInfo = new ServiceInfo (name, sr.Service.Address, sr.Service.Port);
-
-	            foreach (byte[] txt in sr.Service.Text) {
-	                string txtstr = Encoding.UTF8.GetString (txt);
-	                string[] splitstr = txtstr.Split('=');
-
-	                if (splitstr.Length < 2)
-	                    continue;
-
-					if(splitstr[0].CompareTo("User Name") == 0)
-						serviceInfo.UserName = splitstr[1];
-					if(splitstr[0].CompareTo("Machine Name") == 0)
-						serviceInfo.MachineName = splitstr[1];
-					if(splitstr[0].CompareTo("Version") == 0)
-						serviceInfo.Version = splitstr[1];
-					if(splitstr[0].CompareTo("PhotoType") == 0)
-						serviceInfo.PhotoType = splitstr[1];
-					if(splitstr[0].CompareTo("Photo") == 0)
-						serviceInfo.PhotoLocation = splitstr[1];
-	            }
-
-				serviceInfo.Photo = Utilities.GetIcon("blankphoto", 48);
-				lock(locker) {
-					services[serviceInfo.Name] = serviceInfo;
-					
-					if(serviceInfo.PhotoType.CompareTo(Preferences.Local) == 0 ||
-						serviceInfo.PhotoType.CompareTo (Preferences.Gravatar) == 0 ||
-						serviceInfo.PhotoType.CompareTo (Preferences.Uri) == 0) {
-						// Queue the resolution of the photo
-						PhotoService.QueueResolve (serviceInfo);
-					}		
-				}
-
-	            if (ServiceAdded != null)
-				{
-					Logger.Debug("About to call ServiceAdded");
-	                ServiceAdded (this, new ServiceArgs (serviceInfo));
-					Logger.Debug("ServiceAdded was just called");
-				} else {
-					Logger.Debug("ServiceAdded was null and not called");
-				}
-
-			}
-		}
 
     }
 

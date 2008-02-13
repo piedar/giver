@@ -27,7 +27,7 @@
  */
 
 using System;
-using Avahi;
+using Mono.Zeroconf;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -44,9 +44,7 @@ namespace Giver
 	public class GiverService
 	{		
 		#region Private Types
-		private Avahi.Client client;
-        private EntryGroup eg;
-        private object eglock;
+		private RegisterService client;
 		private HttpListener listener;
 		private Thread listnerThread;
 		private bool running;
@@ -59,7 +57,6 @@ namespace Giver
 		public GiverService()
 		{
 			Logger.Debug("New GiverService was created");
-	        eglock = new Object();
 			running = true;
 
 			TcpListener server = new TcpListener(IPAddress.Any, 0);
@@ -75,18 +72,15 @@ namespace Giver
 
 			listnerThread  = new Thread(TcpServerThread);
 			listnerThread.Start();
-			Logger.Debug("About to create the Avahi client");
-            client = new Avahi.Client ();
-            client.StateChanged += OnClientStateChanged;
-			if(client.State == ClientState.Running)
-				RegisterService();
+			Logger.Debug("About to start the Zeroconf Service");
+            client = new RegisterService();
+			AdvertiseService();
 		}
 
 
         public void Stop ()
 		{
 			running = false;
-        	UnregisterService ();
 			listener.Stop();
 			//server.Stop();
 
@@ -96,85 +90,42 @@ namespace Giver
             }
         }
 
-
-        private void OnClientStateChanged (object o, ClientStateArgs args)
-		{  
-			Logger.Debug("OnClientStateChanged called with state = {0}", args.State);
-
-            if (args.State == ClientState.Running) {
-                RegisterService ();
-            }
-        }
-
-
-        private void RegisterService () 
+        private void AdvertiseService () 
 		{
-            lock (eglock) {
+            try {
+				Logger.Debug("Adding Zeroconf Service _giver._tcp");
+				TxtRecord txt = new TxtRecord();
+				
+				txt.Add("User Name", Application.Preferences.UserName);
+				txt.Add("Machine Name", Environment.MachineName);
+				txt.Add("Version", Defines.Version);
+				
+				if( Application.Preferences.PhotoType.CompareTo(Preferences.Local) == 0) {					
+					txt.Add("PhotoType", Preferences.Local);
+					txt.Add("Photo", "none");
+				} else if( Application.Preferences.PhotoType.CompareTo(Preferences.Gravatar) == 0) {
+					txt.Add("PhotoType", Preferences.Gravatar);
+					txt.Add("Photo", Giver.Utilities.GetMd5Sum(Application.Preferences.PhotoLocation));	
+				} else if( Application.Preferences.PhotoType.CompareTo(Preferences.Uri) == 0) {
+					txt.Add("PhotoType", Preferences.Uri);
+					txt.Add("Photo", Application.Preferences.PhotoLocation);
+				} else {
+					txt.Add("PhotoType", Preferences.None);
+					txt.Add("Photo", "none");
+				}
+				
+				client.Name = "giver on " + Application.Preferences.UserName + "@" + Environment.MachineName; 
+				client.RegType = "_giver._tcp";
+				client.ReplyDomain = "local.";
+				client.Port = (short)port;
+				client.TxtRecord = txt;
 
-                if (eg != null) {
-                    eg.Reset ();
-                } else {
-                    eg = new EntryGroup (client);
-                    eg.StateChanged += OnEntryGroupStateChanged;
-                }
-
-                try {
-					Logger.Debug("Adding Avahi Service  _giver._tcp");
-					string[] txtStrings;
-
-					if( Application.Preferences.PhotoType.CompareTo(Preferences.Local) == 0) {
-						txtStrings = new string[] { "User Name=" + Application.Preferences.UserName, 
-													"Machine Name=" + Environment.MachineName, 
-													"Version=" + Defines.Version,
-													"PhotoType=" + Preferences.Local,
-													"Photo=none" };
-					} else if( Application.Preferences.PhotoType.CompareTo(Preferences.Gravatar) == 0) {
-						txtStrings = new string[] { "User Name=" + Application.Preferences.UserName, 
-													"Machine Name=" + Environment.MachineName, 
-													"Version=" + Defines.Version,
-													"PhotoType=" + Preferences.Gravatar,
-													"Photo=" + Giver.Utilities.GetMd5Sum(Application.Preferences.PhotoLocation) };	
-					} else if( Application.Preferences.PhotoType.CompareTo(Preferences.Uri) == 0) {
-						txtStrings = new string[] { "User Name=" + Application.Preferences.UserName, 
-													"Machine Name=" + Environment.MachineName, 
-													"Version=" + Defines.Version,
-													"PhotoType=" + Preferences.Uri,
-													"Photo=" + Application.Preferences.PhotoLocation };	
-					} else {
-						txtStrings = new string[] { "User Name=" + Application.Preferences.UserName, 
-													"Machine Name=" + Environment.MachineName, 
-													"Version=" + Defines.Version,
-													"PhotoType=" + Preferences.None,
-													"Photo=none" };
-					}
-
-					eg.AddService(	"giver on " + Application.Preferences.UserName + "@" + Environment.MachineName, 
-									"_giver._tcp", "", (ushort)port, txtStrings);
-
-                    eg.Commit ();
-					Logger.Debug("Avahi Service  _giver._tcp is added");
-                } catch (Exception e) {
-					Logger.Debug("Exception adding service: {0}", e.Message);
-					Logger.Debug("Exception is: {0}", e);
-                }
+                client.Register();
+				Logger.Debug("Avahi Service  _giver._tcp is added");
+            } catch (Exception e) {
+				Logger.Debug("Exception adding service: {0}", e.Message);
+				Logger.Debug("Exception is: {0}", e);
             }
-        }
-
-
-        private void UnregisterService () {
-            lock (eglock) {
-                if (eg == null)
-                    return;
-
-                eg.Reset ();
-                eg.Dispose ();
-                eg = null;
-            }
-        }
-
-
-        private void OnEntryGroupStateChanged (object o, EntryGroupStateArgs args) {
-			Logger.Debug("GiverService:OnEntryGroupStateChanged was called state: {0}", args.State.ToString());
         }
 
 
