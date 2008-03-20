@@ -1,3 +1,8 @@
+2008-03-20  Calvin Gaisford <calvinrg@gmail.com> 
+
+	* src/SendingHandler.cs, src/RequestHandler.cs, src/TargetService.cs: Fixed
+	  up the tasque integration for drag and drop
+
 2008-03-19  Calvin Gaisford <calvinrg@gmail.com> 
 
 	* src/ServiceLocator.cs, src/RequestHandler.cs, src/Protocol.cs: Added more

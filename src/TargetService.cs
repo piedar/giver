@@ -168,7 +168,7 @@ namespace Giver
 			Gtk.Drag.DestSet(this,
 						 DestDefaults.All | DestDefaults.Highlight,
 						 targets,
-						 Gdk.DragAction.Copy );
+						 Gdk.DragAction.Copy | Gdk.DragAction.Move );
 		}
 
 
@@ -201,6 +201,15 @@ namespace Giver
 								path = System.IO.Path.Combine(path, tomboyID + ".note");
 								files[0] = path;
 								Logger.Debug("Go and get the tomboy note {0}", path);
+								Application.EnqueueFileSend(serviceInfo, files);
+							}
+							else if(uri.Scheme.CompareTo("tasque") == 0) {
+								string[] files = new string[1];
+								string taskFile = uri.AbsolutePath.Substring(1);
+
+								string path = System.IO.Path.Combine("/", taskFile);
+								files[0] = path;
+								Logger.Debug("Go and get the task file {0}", path);
 								Application.EnqueueFileSend(serviceInfo, files);
 							}
 						}

@@ -134,7 +134,7 @@ namespace Giver
 					}
 //				*** TASQUE HACK **
 					else if(sd.type.CompareTo(Protocol.ProtocolTypeTasque) == 0) {
-						body = String.Format(Catalog.GetString("Tasque Task:\n{0}"), sd.name);
+						body = String.Format(Catalog.GetString("Task:\n{0}"), sd.name);
 					}
 					else
 						body = String.Format(Catalog.GetString("{0}\nSize: {1} bytes"), sd.name, sd.size);
@@ -439,7 +439,7 @@ namespace Giver
 					//Logger.Debug("RECEIVE: About to do a Gtk.Application.Invoke for the notify dude.");
 					Gtk.Application.Invoke( delegate {
 						string summary = String.Format(Catalog.GetString("{0} is done giving"), sd.userName);
-						string body = String.Format(Catalog.GetString("You have received all of the sent files...Welcome to the sow shul!"));
+						string body = String.Format(Catalog.GetString("You have received all of the sent files!"));
 
 						//Logger.Debug("RECEIVE: Inside the Gtk.Application.Invoke dude");
 						Notification notify = new Notification(	summary, 

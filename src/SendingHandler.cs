@@ -184,7 +184,7 @@ namespace Giver
 				request.Headers.Set(Protocol.UserName, Application.Preferences.UserName);
 				request.Headers.Set(Protocol.Type, Protocol.ProtocolTypeFiles);
 				request.Headers.Set(Protocol.Count, sh.fileCount.ToString());
-//				*** START OF TOMBOY HACK ***
+//				*** START OF TOMBOY and TASQUE HACK ***
 
 				if(sh.fileCount == 1) {
 					// Complete and total hack for TomBoy
@@ -220,11 +220,31 @@ namespace Giver
 							Logger.Debug("Exception getting note {0}", e);
 							request.Headers.Set(Protocol.Name, Path.GetFileName(sh.files[0]));
 						}	
+					}
+					else if(Path.GetExtension(sh.files[0]).CompareTo(".tasque") == 0) {
+						Logger.Debug("I got a task file");
+						try {
+							string name = null;
+							System.Xml.XmlDocument doc = new XmlDocument();
+							doc.Load (sh.files[0]);
+							XmlNode node = doc.SelectSingleNode ("//name");
+							name = node.InnerText;
+
+							if(name != null) {
+								request.Headers.Set(Protocol.Name, name);
+								request.Headers.Set(Protocol.Type, Protocol.ProtocolTypeTasque);
+							} else {
+								Logger.Debug("The node is null");
+								request.Headers.Set(Protocol.Name, Path.GetFileName(sh.files[0]));
+							}
+						} catch (Exception e) {
+							Logger.Debug("Exception getting task {0}", e);
+							request.Headers.Set(Protocol.Name, Path.GetFileName(sh.files[0]));
+						}	
 					} else {
 						request.Headers.Set(Protocol.Name, Path.GetFileName(sh.files[0]));
 					}
 				}
-//				*** END OF TOMBOY HACK ***
 
 //				if(sh.fileCount == 1)
 //					request.Headers.Set(Protocol.Name, Path.GetFileName(sh.files[0]));
@@ -352,7 +372,7 @@ namespace Giver
 
 					//Logger.Debug("RECEIVE: About to do a Gtk.Application.Invoke for the notify dude.");
 					Gtk.Application.Invoke( delegate {
-						string body = String.Format(Catalog.GetString("{0} has received the file(s). Welcome to the sow shul!"), serviceInfo.UserName);
+						string body = String.Format(Catalog.GetString("{0} has received the file(s)!"), serviceInfo.UserName);
 						//Logger.Debug("RECEIVE: Inside the Gtk.Application.Invoke dude");
 						Notification notify = new Notification(	Catalog.GetString("Done Giving Files."), 
 																body,
