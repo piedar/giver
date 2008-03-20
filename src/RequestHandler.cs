@@ -132,12 +132,14 @@ namespace Giver
 					if(sd.type.CompareTo(Protocol.ProtocolTypeTomboy) == 0) {
 						body = String.Format(Catalog.GetString("Tomboy Note:\n{0}"), sd.name);
 					}
+//				*** TASQUE HACK **
+					else if(sd.type.CompareTo(Protocol.ProtocolTypeTasque) == 0) {
+						body = String.Format(Catalog.GetString("Tasque Task:\n{0}"), sd.name);
+					}
 					else
 						body = String.Format(Catalog.GetString("{0}\nSize: {1} bytes"), sd.name, sd.size);
 
 				}
-//				*** END TOMBOY HACK **
-//						body = String.Format(Catalog.GetString("{0}\nSize: {1} bytes"), sd.name, sd.size);
 				else
 					body = String.Format(Catalog.GetString("{0} files\nSize: {1} bytes"), sd.count, sd.size);
 
@@ -149,9 +151,14 @@ namespace Giver
 
 					//Logger.Debug("RECEIVE: Inside the Gtk.Application.Invoke dude");
 					Gdk.Pixbuf pixbuf = null;
-
+					
+//				*** TOMBOY HACK **
 					if(sd.type.CompareTo(Protocol.ProtocolTypeTomboy) == 0)
 						pixbuf = Gtk.IconTheme.Default.LoadIcon ("tomboy", 48, 0);
+
+//				*** TASQUE HACK **
+					if(sd.type.CompareTo(Protocol.ProtocolTypeTasque) == 0)
+						pixbuf = Gtk.IconTheme.Default.LoadIcon ("tasque", 48, 0);
 					
 					if(pixbuf == null)
 						pixbuf = Utilities.GetIcon ("giver-48", 48);
@@ -354,6 +361,13 @@ namespace Giver
 					newFilePath = Path.Combine("/tmp", fileName);
 				}
 
+//				*** TASQUE HACK
+				if(Path.GetExtension(fileName).CompareTo(".tasque") == 0) {
+					basePath = "/tmp";
+					newFilePath = Path.Combine("/tmp", fileName);
+				}
+				
+
 				fileInstance++;
 				// Loop until there is no file conflict
 				while(File.Exists(newFilePath)) {
@@ -393,6 +407,21 @@ namespace Giver
 					// TODO: Is calling /sbin/lsmod safe enough?  i.e., can we be guaranteed it's gonna be there?
 					p.StartInfo.FileName = "tomboy";
 					p.StartInfo.Arguments = "--open-note " + newFilePath;
+					p.StartInfo.CreateNoWindow = true;
+					p.Start ();
+					p.StandardOutput.ReadToEnd ();
+					p.WaitForExit ();
+				}
+
+
+//				*** TASQUE HACK
+				if(Path.GetExtension(newFilePath).CompareTo(".tasque") == 0) {
+					Process p = new Process ();
+					p.StartInfo.UseShellExecute = false;
+					p.StartInfo.RedirectStandardOutput = true;
+					// TODO: Is calling /sbin/lsmod safe enough?  i.e., can we be guaranteed it's gonna be there?
+					p.StartInfo.FileName = "tasque";
+					p.StartInfo.Arguments = "--open-task " + newFilePath;
 					p.StartInfo.CreateNoWindow = true;
 					p.Start ();
 					p.StandardOutput.ReadToEnd ();

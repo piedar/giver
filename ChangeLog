@@ -1,3 +1,8 @@
+2008-03-19  Calvin Gaisford <calvinrg@gmail.com> 
+
+	* src/ServiceLocator.cs, src/RequestHandler.cs, src/Protocol.cs: Added more
+	  hackish code to support Tasque Tasks much like Tomboy notes
+
 2008-02-13  Andrew Jorgensen <andrew.jorgensen@gmail.com> 
 
 	* src/ServiceLocator.cs, src/GiverService.cs: Replaced avahi-sharp code with

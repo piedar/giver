@@ -61,7 +61,7 @@ namespace Giver {
 		private System.Object locker;
         private ServiceBrowser browser;
         private Dictionary <string, ServiceInfo> services;
-        private bool showLocals = true;
+        private bool showLocals = false;
 
         public event ServiceHandler ServiceAdded;
         public event ServiceHandler ServiceRemoved;
