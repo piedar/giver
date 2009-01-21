@@ -4,11 +4,13 @@ CSC = gmcs
 TARGET = Giver.exe
 WRAPPER = giver
 
+CSFLAGS=
+
 if ENABLE_DEBUG
-CSFLAGS =  -noconfig -codepage:utf8 -warn:4 -debug -d:DEBUG
+CSFLAGS +=  -noconfig -codepage:utf8 -warn:4 -debug -d:DEBUG
 endif
 if ENABLE_RELEASE
-CSFLAGS =  -noconfig -codepage:utf8 -warn:4
+CSFLAGS +=  -noconfig -codepage:utf8 -warn:4
 endif
 
 CSFILES = \
@@ -16,9 +18,6 @@ CSFILES = \
 	$(srcdir)/ComplexMenuItem.cs \
 	$(srcdir)/GiverMenuItem.cs \
 	$(srcdir)/GiverService.cs \
-	$(srcdir)/GtkApplication.cs \
-	$(srcdir)/GnomeApplication.cs \
-	$(srcdir)/GnomePlatformService.cs \
 	$(srcdir)/IDesktopApplication.cs \
 	$(srcdir)/Logger.cs \
 	$(srcdir)/PhotoService.cs \
@@ -37,8 +36,7 @@ CSFILES = \
 	$(srcdir)/TrayLib.cs \
 	$(srcdir)/TrayPopupWindow.cs \
 	$(srcdir)/UriList.cs \
-	$(srcdir)/Utilities.cs \
-	$(srcdir)/WindowsPlatformService.cs
+	$(srcdir)/Utilities.cs
 
 RESOURCES = \
 	-resource:$(top_srcdir)/data/images/giver-16.png \
@@ -52,13 +50,23 @@ RESOURCES = \
 
 ASSEMBLIES =  \
 	-r:System \
-	-r:Mono.Posix \
 	-r:System.Xml \
 	$(GLIB_SHARP_20_LIBS) \
-	$(GNOME_SHARP_20_LIBS) \
 	$(GTK_DOTNET_20_LIBS) \
 	$(NOTIFY_SHARP_LIBS) \
 	$(MONO_ZEROCONF_LIBS)
+
+if ENABLE_WIN
+CSFILES += $(srcdir)/GtkApplication.cs \
+	$(srcdir)/WindowsPlatformService.cs
+
+CSFLAGS += -t:winexe -d:WIN32
+else
+CSFILES += $(srcdir)/GnomeApplication.cs \
+	$(srcdir)/GnomePlatformService.cs
+
+ASSEMBLIES += -r:Mono.Posix $(GNOME_SHARP_20_LIBS)
+endif
 
 $(TARGET): $(CSFILES) Defines.cs
 	$(CSC) -unsafe -out:$@ $(CSFLAGS) $^ $(ASSEMBLIES) $(RESOURCES)

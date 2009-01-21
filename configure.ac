@@ -78,6 +78,11 @@ if test -z "$CONFIG_REQUESTED" ; then
 	AM_CONDITIONAL(ENABLE_DEBUG, true)
 fi
 
+AC_ARG_ENABLE(windows,
+	      AC_HELP_STRING([--enable-windows],[Compile with Windows support [default: no]]),
+	      enable_win=yes, enable_win=no)
+AM_CONDITIONAL(ENABLE_WIN, test "x$enable_win" = "xyes")
+
 ### Begin GAC tool ###
 
 AC_PATH_PROG(GACUTIL, gacutil, no)
