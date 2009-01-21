@@ -37,7 +37,6 @@ using System.Net.Sockets;
 
 using Gtk;
 using Gdk;
-using Notifications;
 
 namespace Giver
 {
@@ -392,16 +391,6 @@ namespace Giver
 			OnExitSignal (-1);
 			System.Environment.Exit (exitcode);
 		}
-
-        // <summary>
-        // Connects a Notification to the application icon in the notification area and shows it.
-        // </summary>
-        public static void ShowAppNotification(Notification notification)
-        {
-            //notification.AttachToWidget(Giver.Application.Instance.trayIcon);
-            notification.Show();
-        }
-
 
 		public static void EnqueueFileSend(ServiceInfo serviceInfo, string[] files)
 		{

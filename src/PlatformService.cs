@@ -25,6 +25,8 @@
  *  DEALINGS IN THE SOFTWARE.
  */
 
+using System;
+
 namespace Giver
 {
 	public abstract class PlatformService
@@ -34,5 +36,10 @@ namespace Giver
 		public abstract void SetProcessName (string name);
 		public abstract void PlaySoundFile (string filename);
 		public abstract string GetString (string format, params object [] args);
+
+		public abstract void ShowMessage (string title, string message, Gdk.Pixbuf icon);
+		public abstract void AskYesNoQuestion (string title, string message, Gdk.Pixbuf icon,
+				string ok_string, string cancel_string,
+				EventHandler ok_handler, EventHandler cancel_handler);
 	}
 }

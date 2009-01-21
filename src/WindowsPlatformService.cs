@@ -26,6 +26,7 @@
  */
 
 using System;
+using Gtk;
 
 namespace Giver
 {
@@ -51,6 +52,34 @@ namespace Giver
 		public override string GetString (string format, params object [] args)
 		{
 			return String.Format (format, args);
+		}
+
+		public override void ShowMessage (string title, string message, Gdk.Pixbuf icon)
+		{
+			MessageDialog dialog = new MessageDialog (null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok,
+					message);
+			dialog.Run ();
+			dialog.Destroy ();
+		}
+
+		public override void AskYesNoQuestion (string title, string message, Gdk.Pixbuf icon,
+				string ok_string, string cancel_string,
+				EventHandler ok_handler, EventHandler cancel_handler)
+		{
+			Dialog dialog = new Dialog (title, null, DialogFlags.DestroyWithParent | DialogFlags.Modal);
+
+			dialog.AddButton (ok_string, ResponseType.Yes);
+			dialog.AddButton (cancel_string, ResponseType.No);
+
+			dialog.Response += delegate (object o, ResponseArgs args) {
+				if (args.ResponseId == ResponseType.Yes && ok_handler != null)
+					ok_handler (null, null);
+				else if (args.ResponseId == ResponseType.No && cancel_handler != null)
+					cancel_handler (null, null);
+			};
+
+			dialog.Run ();
+			dialog.Destroy ();
 		}
 	}
 }

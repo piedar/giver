@@ -32,10 +32,14 @@ using System;
 using System.Text;
 using System.Runtime.InteropServices;
 
+using Notifications;
+
 namespace Giver
 {
 	public class GnomePlatformService : PlatformService
 	{
+		Notification currentNotification;
+
 		public override IDesktopApplication CreateDesktopApplication (string app_name, string version, string [] args)
 		{
 			return new GnomeApplication (app_name, version, args);
@@ -59,6 +63,46 @@ namespace Giver
 		public override string GetString (string format, params object [] args)
 		{
 			return String.Format (Mono.Unix.Catalog.GetString (format), args);
+		}
+
+		public override void ShowMessage (string title, string message, Gdk.Pixbuf icon)
+		{
+			Notification notification = new Notification(title, message, icon);
+			notification.Show ();
+		}
+
+		public override void AskYesNoQuestion (string title, string message, Gdk.Pixbuf icon,
+				string ok_string, string cancel_string,
+				EventHandler ok_handler, EventHandler cancel_handler)
+		{
+			Notification notify = new Notification (title, message, icon);
+			notify.Timeout = 60000;
+
+			notify.AddAction (ok_string, ok_string, delegate {
+					if (ok_handler != null)
+						ok_handler (null, null);
+					currentNotification = null;
+				});
+
+			notify.AddAction (cancel_string, cancel_string, delegate {
+					if (cancel_handler != null)
+						cancel_handler (null, null);
+					currentNotification = null;
+				});
+			notify.Closed += delegate {
+					if (cancel_handler != null)
+						cancel_handler (null, null);
+					currentNotification = null;
+				};
+
+			if (currentNotification != null) {
+				Logger.Debug ("RECEIVE: HandleSendRequest: Found a notification... closing it");
+				currentNotification.Close();
+				currentNotification = null;
+			}
+
+			currentNotification = notify;
+			currentNotification.Show ();
 		}
 
 		[DllImport("libc")]

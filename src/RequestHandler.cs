@@ -33,7 +33,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Collections.Generic;
-using Notifications;
 using System.Diagnostics;
 
 namespace Giver
@@ -66,7 +65,6 @@ namespace Giver
 	{
 		private Dictionary<string, SessionData> sessions;
 		private SessionData pendingSession;
-		private Notification currentNotification;
 		private System.Object sessionLocker;
 
 		public RequestHandler()
@@ -74,7 +72,6 @@ namespace Giver
 			sessionLocker = new Object();
 			sessions = new Dictionary<string, SessionData> ();
 			pendingSession = null;
-			currentNotification = null;
 		}
 
 		public void HandleRequest(HttpListenerContext context)
@@ -162,24 +159,10 @@ namespace Giver
 					if(pixbuf == null)
 						pixbuf = Utilities.GetIcon ("giver-48", 48);
 
-					Notification notify = new Notification(	summary,
-															body,
-															pixbuf);
+					Services.PlatformService.AskYesNoQuestion (summary, body, pixbuf,
+						Services.PlatformService.GetString ("Accept"), Services.PlatformService.GetString ("Decline"), 
+						AcceptReceiveHandler, DeclineReceiveHandler);
 
-					notify.Timeout = 60000;
-
-					notify.AddAction("Accept", Services.PlatformService.GetString("Accept"), AcceptNotificationHandler);
-					notify.AddAction("Decline", Services.PlatformService.GetString("Decline"), DeclineNotificationHandler);
-					notify.Closed += ClosedNotificationHandler;
-
-					if(currentNotification != null) {
-						Logger.Debug("RECEIVE: HandleSendRequest: Found a notification... closing it");
-						currentNotification.Close();
-						currentNotification = null;
-					}
-
-					currentNotification = notify;
-					Application.ShowAppNotification(notify);
 					Services.PlatformService.PlaySoundFile (Path.Combine (Giver.Defines.SoundDir, "notify.wav"));
 				} );
 			} catch (Exception e) {
@@ -191,17 +174,11 @@ namespace Giver
 				pendingSession.context.Response.Close();
 				pendingSession.context = null;
 				pendingSession = null;
-				currentNotification = null;
 			}			
 		}
 
-
-        /// <summary>
-        /// AcceptNotificationHandler
-        /// Handles notifications
-        /// </summary>
-        private void AcceptNotificationHandler (object o, ActionArgs args)
-        {
+		private void AcceptFile ()
+		{
 			lock(sessionLocker) {
 				if(pendingSession != null) {
 					pendingSession.context.Response.Headers.Set(Protocol.SessionID, pendingSession.sessionID);
@@ -216,16 +193,10 @@ namespace Giver
 					pendingSession = null;
 				}
 			}
-			currentNotification = null;
-        }
+		}
 
-
-        /// <summary>
-        /// DeclineNotificationHandler
-        /// Handles notifications
-        /// </summary>
-        private void DeclineNotificationHandler (object o, ActionArgs args)
-        {
+		private void DeclineFile ()
+		{
 			lock(sessionLocker) {
 				if(pendingSession != null) {
 					pendingSession.context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
@@ -236,29 +207,26 @@ namespace Giver
 					pendingSession = null;
 				}
 			}
-			currentNotification = null;
-        }
+		}
+
+		/// <summary>
+		/// AcceptReceiveHandler
+		/// Handles notifications
+		/// </summary>
+		private void AcceptReceiveHandler (object o, EventArgs args)
+		{
+			AcceptFile ();
+		}
 
 
-        /// <summary>
-        /// ClosedNotificationHandler
-        /// Handles notifications
-        /// </summary>
-        private void ClosedNotificationHandler (object o, EventArgs args)
-        {
-			lock(sessionLocker) {
-				if(pendingSession != null) {
-					pendingSession.context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-					pendingSession.context.Response.StatusDescription = Protocol.ResponseDeclined;
-					pendingSession.context.Response.OutputStream.Close();
-					pendingSession.context.Response.Close();
-					pendingSession.context = null;
-					pendingSession = null;
-				}
-			}
-			currentNotification = null;
-        }
-
+		/// <summary>
+		/// DeclineReceiveHandler
+		/// Handles notifications
+		/// </summary>
+		private void DeclineReceiveHandler (object o, EventArgs args)
+		{
+			DeclineFile ();
+		}
 
 		private void HandlePayload(HttpListenerContext context)
 		{
@@ -441,12 +409,7 @@ namespace Giver
 						string body = Services.PlatformService.GetString("You have received all of the sent files!");
 
 						//Logger.Debug("RECEIVE: Inside the Gtk.Application.Invoke dude");
-						Notification notify = new Notification(	summary, 
-																body,
-																Utilities.GetIcon ("giver-48", 48));
-
-						currentNotification = notify;
-						Application.ShowAppNotification(notify);
+						Services.PlatformService.ShowMessage (summary, body, Utilities.GetIcon ("giver-48", 48));
 						Services.PlatformService.PlaySoundFile (Path.Combine (Giver.Defines.SoundDir, "notify.wav"));
 					} );
 				}

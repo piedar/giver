@@ -1,5 +1,19 @@
 2009-01-19  Ankit Jain  <radical@gmail.com>
 
+	* src/Application.cs (ShowAppNotification): Remove.
+	* src/PlatformService.cs (ShowMessage): New.
+	(AskYesNoQuestion): New.
+	* src/GnomePlatformService.cs: Implement the new methods with
+	notify-sharp.
+	* src/WindowsPlatformService.cs: Implement the new methods with
+	Gtk.Dialog, for now.
+
+	* src/RequestHandler.cs:
+	* src/SendingHandler.cs: Use the new PlatformService api instead of
+	using notify-sharp directly.
+
+2009-01-19  Ankit Jain  <radical@gmail.com>
+
 	* src/Logger.cs: Use SpecialFolder.Personal instead of $(HOME),
 	more cross-platform.
 
