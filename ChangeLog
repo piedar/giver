@@ -1,5 +1,10 @@
 2009-01-19  Ankit Jain  <radical@gmail.com>
 
+	* src/Logger.cs: Use SpecialFolder.Personal instead of $(HOME),
+	more cross-platform.
+
+2009-01-19  Ankit Jain  <radical@gmail.com>
+
 	* configure.ac: Add a '--enable-windows' option
 	* src/Makefile.am: Update for ENABLE_WIN.
 

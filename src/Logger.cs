@@ -63,8 +63,9 @@ namespace Giver
 		{
 			try {
 				log = File.CreateText (Path.Combine (
-					Environment.GetEnvironmentVariable ("HOME"), 
-					".banter.log"));
+					Environment.GetFolderPath (Environment.SpecialFolder.Personal),
+					".giver.log"));
+
 				log.Flush ();
 			} catch (IOException) {
 				// FIXME: Use temp file
