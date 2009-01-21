@@ -16,13 +16,19 @@ CSFILES = \
 	$(srcdir)/ComplexMenuItem.cs \
 	$(srcdir)/GiverMenuItem.cs \
 	$(srcdir)/GiverService.cs \
+	$(srcdir)/GtkApplication.cs \
+	$(srcdir)/GnomeApplication.cs \
+	$(srcdir)/GnomePlatformService.cs \
+	$(srcdir)/IDesktopApplication.cs \
 	$(srcdir)/Logger.cs \
 	$(srcdir)/PhotoService.cs \
+	$(srcdir)/PlatformService.cs \
 	$(srcdir)/Preferences.cs \
 	$(srcdir)/PreferencesDialog.cs \
 	$(srcdir)/Protocol.cs \
 	$(srcdir)/RequestHandler.cs \
 	$(srcdir)/SendingHandler.cs \
+	$(srcdir)/Services.cs \
 	$(srcdir)/ServiceInfo.cs \
 	$(srcdir)/ServiceLocator.cs \
 	$(srcdir)/TargetService.cs \
@@ -31,7 +37,8 @@ CSFILES = \
 	$(srcdir)/TrayLib.cs \
 	$(srcdir)/TrayPopupWindow.cs \
 	$(srcdir)/UriList.cs \
-	$(srcdir)/Utilities.cs 
+	$(srcdir)/Utilities.cs \
+	$(srcdir)/WindowsPlatformService.cs
 
 RESOURCES = \
 	-resource:$(top_srcdir)/data/images/giver-16.png \

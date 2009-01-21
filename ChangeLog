@@ -1,3 +1,23 @@
+2009-01-19  Ankit Jain  <radical@gmail.com>
+
+	Abstract out platform specific bits.
+	* src/IDesktopApplication.cs: New.
+	* src/PlatformService.cs: New.
+	* src/Services.cs: New.
+
+	* src/GnomeApplication.cs: New. Implement IDesktopApplication.
+	* src/GtkApplication.cs: New. Likewise.
+	(SetProcessName): Move here from .. 
+	* src/Utilities.cs (SetProcessName): .. here.
+
+	* src/GnomePlatformService.cs: New. Implement PlatformService.
+	* src/WindowsPlatformService.cs: New. Likewise.
+
+	* src/Application.cs: Track api changes.
+
+	* Makefile.am: Add the new files.
+	* giver.mdp: Likewise.
+
 2008-03-20  Calvin Gaisford <calvinrg@gmail.com> 
 
 	* src/SendingHandler.cs, src/RequestHandler.cs, src/TargetService.cs: Fixed

@@ -37,7 +37,6 @@ using System.Net.Sockets;
 
 using Gtk;
 using Gdk;
-using Gnome;
 using Mono.Unix;
 using Mono.Unix.Native;
 using Notifications;
@@ -55,7 +54,7 @@ namespace Giver
 		#endregion
 		
 		#region Private Types
-        private Gnome.Program program;
+		private IDesktopApplication desktop_app;
 		private Gdk.Pixbuf onPixBuf;
 		private Gdk.Pixbuf offPixBuf;
 		private Gtk.Image trayImage;
@@ -118,13 +117,9 @@ namespace Giver
 		#region Private Methods
 		private void Init(string[] args)
 		{
-//			Gtk.Application.Init ();
-
-			program = 
-				new Gnome.Program (
+			desktop_app = Services.PlatformService.CreateDesktopApplication (
 						"Giver",
 						Defines.Version,
-						Gnome.Modules.UI,
 						args);
 
 			preferences = new Preferences();
@@ -408,10 +403,8 @@ namespace Giver
 			service.Stop();
 			locator.Stop();
 			photoService.Stop ();
-			
 
-			//Gtk.Main.Quit ();
-			program.Quit (); // Should this be called instead?
+			desktop_app.Quit ();
 		}
 		
 		private void OnTrayIconClick (object o, ButtonPressEventArgs args) // handler for mouse click
@@ -461,7 +454,7 @@ namespace Giver
 		{
 			try 
 			{
-				Utilities.SetProcessName ("Giver");
+				Services.PlatformService.SetProcessName ("Giver");
 				application = GetApplicationWithArgs(args);
 				application.StartMainLoop ();
 			} 
@@ -521,11 +514,12 @@ namespace Giver
 		#region Public Methods			
 		public void StartMainLoop ()
 		{
-			program.Run ();
+			desktop_app.StartMainLoop ();
 		}
 
 		public void QuitMainLoop ()
 		{
+			desktop_app.Quit ();
 //			actionManager ["QuitAction"].Activate ();
 		}
 		#endregion
