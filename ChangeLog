@@ -1,5 +1,11 @@
 2009-01-19  Ankit Jain  <radical@gmail.com>
 
+	* Application.cs: Use Gtk.StatusIcon instead of Egg.TrayIcon .
+	This should be more cross-platform.
+	Remove unused (related) old code.
+
+2009-01-19  Ankit Jain  <radical@gmail.com>
+
 	Abstract out platform specific bits.
 	* src/IDesktopApplication.cs: New.
 	* src/PlatformService.cs: New.

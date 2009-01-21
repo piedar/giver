@@ -57,17 +57,13 @@ namespace Giver
 		private IDesktopApplication desktop_app;
 		private Gdk.Pixbuf onPixBuf;
 		private Gdk.Pixbuf offPixBuf;
-		private Gtk.Image trayImage;
-		private Egg.TrayIcon trayIcon;	
+		private Gtk.StatusIcon tray_icon;
 		private GiverService service;
 		private ServiceLocator locator;
 		private RequestHandler requestHandler;
 		private SendingHandler sendingHandler;
 		private Giver.PhotoService photoService;
 		private Preferences preferences;
-		private bool cursorOverTrayIcon;
-		private Gtk.Window popup;
-		private EventBox eb;
 		#endregion
 	
     	public TransferStartedHandler TransferStarted;
@@ -186,9 +182,9 @@ namespace Giver
 		private void UpdateTrayIcon()
 		{
 			if(locator.Count > 0)
-				trayImage.Pixbuf = onPixBuf;
+				tray_icon.Pixbuf = onPixBuf;
 			else
-				trayImage.Pixbuf = offPixBuf;
+				tray_icon.Pixbuf = offPixBuf;
 		}
  
 	 	private void OnServicesChanged (object o, ServiceArgs args)
@@ -224,27 +220,13 @@ namespace Giver
 		{
 //			Logger.Debug ("Creating TrayIcon");
 			
-			eb = new EventBox();
 			onPixBuf = Utilities.GetIcon ("giver-24", 24);
 			offPixBuf = Utilities.GetIcon ("giveroff-24", 24);
-			if(locator.Count > 0)
-				trayImage = new Gtk.Image(onPixBuf);
-			else
-				trayImage = new Gtk.Image(offPixBuf);
-			eb.Add(trayImage);
-			//new Image(Gtk.Stock.DialogWarning, IconSize.Menu)); // using stock icon
 
-
-
-			// hooking event
-			eb.ButtonPressEvent += OnTrayIconClick;
-			trayIcon = new Egg.TrayIcon("Giver");
-			trayIcon.Add(eb); 
-
-			trayIcon.EnterNotifyEvent += OnTrayIconEnterNotifyEvent;
-			trayIcon.LeaveNotifyEvent += OnTrayIconLeaveNotifyEvent;
-			// showing the trayicon
-			trayIcon.ShowAll();			
+			tray_icon = new Gtk.StatusIcon ();
+			tray_icon.Pixbuf = offPixBuf;
+			tray_icon.Activate += delegate { TargetWindow.ShowWindow (locator); };
+			tray_icon.PopupMenu += OnPopupMenu;
 		}
 
 		private void TransferStartedHandler (TransferStatusArgs args)
@@ -270,80 +252,6 @@ namespace Giver
 		{
 			if(TransferEnded != null)
 				TransferEnded(args);
-		}
-
-
-
-		private void PositionWidget (Widget widget, 
-						 out int x, 
-						 out int y, 
-						 int yPadding) {
-			int button_y, panel_width, panel_height;
-			
-			Gtk.Requisition requisition = widget.SizeRequest ();
-			
-			eb.GdkWindow.GetOrigin (out x, out button_y);
-			(eb.Toplevel as Gtk.Window).GetSize(out panel_width, out panel_height);
-			
-			y = (button_y + panel_height + requisition.Height >= eb.Screen.Height) 
-				? button_y - requisition.Height - yPadding
-				: button_y + panel_height + yPadding;
-		}
-		
-		private void PositionPopup () {
-			int x, y;
-			
-			Gtk.Requisition event_box_req;
-			
-			event_box_req = eb.SizeRequest();
-			Gtk.Requisition popup_req = popup.SizeRequest();
-			
-			PositionWidget(popup, out x, out y, 5);
-			
-			x = x - (popup_req.Width / 2) + (event_box_req.Width / 2);	 
-			if (x + popup_req.Width >= eb.Screen.Width) { 
-				x = eb.Screen.Width - popup_req.Width - 5;
-			}
-			
-			popup.Move (x, y);
-		}
-
-
-
-		private void OnTrayIconEnterNotifyEvent(object o, EventArgs args)
-		{
-/*			cursorOverTrayIcon = true;
-			if (cursorOverTrayIcon) {
-				// only show the popup when the cursor is still over the
-				// tray icon after 500ms
-				//GLib.Timeout.Add (500, delegate {
-				//	if (cursorOverTrayIcon){ 
-				//		Logger.Info("Mousing over tray icon");
-				//		popup = new TrayPopupWindow();
-				//		//popup.Move(500, 600);
-				//		this.PositionPopup();
-				//		popup.ShowAll();
-				//	}
-				//	return false;
-				//});
-			}			//(EnterNotifyEventArgs) args;
-			//EventCrossing eventCrossing = args.Event
-
-
-*/		
-		}
-
-		private void OnTrayIconLeaveNotifyEvent(object o, EventArgs args)
-		{
-			//(EnterNotifyEventArgs) args;
-			//EventCrossing eventCrossing = args.Event;
-			cursorOverTrayIcon = false;
-			Logger.Info("Mouse is leaving tray icon");
-			if(popup != null){
-				popup.Destroy();
-				popup = null;
-			}
-		
 		}
 
 		private void OnPreferences (object sender, EventArgs args)
@@ -407,12 +315,8 @@ namespace Giver
 			desktop_app.Quit ();
 		}
 		
-		private void OnTrayIconClick (object o, ButtonPressEventArgs args) // handler for mouse click
+		private void OnPopupMenu (object o, PopupMenuArgs args)
 		{
-			if (args.Event.Button == 1) {
-				TargetWindow.ShowWindow(locator);
-			} else if (args.Event.Button == 3) {
-   				// FIXME: Eventually get all these into UIManagerLayout.xml file
       			Menu popupMenu = new Menu();
       			
       			ImageMenuItem targets = new ImageMenuItem (
@@ -439,13 +343,10 @@ namespace Giver
       			quit.Activated += OnQuit;
       			popupMenu.Add (quit);
       			
-				popupMenu.ShowAll(); // shows everything
-      			//popupMenu.Popup(null, null, null, IntPtr.Zero, args.Event.Button, args.Event.Time);
-      			popupMenu.Popup(null, null, null, args.Event.Button, args.Event.Time);
-   			}
+			popupMenu.ShowAll(); // shows everything
+			popupMenu.Popup(null, null, null, 3, Gtk.Global.CurrentEventTime);
 		}		
-		
-		
+
 		#endregion		
 
 
@@ -499,7 +400,7 @@ namespace Giver
         // </summary>
         public static void ShowAppNotification(Notification notification)
         {
-            notification.AttachToWidget(Giver.Application.Instance.trayIcon);
+            //notification.AttachToWidget(Giver.Application.Instance.trayIcon);
             notification.Show();
         }
 
