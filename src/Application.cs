@@ -37,8 +37,6 @@ using System.Net.Sockets;
 
 using Gtk;
 using Gdk;
-using Mono.Unix;
-using Mono.Unix.Native;
 using Notifications;
 
 namespace Giver
@@ -275,7 +273,7 @@ namespace Giver
                 "Calvin Gaisford <calvinrg@gmail.com>"
             };
 
-			string translators = Catalog.GetString ("translator-credits");
+			string translators = Services.PlatformService.GetString ("translator-credits");
             if (translators == "translator-credits")
                 translators = null;
 			*/
@@ -285,10 +283,10 @@ namespace Giver
             about.Version = Defines.Version;
             about.Logo = Utilities.GetIcon("giver-48", 48);
             about.Copyright =
-                Catalog.GetString ("Copyright \xa9 2007 Novell, Inc.");
-            about.Comments = Catalog.GetString ("Easy File Sharing");
+                Services.PlatformService.GetString ("Copyright \xa9 2007 Novell, Inc.");
+            about.Comments = Services.PlatformService.GetString ("Easy File Sharing");
             about.Website = "http://idea.opensuse.org/content/ideas/easy-file-sharing";
-            about.WebsiteLabel = Catalog.GetString("Homepage");
+            about.WebsiteLabel = Services.PlatformService.GetString("Homepage");
             about.Authors = authors;
             //about.Documenters = documenters;
             //about.TranslatorCredits = translators;
@@ -320,7 +318,7 @@ namespace Giver
       			Menu popupMenu = new Menu();
       			
       			ImageMenuItem targets = new ImageMenuItem (
-						Catalog.GetString ("Giver Recipients ..."));
+						Services.PlatformService.GetString ("Giver Recipients ..."));
 				targets.Image = new Gtk.Image(Utilities.GetIcon ("giver-24", 24));
       			targets.Activated += OnShowTargets;
       			popupMenu.Add (targets);
@@ -426,4 +424,5 @@ namespace Giver
 		#endregion
 		
 	}
+
 }

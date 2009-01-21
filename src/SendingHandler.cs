@@ -34,7 +34,6 @@ using System.Text;
 using System.Threading;
 using System.Collections.Generic;
 using Notifications;
-using Mono.Unix;
 using System.Xml;
 
 namespace Giver
@@ -372,27 +371,27 @@ namespace Giver
 
 					//Logger.Debug("RECEIVE: About to do a Gtk.Application.Invoke for the notify dude.");
 					Gtk.Application.Invoke( delegate {
-						string body = String.Format(Catalog.GetString("{0} has received the file(s)!"), serviceInfo.UserName);
+						string body = Services.PlatformService.GetString("{0} has received the file(s)!", serviceInfo.UserName);
 						//Logger.Debug("RECEIVE: Inside the Gtk.Application.Invoke dude");
-						Notification notify = new Notification(	Catalog.GetString("Done Giving Files."), 
+						Notification notify = new Notification(	Services.PlatformService.GetString("Done Giving Files."), 
 																body,
 																serviceInfo.Photo);
 
 						Application.ShowAppNotification(notify);
-						Gnome.Sound.Play(Path.Combine(Giver.Defines.SoundDir, "notify.wav"));
+						Services.PlatformService.PlaySoundFile (Path.Combine (Giver.Defines.SoundDir, "notify.wav"));
 					} );
 
 				} else {
 					//Logger.Debug("RECEIVE: About to do a Gtk.Application.Invoke for the notify dude.");
 					Gtk.Application.Invoke( delegate {
-						string body = String.Format(Catalog.GetString("{0} declined your request to give files."), serviceInfo.UserName);
+						string body = Services.PlatformService.GetString("{0} declined your request to give files.", serviceInfo.UserName);
 						//Logger.Debug("RECEIVE: Inside the Gtk.Application.Invoke dude");
-						Notification notify = new Notification(	Catalog.GetString("Giving Was Declined"), 
+						Notification notify = new Notification(	Services.PlatformService.GetString("Giving Was Declined"), 
 																body,
 																serviceInfo.Photo);
 
 						Application.ShowAppNotification(notify);
-						Gnome.Sound.Play(Path.Combine(Giver.Defines.SoundDir, "notify.wav"));
+						Services.PlatformService.PlaySoundFile (Path.Combine (Giver.Defines.SoundDir, "notify.wav"));
 					} );
 				}
 			

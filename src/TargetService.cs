@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using System.Collections;
 using System.IO;
 using Gtk;
-using Mono.Unix;
 
 namespace Giver
 {
@@ -228,14 +227,14 @@ namespace Giver
 		private void OnSendFile (object sender, EventArgs args)
 		{
 			FileChooserDialog chooser = new FileChooserDialog(
-							Catalog.GetString("File to Give"),
+							Services.PlatformService.GetString("File to Give"),
 							null,
 							FileChooserAction.Open
 							);
 
 			chooser.SetCurrentFolder(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
 			chooser.AddButton(Stock.Cancel, ResponseType.Cancel);
-			chooser.AddButton(Catalog.GetString("Give"), ResponseType.Ok);
+			chooser.AddButton(Services.PlatformService.GetString("Give"), ResponseType.Ok);
 			chooser.DefaultResponse = ResponseType.Ok;
 			chooser.LocalOnly = true;
 
@@ -255,14 +254,14 @@ namespace Giver
 		private void OnSendFolder (object sender, EventArgs args)
 		{
 			FileChooserDialog chooser = new FileChooserDialog(
-							Catalog.GetString("Folder to Give"),
+							Services.PlatformService.GetString("Folder to Give"),
 							null,
 							FileChooserAction.SelectFolder
 							);
 
 			chooser.SetCurrentFolder(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
 			chooser.AddButton(Stock.Cancel, ResponseType.Cancel);
-			chooser.AddButton(Catalog.GetString("Give"), ResponseType.Ok);
+			chooser.AddButton(Services.PlatformService.GetString("Give"), ResponseType.Ok);
 			chooser.DefaultResponse = ResponseType.Ok;
 			chooser.LocalOnly = true;
 
@@ -303,11 +302,9 @@ namespace Giver
 		private void FileTransferStartedHandler (TransferStatusArgs args)
 		{
 			Gtk.Application.Invoke ( delegate {
-				ProgressText = string.Format (
-					Catalog.GetString ("Giving: {0}"),
+				ProgressText = Services.PlatformService.GetString ("Giving: {0}",
 					args.Name);
-				progressBar.Text = string.Format (
-					Catalog.GetString ("{0} of {1}"),
+				progressBar.Text = Services.PlatformService.GetString ("{0} of {1}",
 					args.CurrentCount,
 					args.TotalCount);
 			});

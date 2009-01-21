@@ -32,5 +32,7 @@ namespace Giver
 		public abstract IDesktopApplication CreateDesktopApplication (string app_name, string version, string [] args);
 
 		public abstract void SetProcessName (string name);
+		public abstract void PlaySoundFile (string filename);
+		public abstract string GetString (string format, params object [] args);
 	}
 }

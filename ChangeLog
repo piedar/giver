@@ -1,5 +1,23 @@
 2009-01-19  Ankit Jain  <radical@gmail.com>
 
+	* src/PlatformService (PlaySoundFile): New.
+	(GetString): New.
+	* src/GnomePlatformService.cs:
+	* src/WindowsPlatformService.cs: Implement the new methods.
+
+	* src/Application.cs:
+	* src/RequestHandler.cs:
+	* src/SendingHandler.cs:
+	* src/TargetService.cs:
+	Replace Mono.Unix.Catalog.GetString calls with
+	PlatformService.GetString, and same for Gnome.Sound.Play
+
+	* src/PreferencesDialog.cs:
+	* src/TargetWindow.cs:
+	* src/UriList.cs: Remove unused 'using Mono.Unix*'
+
+2009-01-19  Ankit Jain  <radical@gmail.com>
+
 	* Application.cs: Use Gtk.StatusIcon instead of Egg.TrayIcon .
 	This should be more cross-platform.
 	Remove unused (related) old code.

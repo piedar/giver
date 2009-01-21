@@ -51,6 +51,16 @@ namespace Giver
 			}
 		}
 
+		public override void PlaySoundFile (string filename)
+		{
+			Gnome.Sound.Play (filename);
+		}
+
+		public override string GetString (string format, params object [] args)
+		{
+			return String.Format (Mono.Unix.Catalog.GetString (format), args);
+		}
+
 		[DllImport("libc")]
 		private static extern int prctl (int option, byte [] arg2, IntPtr arg3,
 			IntPtr arg4, IntPtr arg5);

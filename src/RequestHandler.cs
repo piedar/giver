@@ -34,7 +34,6 @@ using System.Text;
 using System.Threading;
 using System.Collections.Generic;
 using Notifications;
-using Mono.Unix;
 using System.Diagnostics;
 
 namespace Giver
@@ -125,23 +124,23 @@ namespace Giver
 			//Logger.Debug("RECEIVE: Preparing Notification");
 			try {
 				// place this request into the pending requests and notify the user of the request
-				string summary = String.Format(Catalog.GetString("{0} wants to give"), sd.userName);
+				string summary = Services.PlatformService.GetString("{0} wants to give", sd.userName);
 				string body;
 				if(sd.count == 1) {
 //				*** TOMBOY HACK **
 					if(sd.type.CompareTo(Protocol.ProtocolTypeTomboy) == 0) {
-						body = String.Format(Catalog.GetString("Tomboy Note:\n{0}"), sd.name);
+						body = Services.PlatformService.GetString("Tomboy Note:\n{0}", sd.name);
 					}
 //				*** TASQUE HACK **
 					else if(sd.type.CompareTo(Protocol.ProtocolTypeTasque) == 0) {
-						body = String.Format(Catalog.GetString("Task:\n{0}"), sd.name);
+						body = Services.PlatformService.GetString("Task:\n{0}", sd.name);
 					}
 					else
-						body = String.Format(Catalog.GetString("{0}\nSize: {1} bytes"), sd.name, sd.size);
+						body = Services.PlatformService.GetString("{0}\nSize: {1} bytes", sd.name, sd.size);
 
 				}
 				else
-					body = String.Format(Catalog.GetString("{0} files\nSize: {1} bytes"), sd.count, sd.size);
+					body = Services.PlatformService.GetString("{0} files\nSize: {1} bytes", sd.count, sd.size);
 
 				pendingSession = sd;
 
@@ -169,8 +168,8 @@ namespace Giver
 
 					notify.Timeout = 60000;
 
-					notify.AddAction("Accept", Catalog.GetString("Accept"), AcceptNotificationHandler);
-					notify.AddAction("Decline", Catalog.GetString("Decline"), DeclineNotificationHandler);
+					notify.AddAction("Accept", Services.PlatformService.GetString("Accept"), AcceptNotificationHandler);
+					notify.AddAction("Decline", Services.PlatformService.GetString("Decline"), DeclineNotificationHandler);
 					notify.Closed += ClosedNotificationHandler;
 
 					if(currentNotification != null) {
@@ -181,7 +180,7 @@ namespace Giver
 
 					currentNotification = notify;
 					Application.ShowAppNotification(notify);
-					Gnome.Sound.Play(Path.Combine(Giver.Defines.SoundDir, "notify.wav"));
+					Services.PlatformService.PlaySoundFile (Path.Combine (Giver.Defines.SoundDir, "notify.wav"));
 				} );
 			} catch (Exception e) {
 				Logger.Debug("RECEIVE: Exception attempting to notify {0}", e);
@@ -438,8 +437,8 @@ namespace Giver
 
 					//Logger.Debug("RECEIVE: About to do a Gtk.Application.Invoke for the notify dude.");
 					Gtk.Application.Invoke( delegate {
-						string summary = String.Format(Catalog.GetString("{0} is done giving"), sd.userName);
-						string body = String.Format(Catalog.GetString("You have received all of the sent files!"));
+						string summary = Services.PlatformService.GetString("{0} is done giving", sd.userName);
+						string body = Services.PlatformService.GetString("You have received all of the sent files!");
 
 						//Logger.Debug("RECEIVE: Inside the Gtk.Application.Invoke dude");
 						Notification notify = new Notification(	summary, 
@@ -448,7 +447,7 @@ namespace Giver
 
 						currentNotification = notify;
 						Application.ShowAppNotification(notify);
-						Gnome.Sound.Play(Path.Combine(Giver.Defines.SoundDir, "notify.wav"));
+						Services.PlatformService.PlaySoundFile (Path.Combine (Giver.Defines.SoundDir, "notify.wav"));
 					} );
 				}
 		

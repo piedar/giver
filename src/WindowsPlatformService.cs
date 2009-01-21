@@ -25,6 +25,8 @@
  *  DEALINGS IN THE SOFTWARE.
  */
 
+using System;
+
 namespace Giver
 {
 	public class WindowsPlatformService : PlatformService
@@ -38,6 +40,17 @@ namespace Giver
 		//TODO
 		public override void SetProcessName (string name)
 		{
+		}
+
+		//TODO
+		public override void PlaySoundFile (string filename)
+		{
+		}
+
+		//TODO: Use resources?
+		public override string GetString (string format, params object [] args)
+		{
+			return String.Format (format, args);
 		}
 	}
 }

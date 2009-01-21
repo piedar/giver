@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Text;
 using Gtk;
-using Mono.Unix;
 
 namespace Giver
 {	
