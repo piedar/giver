@@ -66,7 +66,7 @@ namespace Giver
 			Logger.Debug("We have the port : {0}", port );
 
 			listener = new HttpListener();
-			listener.AuthenticationSchemes = AuthenticationSchemes.None;
+			listener.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
 			listener.Prefixes.Add(String.Format("http://+:{0}/", port));
 			listener.Start();
 
