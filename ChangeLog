@@ -1,5 +1,9 @@
 2009-01-22  Ankit Jain  <radical@gmail.com>
 
+	* src/RequestHandler.cs (HandlePayload): 'relativePath' can be null.
+
+2009-01-22  Ankit Jain  <radical@gmail.com>
+
 	* src/GiverService.cs (.ctor): Set authentication to Anonymous instead
 	of None. None actually translates to forbid (http 403)!
 

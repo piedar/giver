@@ -253,7 +253,6 @@ namespace Giver
 			}
 
 			try{
-
 				// type context.Request.Headers[Protocol.Type]
 				// count context.Request.Headers[Protocol.Count]
 				string fileName = context.Request.Headers[Protocol.Name];
@@ -266,7 +265,7 @@ namespace Giver
 
 				// Create the local file path
 				string basePath;
-				if(relativePath.Length > 0)
+				if (!String.IsNullOrEmpty (relativePath))
 				{
 					Logger.Debug("RECEIVE: We got a file with a relativePath of {0}", relativePath);
 					// first check to see if we have fixed up the base of this path
