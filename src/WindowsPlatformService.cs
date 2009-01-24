@@ -58,6 +58,11 @@ namespace Giver
 		{
 			MessageDialog dialog = new MessageDialog (null, DialogFlags.Modal, MessageType.Info, ButtonsType.Ok,
 					message);
+			if (icon != null) {
+				dialog.Image = new Image (icon);
+				dialog.Image.Show ();
+			}
+
 			dialog.Run ();
 			dialog.Destroy ();
 		}
@@ -66,7 +71,18 @@ namespace Giver
 				string ok_string, string cancel_string,
 				EventHandler ok_handler, EventHandler cancel_handler)
 		{
-			Dialog dialog = new Dialog (title, null, DialogFlags.DestroyWithParent | DialogFlags.Modal);
+			MessageDialog dialog = new MessageDialog (null, DialogFlags.DestroyWithParent | DialogFlags.Modal,
+					MessageType.Other, ButtonsType.None, true, null);
+
+			dialog.UseMarkup = true;
+			dialog.Title = "Giver";
+			if (!String.IsNullOrEmpty (title))
+				dialog.Text = "<b>" + title + "</b>";
+			dialog.SecondaryText = message;
+			if (icon != null) {
+				dialog.Image = new Image (icon);
+				dialog.Image.Show ();
+			}
 
 			dialog.AddButton (ok_string, ResponseType.Yes);
 			dialog.AddButton (cancel_string, ResponseType.No);
