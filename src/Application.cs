@@ -303,13 +303,7 @@ namespace Giver
 		private void OnQuit (object sender, EventArgs args)
 		{
 			Logger.Info ("OnQuitAction called - terminating application");
-
-			sendingHandler.Stop();
-			service.Stop();
-			locator.Stop();
-			photoService.Stop ();
-
-			desktop_app.Quit ();
+			Quit ();
 		}
 		
 		private void OnPopupMenu (object o, PopupMenuArgs args)
@@ -405,8 +399,12 @@ namespace Giver
 			desktop_app.StartMainLoop ();
 		}
 
-		public void QuitMainLoop ()
+		public void Quit ()
 		{
+			sendingHandler.Stop();
+			service.Stop();
+			locator.Stop();
+			photoService.Stop ();
 			desktop_app.Quit ();
 //			actionManager ["QuitAction"].Activate ();
 		}

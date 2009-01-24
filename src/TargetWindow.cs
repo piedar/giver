@@ -235,6 +235,7 @@ namespace Giver
 			Logger.Debug("WindowDeleted was called");
 			TearDownLocatorEvents();
 			targetWindow = null;
+			Application.Instance.Quit ();
 		}
 
 
