@@ -78,17 +78,18 @@ namespace Giver
 			Notification notify = new Notification (title, message, icon);
 			notify.Timeout = 60000;
 
+			notify.AddAction (cancel_string, cancel_string, delegate {
+					if (cancel_handler != null)
+						cancel_handler (null, null);
+					currentNotification = null;
+				});
+
 			notify.AddAction (ok_string, ok_string, delegate {
 					if (ok_handler != null)
 						ok_handler (null, null);
 					currentNotification = null;
 				});
 
-			notify.AddAction (cancel_string, cancel_string, delegate {
-					if (cancel_handler != null)
-						cancel_handler (null, null);
-					currentNotification = null;
-				});
 			notify.Closed += delegate {
 					if (cancel_handler != null)
 						cancel_handler (null, null);

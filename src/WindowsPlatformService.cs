@@ -84,13 +84,19 @@ namespace Giver
 				dialog.Image.Show ();
 			}
 
-			dialog.AddButton (ok_string, ResponseType.Yes);
 			dialog.AddButton (cancel_string, ResponseType.No);
+			dialog.AddButton (ok_string, ResponseType.Yes);
+			dialog.DefaultResponse = ResponseType.Yes;
 
 			dialog.Response += delegate (object o, ResponseArgs args) {
 				if (args.ResponseId == ResponseType.Yes && ok_handler != null)
 					ok_handler (null, null);
 				else if (args.ResponseId == ResponseType.No && cancel_handler != null)
+					cancel_handler (null, null);
+			};
+
+			dialog.Close += delegate {
+				if (cancel_handler != null)
 					cancel_handler (null, null);
 			};
 

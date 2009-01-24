@@ -1,3 +1,10 @@
+2009-01-24  Ankit Jain  <radical@gmail.com>
+
+	* src/GnomePlatformService.cs (AskYesNoQuestion):
+	* src/WindowsPlatformService.cs (AskYesNoQuestion):
+	Reverse the order of the buttons, make the 'yes' button
+	the default. Handle 'Close' event.
+
 2009-01-23  Ankit Jain  <radical@gmail.com>
 
 	* src/Application.cs (QuitMainLoop): Rename to ..
