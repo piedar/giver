@@ -362,6 +362,14 @@ namespace Giver
 
 				sd.countReceived++;
 				sd.bytesReceived += totalRead;
+				// Try to set timestamp
+				string timestamp = context.Request.Headers [Protocol.TimeStamp];
+				if (timestamp != null) {
+					FileInfo finfo = new FileInfo (newFilePath);
+					long lastwritetime;
+					if (Int64.TryParse (timestamp, out lastwritetime))
+						finfo.LastWriteTime = new DateTime (lastwritetime);
+				}
 
 				Logger.Debug("RECEIVE: We've read {0} files and {1} bytes", sd.countReceived, sd.bytesReceived);
 

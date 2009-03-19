@@ -298,6 +298,8 @@ namespace Giver
 						string fileName = Path.GetFileName(filePair.file);
 						request.Headers.Set(Protocol.Name, fileName);
 						request.Headers.Set(Protocol.RelativePath, filePair.relativePath);
+						request.Headers.Set(Protocol.TimeStamp,
+								File.GetLastWriteTime (filePair.file).Ticks.ToString ());
 
 						try {
 							System.IO.FileStream filestream = File.Open(filePair.file, FileMode.Open, FileAccess.Read);

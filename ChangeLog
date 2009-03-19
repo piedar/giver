@@ -1,5 +1,13 @@
 2009-03-20  Ankit Jain  <jankit@novell.com>
 
+	Fix bug #18.
+	* src/Protocol.cs (TimeStamp): New.
+	* src/SendingHandler.cs: Send LastWriteTime as the timestamp
+	for files.
+	* src/RequestHandler.cs: Set LastWriteTime if timestamp is found.
+
+2009-03-20  Ankit Jain  <jankit@novell.com>
+
 	* src/Application.cs: Add a --quiet option to start with
 	no visible window.
 
