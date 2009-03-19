@@ -1,5 +1,9 @@
 2009-03-20  Ankit Jain  <jankit@novell.com>
 
+	* src/TargetService.cs (OnSendFolder): Enable sending folders.
+
+2009-03-20  Ankit Jain  <jankit@novell.com>
+
 	Fix bug #18.
 	* src/Protocol.cs (TimeStamp): New.
 	* src/SendingHandler.cs: Send LastWriteTime as the timestamp

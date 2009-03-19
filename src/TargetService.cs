@@ -267,7 +267,7 @@ namespace Giver
 
 			if(chooser.Run() == (int)ResponseType.Ok) {
 				if(!isManual) {
-	//				Giver.Application.EnqueueFileSend(serviceInfo, chooser.Filename);
+					Giver.Application.EnqueueFileSend(serviceInfo, chooser.Filenames);
 				} else {
 					// Prompt for the info to send here
 				}
