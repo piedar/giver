@@ -61,6 +61,7 @@ namespace Giver
 		private SendingHandler sendingHandler;
 		private Giver.PhotoService photoService;
 		private Preferences preferences;
+		private bool quiet;
 		#endregion
 	
     	public TransferStartedHandler TransferStarted;
@@ -116,6 +117,12 @@ namespace Giver
 						args);
 
 			preferences = new Preferences();
+			foreach (string arg in args) {
+				if (arg == "--quiet") {
+					quiet = true;
+					break;
+				}
+			}
 
 			GLib.Idle.Add(InitializeIdle);
 		}
@@ -171,7 +178,8 @@ namespace Giver
 			//tray = new NotificationArea("RtcApplication");
 			SetupTrayIcon();
 
-			TargetWindow.ShowWindow(locator);
+			if (!quiet)
+				TargetWindow.ShowWindow(locator);
 
 			return false;
 		}

@@ -1,5 +1,10 @@
 2009-03-20  Ankit Jain  <jankit@novell.com>
 
+	* src/Application.cs: Add a --quiet option to start with
+	no visible window.
+
+2009-03-20  Ankit Jain  <jankit@novell.com>
+
 	* giver.sln, giver.csproj: Add msbuild project files.
 	This has a 'Windows' configuration also. It needs 
 	Mono.Zeroconf.dll and Mono.Zeroconf.Providers.Bonjour.dll.
