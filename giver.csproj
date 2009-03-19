@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B89A6183-3449-41DD-91D9-DBD2E81170A0}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>giver</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Windows|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Windows\</OutputPath>
+    <OutputType>WinExe</OutputType>
+    <DefineConstants>WIN32</DefineConstants>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>f:\Program Files\GtkSharp\SDK\lib\gtk-sharp-2.0\atk\atk-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Mono.Zeroconf.Providers.Bonjour, Version=3.0.0.80, Culture=neutral, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'Windows'">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>winbin\Mono.Zeroconf.Providers.Bonjour.dll</HintPath>
+    </Reference>
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Web" />
+    <Reference Include="notify-sharp, Version=0.4.0.0, Culture=neutral, PublicKeyToken=2df29c54e245917a" Condition="'$(Configuration)' != 'Windows'" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Mono.Posix" Condition="'$(Configuration)' != 'Windows'"/>
+    <Reference Include="Mono.Zeroconf, Version=3.0.0.80, Culture=neutral, PublicKeyToken=e60c4f4a95e1099e">
+      <HintPath>winbin\Mono.Zeroconf.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="src\Application.cs" />
+    <Compile Include="src\Logger.cs" />
+    <Compile Include="src\Utilities.cs" />
+    <Compile Include="src\GiverService.cs" />
+    <Compile Include="src\TrayLib.cs" />
+    <Compile Include="src\ServiceLocator.cs" />
+    <Compile Include="src\ComplexMenuItem.cs" />
+    <Compile Include="src\GiverMenuItem.cs" />
+    <Compile Include="src\RequestHandler.cs" />
+    <Compile Include="src\SendingHandler.cs" />
+    <Compile Include="src\Protocol.cs" />
+    <Compile Include="src\Preferences.cs" />
+    <Compile Include="src\PreferencesDialog.cs" />
+    <Compile Include="src\ServiceInfo.cs" />
+    <Compile Include="src\TargetWindow.cs" />
+    <Compile Include="src\TargetService.cs" />
+    <Compile Include="src\UriList.cs" />
+    <Compile Include="src\TransferStatusArgs.cs" />
+    <Compile Include="src\PhotoService.cs" />
+    <Compile Include="src\IDesktopApplication.cs" />
+    <Compile Include="src\PlatformService.cs" />
+    <Compile Include="src\Services.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' != 'Windows'">
+    <Compile Include="src\GnomeApplication.cs" />
+    <Compile Include="src\GnomePlatformService.cs" />
+    <Compile Include="src\Defines.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Windows'">
+    <Compile Include="src\GtkApplication.cs" />
+    <Compile Include="src\WindowsPlatformService.cs" />
+    <Compile Include="src\Defines.Win32.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Defines.cs.in" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="data\images\blankphoto.png">
+	    <LogicalName>blankphoto.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="data\images\giver-16.png">
+	    <LogicalName>giver-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="data\images\giver-24.png" >
+	    <LogicalName>giver-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="data\images\giver-256.png" >
+	    <LogicalName>giver-256.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="data\images\giver-32.png" >
+	    <LogicalName>giver-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="data\images\giver-48.png" >
+	    <LogicalName>giver-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="data\images\giveroff-24.png" >
+	    <LogicalName>giveroff-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="data\images\gravatar.png" >
+	    <LogicalName>gravatar.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <MonoDevelop.Autotools.MakefileInfo IntegrationEnabled="true" RelativeMakefileName="./Makefile.am">
+          <BuildFilesVar />
+          <DeployFilesVar />
+          <ResourcesVar />
+          <OthersVar />
+          <GacRefVar />
+          <AsmRefVar />
+          <ProjectRefVar />
+        </MonoDevelop.Autotools.MakefileInfo>
+      </Properties>
+    </MonoDevelop>
+    <VisualStudio />
+  </ProjectExtensions>
+</Project>

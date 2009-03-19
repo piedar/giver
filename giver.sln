@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "giver", "giver.csproj", "{B89A6183-3449-41DD-91D9-DBD2E81170A0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Windows|Any CPU = Windows|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B89A6183-3449-41DD-91D9-DBD2E81170A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B89A6183-3449-41DD-91D9-DBD2E81170A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B89A6183-3449-41DD-91D9-DBD2E81170A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B89A6183-3449-41DD-91D9-DBD2E81170A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B89A6183-3449-41DD-91D9-DBD2E81170A0}.Windows|Any CPU.ActiveCfg = Windows|Any CPU
+		{B89A6183-3449-41DD-91D9-DBD2E81170A0}.Windows|Any CPU.Build.0 = Windows|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		name = giver
+		outputpath = build\bin\
+		StartupItem = giver.csproj
+	EndGlobalSection
+EndGlobal

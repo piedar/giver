@@ -1,3 +1,12 @@
+2009-03-20  Ankit Jain  <jankit@novell.com>
+
+	* giver.sln, giver.csproj: Add msbuild project files.
+	This has a 'Windows' configuration also. It needs 
+	Mono.Zeroconf.dll and Mono.Zeroconf.Providers.Bonjour.dll.
+	* src/Defines.WIN32.cs: New.
+	* winbin/Mono.Zeroconf.dll, winbin/Mono.Zeroconf.Providers.Bonjour.dll:
+	Add for windows build.
+
 2009-01-24  Ankit Jain  <radical@gmail.com>
 
 	* src/GnomePlatformService.cs (AskYesNoQuestion):
