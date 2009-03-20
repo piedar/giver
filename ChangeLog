@@ -1,5 +1,10 @@
 2009-03-20  Ankit Jain  <jankit@novell.com>
 
+	* Logger.cs (FileLogger): Set AutoFlush to true. Remove finalizer.
+	Fixes a crash on exit on windows.
+
+2009-03-20  Ankit Jain  <jankit@novell.com>
+
 	* src/TargetService.cs (OnSendFolder): Enable sending folders.
 
 2009-03-20  Ankit Jain  <jankit@novell.com>

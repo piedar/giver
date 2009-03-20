@@ -65,19 +65,12 @@ namespace Giver
 				log = File.CreateText (Path.Combine (
 					Environment.GetFolderPath (Environment.SpecialFolder.Personal),
 					".giver.log"));
-
-				log.Flush ();
+				log.AutoFlush = true;
 			} catch (IOException) {
 				// FIXME: Use temp file
 			}
 
 			console = new ConsoleLogger ();
-		}
-
-		~FileLogger ()
-		{
-			if (log != null)
-				log.Flush ();
 		}
 
 		public void Log (LogLevel lvl, string msg, params object[] args)
@@ -90,7 +83,6 @@ namespace Giver
 						     Enum.GetName (typeof (LogLevel), lvl), 
 						     msg);
 				log.WriteLine (msg, args);
-				log.Flush();
 			}
 		}
 	}
