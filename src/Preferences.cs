@@ -156,6 +156,34 @@ namespace Giver
 			}
 		}
 
+		public int PortNumber
+		{
+			get
+			{ 
+				XmlNodeList list = document.GetElementsByTagName("PortNumber");
+				XmlElement element = (XmlElement) list[0];
+				if( (element == null) || (element.InnerText.Length < 1) )
+					// any port
+					return -1;
+				int port_num;
+				if (Int32.TryParse (element.InnerText, out port_num))
+					return port_num;
+				else
+					return -1;
+			}
+
+			set
+			{
+				XmlNodeList list = document.GetElementsByTagName("PortNumber");
+				XmlElement element = (XmlElement) list[0];
+				if(element == null) {
+					element = document.CreateElement("PortNumber");
+					document.DocumentElement.AppendChild(element);
+				}
+				element.InnerText = value.ToString ();
+				SavePrefs();
+			}
+		}
 
 		public Preferences ()
 		{
@@ -190,6 +218,7 @@ namespace Giver
                    				"  <PhotoLocation></PhotoLocation>" +
 								"  <UserName></UserName>" +
 								"  <ReceiveFileLocation></ReceiveFileLocation>" +
+								"  <PortNumber></PortNumber>" +
                   			 "</giverprefs>");
 				SavePrefs();
 /* 

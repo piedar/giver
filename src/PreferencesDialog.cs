@@ -40,6 +40,8 @@ namespace Giver
 		private Gtk.RadioButton		localButton;
 		private Gtk.RadioButton		webButton;
 		private Gtk.RadioButton		gravatarButton;
+		private Gtk.RadioButton		anyPortButton, fixedPortButton;
+		private Gtk.Entry		portNumberEntry;
 		private Image 				localImage;
 		private Button 				photoButton;
 		private Entry				webEntry;
@@ -202,6 +204,60 @@ namespace Giver
 
 			mainVBox.PackStart(fileLocationButton, true, true, 0);
 
+			table = new Table(2, 3, false);
+			table.Show();
+
+			// Port number section
+			label = new Label();
+			label.Show();
+			label.Justify = Gtk.Justification.Left;
+			label.SetAlignment (0.0f, 0.5f);
+			label.LineWrap = false;
+			label.UseMarkup = true;
+			label.UseUnderline = false;
+			label.Markup = "<span weight=\"bold\" size=\"large\">Port Number</span>";
+			mainVBox.PackStart(label, true, true, 0);
+
+			// any port Entry
+			anyPortButton = new RadioButton((Gtk.RadioButton)null);
+			anyPortButton.Show();
+			table.Attach(anyPortButton, 0, 1, 0, 1, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
+
+			vbox = new VBox();
+			vbox.Show();
+
+			label = new Label ();
+			label.Show ();
+			label.Justify = Gtk.Justification.Left;
+			label.SetAlignment (0.0f, 0.5f);
+			label.LineWrap = false;
+			label.UseMarkup = true;
+			label.UseUnderline = false;
+			label.Markup = "Any available port";
+			vbox.PackStart(label, false, false, 0);
+			table.Attach(vbox, 1, 2, 0, 1, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
+
+			// fixed port Entry
+			fixedPortButton = new RadioButton(anyPortButton);
+			fixedPortButton.Show();
+			table.Attach(fixedPortButton, 0, 1, 1, 2, AttachOptions.Shrink, AttachOptions.Shrink, 0, 0);
+
+			label = new Label ();
+			label.Show ();
+			label.Justify = Gtk.Justification.Left;
+			label.SetAlignment (0.0f, 0.5f);
+			label.LineWrap = false;
+			label.UseMarkup = true;
+			label.UseUnderline = false;
+			label.Markup = "Use a fixed port";
+			table.Attach(label, 1, 2, 1, 2, AttachOptions.Expand | AttachOptions.Fill, AttachOptions.Expand | AttachOptions.Fill, 0, 0);
+
+			portNumberEntry = new Entry();
+			portNumberEntry.Show();
+			table.Attach(portNumberEntry, 2, 3, 1, 2, AttachOptions.Expand | AttachOptions.Fill, AttachOptions.Expand | AttachOptions.Fill, 0, 0);
+
+			mainVBox.PackStart(table, true, true, 0);
+
 			DeleteEvent += WindowDeleted;
 		}
 
@@ -247,6 +303,15 @@ namespace Giver
 				// make this none
 				noneButton.Active = true;
 			}
+
+			int port = Giver.Application.Preferences.PortNumber;
+			bool is_fixed = port >= 0;
+
+			anyPortButton.Active = !is_fixed;
+			fixedPortButton.Active = is_fixed;
+			portNumberEntry.Sensitive = is_fixed;
+			if (is_fixed)
+				portNumberEntry.Text = Giver.Application.Preferences.PortNumber.ToString ();
 		}
 
 		private void ConnectEvents()
@@ -307,6 +372,28 @@ namespace Giver
 
 			gravatarEntry.Changed += delegate {
 				Application.Preferences.PhotoLocation = gravatarEntry.Text;
+			};
+
+			anyPortButton.Toggled += delegate {
+				if (anyPortButton.Active) {
+					portNumberEntry.Sensitive = false;
+					Application.Preferences.PortNumber = -1;
+				}
+			};
+
+			fixedPortButton.Toggled += delegate {
+				if (fixedPortButton.Active) {
+					portNumberEntry.Sensitive = true;
+					int port;
+					if (Int32.TryParse (portNumberEntry.Text, out port))
+						Application.Preferences.PortNumber = port;
+				}
+			};
+
+			portNumberEntry.Changed += delegate {
+				int port;
+				if (Int32.TryParse (portNumberEntry.Text, out port))
+					Application.Preferences.PortNumber = port;
 			};
 
 		}

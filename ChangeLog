@@ -1,5 +1,15 @@
 2009-03-20  Ankit Jain  <jankit@novell.com>
 
+	Fix bug #12.
+	* src/PreferencesDialog.cs: Add option to specify a port number to
+	listen on.
+	* src/Preferences.cs (PortNumber): New.
+	* src/GiverService.cs: Handle user specified port numbers. Also, handle
+	the case when port might not be available.
+	* src/Application.cs (InitializeIdle): Fix error message.
+
+2009-03-20  Ankit Jain  <jankit@novell.com>
+
 	* Logger.cs (FileLogger): Set AutoFlush to true. Remove finalizer.
 	Fixes a crash on exit on windows.
 

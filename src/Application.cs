@@ -166,7 +166,7 @@ namespace Giver
 					Logger.Fatal("The Avahi Daemon is not running... start it before running Giver");
 				}
 				else
-					Logger.Debug("Error starting ServiceLocator: {0}", e.Message);
+					Logger.Debug("Error starting GiverService: {0}", e.Message);
 
 				throw e;
 			}

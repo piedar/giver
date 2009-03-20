@@ -59,16 +59,33 @@ namespace Giver
 			Logger.Debug("New GiverService was created");
 			running = true;
 
-			TcpListener server = new TcpListener(IPAddress.Any, 0);
-			server.Start();
-			port = ((IPEndPoint)server.LocalEndpoint).Port;
-			server.Stop();
-			Logger.Debug("We have the port : {0}", port );
+			int desired_port_num = Application.Preferences.PortNumber;
+			if (desired_port_num < 0)
+				//any port
+				desired_port_num = 0;
+			if (desired_port_num < IPEndPoint.MinPort || desired_port_num > IPEndPoint.MaxPort) {
+				Logger.Debug ("Error: Port number must be between 0 and 65535. Trying to bind to any available port.");
+				desired_port_num = 0;
+			}
+			port = desired_port_num;
 
-			listener = new HttpListener();
-			listener.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
-			listener.Prefixes.Add(String.Format("http://+:{0}/", port));
-			listener.Start();
+			if (desired_port_num == 0 && !TryBindFixedOrAnyPort (desired_port_num, out port))
+				ThrowUnableToBindAnyPort ();
+
+			try {
+				Logger.Debug ("Starting listener on port {0}", port);
+				listener = CreateListener (port);
+				listener.Start ();
+			} catch (HttpListenerException hle) {
+				Logger.Debug ("Error starting a http listener on port {0} : {1}", port, hle.Message);
+				listener = TryBindAndListenAgain (desired_port_num, out port);
+			} catch (SocketException se) {
+				Logger.Debug ("Error starting a http listener on port {0} : {1}", port, se.Message);
+				listener = TryBindAndListenAgain (desired_port_num, out port);
+			}
+
+			if (port != Application.Preferences.PortNumber)
+				Logger.Debug ("We have the port : {0}", port);
 
 			listnerThread  = new Thread(TcpServerThread);
 			listnerThread.Start();
@@ -77,6 +94,63 @@ namespace Giver
 			AdvertiseService();
 		}
 
+		private HttpListener CreateListener (int actual_port)
+		{
+			HttpListener listener = new HttpListener ();
+			listener.AuthenticationSchemes = AuthenticationSchemes.Anonymous;
+			listener.Prefixes.Add (String.Format ("http://+:{0}/", actual_port));
+
+			return listener;
+		}
+
+		// Tries to bind to @desired_port, if that fails
+		// then it tries to bind to _any_ port
+		// @actual_port contains a valid available port number
+		private bool TryBindFixedOrAnyPort (int desired_port, out int actual_port)
+		{
+			actual_port = -1;
+			TcpListener server = new TcpListener (IPAddress.Any, desired_port);
+
+			try {
+				server.Start ();
+			} catch (SocketException se) {
+				if (port > 0) {
+					// user requested port
+					Logger.Debug ("Unable to bind to requested port number {0}. Error: {1}. " +
+							"Trying to bind to any other available port", desired_port, se.Message);
+					try {
+						server = new TcpListener (IPAddress.Any, 0);
+						server.Start ();
+					} catch (SocketException se2) {
+						Logger.Debug ("Unable to bind to any port, error: {0}", se2.Message);
+						return false;
+					}
+				}
+			}
+
+			actual_port = ((IPEndPoint) server.LocalEndpoint).Port;
+			server.Stop ();
+			return true;
+		}
+
+		// Tries to start a http listener at @desired_port, if that fails
+		// then it tries to listen on _any_ port
+		// @actual_port will have the listener's port number
+		private HttpListener TryBindAndListenAgain (int desired_port_num, out int actual_port)
+		{
+			actual_port = 0;
+			if (desired_port_num <= 0)
+				ThrowUnableToBindAnyPort ();
+
+			Logger.Debug ("Trying to bind to any available port");
+			if (!TryBindFixedOrAnyPort (0, out actual_port))
+				ThrowUnableToBindAnyPort ();
+
+			HttpListener listener = CreateListener (actual_port);
+			listener.Start ();
+
+			return listener;
+		}
 
         public void Stop ()
 		{
@@ -160,10 +234,15 @@ namespace Giver
 			    catch(Exception e)
 			    {
 					// this will happen when we close down the service
-					Logger.Debug("GiverService: SocketException: {0}", e.Message);
+					Logger.Debug("GiverService: {0}", e.ToString ());
 			    }
 			}
 		}
 
+
+		void ThrowUnableToBindAnyPort ()
+		{
+			throw new Exception ("Unable to bind to any port. See .giver.log file in your home directory for details.");
+		}
 	}
 }
